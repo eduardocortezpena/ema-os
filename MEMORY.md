@@ -1,0 +1,3 @@
+- [Skills](.claude/skills/) — Development guidelines & UI standards
+- [Documentation](.claude/docs/) — Project vision & roadmap
+- [Agents](.claude/agents/) — AI development assistants (empty initially)

@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/lib/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Proyecto {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  priority    Priority @default(LOW)
+  status      Status   @default(PLANNING)
+  progress    Int      @default(0)
+  nextAction  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tasks       Tarea[]
+}
+
+model Tarea {
+  id          String   @id @default(cuid())
+  projectId   String
+  title       String
+  description String?
+  priority    Priority @default(LOW)
+  status      TareaStatus @default(TODO)
+  dueDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  project     Proyecto @relation(fields: [projectId], references: [id])
+  notes       Nota[]
+}
+
+model Nota {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  taskId    String
+  task      Tarea    @relation(fields: [taskId], references: [id])
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum Status {
+  PLANNING
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+enum TareaStatus {
+  TODO
+  IN_PROGRESS
+  WAITING
+  DONE
+}

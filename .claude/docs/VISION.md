@@ -1,0 +1,2 @@
+# VISION.md
+EMA OS aims to become the most intuitive personal project manager for individuals seeking a lightweight, distraction-free environment to organize their work. Built with modern web technologies and designed for simplicity, EMA OS will serve as a foundation for personal productivity without unnecessary complexity.
