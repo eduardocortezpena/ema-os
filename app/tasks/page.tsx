@@ -1,5 +1,7 @@
 import { prisma } from '@/app/lib/prisma';
-import { createTask, markTaskComplete, deleteTask } from '../actions';
+import { createTask, updateTaskStatus, deleteTask } from '../actions';
+import { ConfirmButton } from '../components/ConfirmButton';
+import { AutoSubmitSelect } from '../components/AutoSubmitSelect';
 
 export default async function TasksPage() {
   const [tasks, projects] = await Promise.all([
@@ -59,24 +61,31 @@ export default async function TasksPage() {
                           </span>
                         </div>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        {task.status !== 'DONE' && (
-                          <form action={markTaskComplete}>
-                            <input type="hidden" name="id" value={task.id} />
-                            <input type="hidden" name="projectId" value={task.projectId} />
-                            <button type="submit" className="text-green-400 hover:text-white text-sm">
-                              ✓ Complete
-                            </button>
-                          </form>
-                        )}
-                        <form action={deleteTask} onSubmit={(e) => {
-                          if (!confirm('Delete this task?')) e.preventDefault();
-                        }}>
+                      <div className="flex flex-col gap-2 items-end">
+                        <form action={updateTaskStatus} className="flex items-center gap-2">
                           <input type="hidden" name="id" value={task.id} />
                           <input type="hidden" name="projectId" value={task.projectId} />
-                          <button type="submit" className="text-danger-500 hover:text-white text-sm">
+                          <AutoSubmitSelect
+                            name="status"
+                            defaultValue={task.status}
+                            className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            options={[
+                              { value: 'TODO', label: 'Todo' },
+                              { value: 'IN_PROGRESS', label: 'In Progress' },
+                              { value: 'WAITING', label: 'Waiting' },
+                              { value: 'DONE', label: 'Done' },
+                            ]}
+                          />
+                        </form>
+                        <form action={deleteTask}>
+                          <input type="hidden" name="id" value={task.id} />
+                          <input type="hidden" name="projectId" value={task.projectId} />
+                          <ConfirmButton
+                            className="text-danger-500 hover:text-white text-sm"
+                            confirmMessage="Delete this task?"
+                          >
                             Delete
-                          </button>
+                          </ConfirmButton>
                         </form>
                       </div>
                     </div>

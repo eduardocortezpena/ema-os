@@ -1,2 +1,2 @@
 export { createProject, updateProject, deleteProject } from './project-actions';
-export { createTask, markTaskComplete, deleteTask } from './task-actions';
+export { createTask, updateTaskStatus, deleteTask } from './task-actions';

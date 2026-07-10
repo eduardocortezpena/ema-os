@@ -41,26 +41,31 @@ export async function createTask(formData: FormData) {
   }
 }
 
-export async function markTaskComplete(formData: FormData) {
+export async function updateTaskStatus(formData: FormData) {
   try {
     const id = formData.get('id')?.toString() || '';
     const projectId = formData.get('projectId')?.toString() || null;
+    const status = formData.get('status')?.toString() as 'TODO' | 'IN_PROGRESS' | 'WAITING' | 'DONE';
 
     if (!id) {
       console.error('ID de tarea requerido');
       return;
     }
+    if (!['TODO', 'IN_PROGRESS', 'WAITING', 'DONE'].includes(status)) {
+      console.error('Status inválido');
+      return;
+    }
 
     await prisma.tarea.update({
       where: { id },
-      data: { status: 'DONE' },
+      data: { status },
     });
 
     revalidatePath('/tasks');
     if (projectId) revalidatePath(`/projects/${projectId}`);
     revalidatePath('/dashboard');
   } catch (error: any) {
-    console.error('Error marcando tarea como completada:', error.message);
+    console.error('Error actualizando status de tarea:', error.message);
   }
 }
 
