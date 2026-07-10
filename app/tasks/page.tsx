@@ -1,4 +1,4 @@
-import prisma from '../../lib/prisma';
+import { prisma } from '../../lib/prisma';
 import { createTask, markTaskComplete, deleteTask } from '../actions';
 
 export default async function TasksPage() {
