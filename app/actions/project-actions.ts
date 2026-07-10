@@ -1,7 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
+
 export async function createProject(formData: FormData) {
   try {
     const name = formData.get('name')?.toString().trim();
@@ -11,8 +13,7 @@ export async function createProject(formData: FormData) {
     const nextAction = formData.get('nextAction')?.toString().trim() || null;
 
     if (!name || name.length === 0) {
-      console.error('Nombre de proyecto requerido');
-      return;
+      redirect(`/projects?error=${encodeURIComponent('Nombre de proyecto requerido')}`);
     }
 
     await prisma.proyecto.create({
@@ -28,7 +29,8 @@ export async function createProject(formData: FormData) {
     revalidatePath('/projects');
     revalidatePath('/dashboard');
   } catch (error: any) {
-    console.error('Error creando proyecto:', error.message);
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/projects?error=${encodeURIComponent('Error creando proyecto: ' + error.message)}`);
   }
 }
 
@@ -44,12 +46,10 @@ export async function updateProject(formData: FormData) {
     const nextAction = formData.get('nextAction')?.toString().trim() || null;
 
     if (!id) {
-      console.error('ID de proyecto requerido');
-      return;
+      redirect(`/projects?error=${encodeURIComponent('ID de proyecto requerido')}`);
     }
     if (!name || name.length === 0) {
-      console.error('Nombre de proyecto requerido');
-      return;
+      redirect(`/projects?error=${encodeURIComponent('Nombre de proyecto requerido')}`);
     }
 
     await prisma.proyecto.update({
@@ -60,7 +60,8 @@ export async function updateProject(formData: FormData) {
     revalidatePath('/projects');
     revalidatePath('/dashboard');
   } catch (error: any) {
-    console.error('Error actualizando proyecto:', error.message);
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/projects?error=${encodeURIComponent('Error actualizando proyecto: ' + error.message)}`);
   }
 }
 
@@ -69,8 +70,7 @@ export async function deleteProject(formData: FormData) {
     const id = formData.get('id')?.toString() || '';
 
     if (!id) {
-      console.error('ID de proyecto requerido');
-      return;
+      redirect(`/projects?error=${encodeURIComponent('ID de proyecto requerido')}`);
     }
 
     await prisma.proyecto.delete({
@@ -80,6 +80,7 @@ export async function deleteProject(formData: FormData) {
     revalidatePath('/projects');
     revalidatePath('/dashboard');
   } catch (error: any) {
-    console.error('Error eliminando proyecto:', error.message);
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/projects?error=${encodeURIComponent('Error eliminando proyecto: ' + error.message)}`);
   }
 }

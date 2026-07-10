@@ -3,7 +3,12 @@ import { createTask, updateTaskStatus, deleteTask } from '../actions';
 import { ConfirmButton } from '../components/ConfirmButton';
 import { AutoSubmitSelect } from '../components/AutoSubmitSelect';
 
-export default async function TasksPage() {
+export default async function TasksPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const [tasks, projects] = await Promise.all([
     prisma.tarea.findMany({
       include: {
@@ -22,6 +27,12 @@ export default async function TasksPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Tareas</h1>
         </div>
+
+        {error && (
+          <p className="bg-danger-500/10 border border-danger-500 text-danger-500 rounded px-3 py-2 mb-4 text-sm">
+            {error}
+          </p>
+        )}
 
         {projects.length === 0 && (
           <p className="text-amber-400 mb-4">

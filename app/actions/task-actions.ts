@@ -1,7 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
+
 export async function createTask(formData: FormData) {
   try {
     const title = formData.get('title')?.toString().trim();
@@ -12,12 +14,10 @@ export async function createTask(formData: FormData) {
     const projectId = formData.get('projectId')?.toString() || '';
 
     if (!title || title.length === 0) {
-      console.error('Título de tarea requerido');
-      return;
+      redirect(`/tasks?error=${encodeURIComponent('Título de tarea requerido')}`);
     }
     if (!projectId) {
-      console.error('Proyecto requerido para la tarea');
-      return;
+      redirect(`/tasks?error=${encodeURIComponent('Proyecto requerido para la tarea')}`);
     }
 
     const dueDate = dueDateStr ? new Date(dueDateStr) : null;
@@ -36,7 +36,8 @@ export async function createTask(formData: FormData) {
     revalidatePath('/tasks');
     revalidatePath('/dashboard');
   } catch (error: any) {
-    console.error('Error creando tarea:', error.message);
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/tasks?error=${encodeURIComponent('Error creando tarea: ' + error.message)}`);
   }
 }
 
@@ -46,12 +47,10 @@ export async function updateTaskStatus(formData: FormData) {
     const status = formData.get('status')?.toString() as 'TODO' | 'IN_PROGRESS' | 'WAITING' | 'DONE';
 
     if (!id) {
-      console.error('ID de tarea requerido');
-      return;
+      redirect(`/tasks?error=${encodeURIComponent('ID de tarea requerido')}`);
     }
     if (!['TODO', 'IN_PROGRESS', 'WAITING', 'DONE'].includes(status)) {
-      console.error('Status inválido');
-      return;
+      redirect(`/tasks?error=${encodeURIComponent('Status inválido')}`);
     }
 
     await prisma.tarea.update({
@@ -62,7 +61,8 @@ export async function updateTaskStatus(formData: FormData) {
     revalidatePath('/tasks');
     revalidatePath('/dashboard');
   } catch (error: any) {
-    console.error('Error actualizando status de tarea:', error.message);
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/tasks?error=${encodeURIComponent('Error actualizando status de tarea: ' + error.message)}`);
   }
 }
 
@@ -71,8 +71,7 @@ export async function deleteTask(formData: FormData) {
     const id = formData.get('id')?.toString() || '';
 
     if (!id) {
-      console.error('ID de tarea requerido');
-      return;
+      redirect(`/tasks?error=${encodeURIComponent('ID de tarea requerido')}`);
     }
 
     await prisma.tarea.delete({
@@ -82,6 +81,7 @@ export async function deleteTask(formData: FormData) {
     revalidatePath('/tasks');
     revalidatePath('/dashboard');
   } catch (error: any) {
-    console.error('Error eliminando tarea:', error.message);
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/tasks?error=${encodeURIComponent('Error eliminando tarea: ' + error.message)}`);
   }
 }

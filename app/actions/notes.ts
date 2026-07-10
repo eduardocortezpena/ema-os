@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
 
 export async function createNote(formData: FormData) {
@@ -10,12 +11,10 @@ export async function createNote(formData: FormData) {
     const projectId = formData.get('projectId')?.toString() || '';
 
     if (!title || title.length === 0) {
-      console.error('Título de nota requerido');
-      return;
+      redirect(`/notes?error=${encodeURIComponent('Título de nota requerido')}`);
     }
     if (!projectId) {
-      console.error('Proyecto requerido para la nota');
-      return;
+      redirect(`/notes?error=${encodeURIComponent('Proyecto requerido para la nota')}`);
     }
 
     await prisma.nota.create({
@@ -25,7 +24,8 @@ export async function createNote(formData: FormData) {
     revalidatePath('/notes');
     revalidatePath('/dashboard');
   } catch (error: any) {
-    console.error('Error creando nota:', error.message);
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/notes?error=${encodeURIComponent('Error creando nota: ' + error.message)}`);
   }
 }
 
@@ -36,12 +36,10 @@ export async function updateNote(formData: FormData) {
     const content = formData.get('content')?.toString().trim() || '';
 
     if (!id) {
-      console.error('ID de nota requerido');
-      return;
+      redirect(`/notes?error=${encodeURIComponent('ID de nota requerido')}`);
     }
     if (!title || title.length === 0) {
-      console.error('Título de nota requerido');
-      return;
+      redirect(`/notes?error=${encodeURIComponent('Título de nota requerido')}`);
     }
 
     await prisma.nota.update({
@@ -51,7 +49,8 @@ export async function updateNote(formData: FormData) {
 
     revalidatePath('/notes');
   } catch (error: any) {
-    console.error('Error actualizando nota:', error.message);
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/notes?error=${encodeURIComponent('Error actualizando nota: ' + error.message)}`);
   }
 }
 
@@ -60,8 +59,7 @@ export async function deleteNote(formData: FormData) {
     const id = formData.get('id')?.toString() || '';
 
     if (!id) {
-      console.error('ID de nota requerido');
-      return;
+      redirect(`/notes?error=${encodeURIComponent('ID de nota requerido')}`);
     }
 
     await prisma.nota.delete({
@@ -71,6 +69,7 @@ export async function deleteNote(formData: FormData) {
     revalidatePath('/notes');
     revalidatePath('/dashboard');
   } catch (error: any) {
-    console.error('Error eliminando nota:', error.message);
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/notes?error=${encodeURIComponent('Error eliminando nota: ' + error.message)}`);
   }
 }

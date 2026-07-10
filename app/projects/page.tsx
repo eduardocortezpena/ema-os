@@ -2,7 +2,12 @@ import { prisma } from '@/app/lib/db';
 import { createProject, updateProject, deleteProject } from '../actions';
 import { ConfirmButton } from '../components/ConfirmButton';
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const projects = await prisma.proyecto.findMany({
     orderBy: { createdAt: 'desc' },
   });
@@ -13,6 +18,12 @@ export default async function ProjectsPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Proyectos</h1>
         </div>
+
+        {error && (
+          <p className="bg-danger-500/10 border border-danger-500 text-danger-500 rounded px-3 py-2 mb-4 text-sm">
+            {error}
+          </p>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
