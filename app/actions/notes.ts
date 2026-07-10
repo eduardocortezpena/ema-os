@@ -1,17 +1,17 @@
 'use server';
 
-import { prisma } from '@/app/generated/prisma';
+import { prisma } from '@/app/lib/prisma';
 
 export async function createNote(data: {
   title: string;
   content: string;
-  taskId?: string;
+  taskId: string;
 }) {
   return prisma.nota.create({
     data: {
       title: data.title,
       content: data.content,
-      taskId: data.taskId || null,
+      taskId: data.taskId,
     },
   });
 }
