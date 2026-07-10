@@ -1,94 +1,110 @@
-'use client';
+import { prisma } from '@/app/lib/prisma';
+import { createNote, updateNote, deleteNote } from '../actions/notes';
+import { ConfirmButton } from '../components/ConfirmButton';
 
-import { useState } from 'react';
-
-type Note = {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-};
-
-export default function Notes() {
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: '1',
-      title: 'Primeras ideas',
-      content: 'Diseño de interfaz',
-      createdAt: '2026-07-08'
-    }
+export default async function NotesPage() {
+  const [notes, projects] = await Promise.all([
+    prisma.nota.findMany({
+      include: { project: true },
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.proyecto.findMany({
+      orderBy: { name: 'asc' },
+    }),
   ]);
-
-  const [form, setForm] = useState({
-    title: '',
-    content: ''
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newNote: Note = {
-      id: Date.now().toString(),
-      ...form,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-    setNotes([newNote, ...notes]);
-    setForm({ title: '', content: '' });
-  };
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <div className="container mx-auto p-4">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Notas</h1>
-          <button className="bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors">
-            Nueva Nota
-          </button>
         </div>
+
+        {projects.length === 0 && (
+          <p className="text-amber-400 mb-4">
+            ⚠️ Necesitas crear un proyecto primero antes de crear notas.
+          </p>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <div className="space-y-4">
-              {notes.map((note) => (
-                <div key={note.id} className="bg-gray-800 p-4 rounded-lg">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold">{note.title}</h3>
-                      <p className="text-gray-400 text-sm mt-1">{note.content.slice(0, 50)}...</p>
-                      <p className="text-gray-500 text-xs mt-2">{note.createdAt}</p>
+              {notes.length === 0 ? (
+                <p className="text-gray-500">No hay notas todavía. ¡Crea una abajo!</p>
+              ) : (
+                notes.map((note) => (
+                  <div key={note.id} className="bg-gray-800 p-4 rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold">{note.title}</h3>
+                        <p className="text-gray-400 text-sm mt-1 whitespace-pre-wrap">{note.content}</p>
+                        <span className="badge bg-gray-700 mt-2 inline-block">{note.project.name}</span>
+                      </div>
+                      <form action={deleteNote}>
+                        <input type="hidden" name="id" value={note.id} />
+                        <ConfirmButton
+                          className="text-danger-500 hover:text-white text-sm"
+                          confirmMessage="¿Eliminar esta nota?"
+                        >
+                          Eliminar
+                        </ConfirmButton>
+                      </form>
                     </div>
-                    <div className="flex gap-2">
-                      <button className="text-gray-400 hover:text-white">Editar</button>
-                      <button className="text-danger-500 hover:text-white">Eliminar</button>
-                    </div>
+
+                    <details className="mt-3">
+                      <summary className="text-sm text-gray-400 cursor-pointer hover:text-white">Editar</summary>
+                      <form action={updateNote} className="space-y-3 mt-3">
+                        <input type="hidden" name="id" value={note.id} />
+                        <div>
+                          <label className="block text-sm mb-1">Título *</label>
+                          <input type="text" name="title" required defaultValue={note.title}
+                            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                        </div>
+                        <div>
+                          <label className="block text-sm mb-1">Contenido</label>
+                          <textarea name="content" defaultValue={note.content}
+                            className="w-full h-32 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                        </div>
+                        <button type="submit" className="bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors text-sm">
+                          Guardar cambios
+                        </button>
+                      </form>
+                    </details>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
           <div className="bg-gray-800 p-4 rounded-lg h-fit">
             <h2 className="text-lg font-semibold mb-4">Nueva Nota</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form action={createNote} className="space-y-4">
               <div>
-                <label className="block text-sm mb-1">Título</label>
-                <input
-                  type="text"
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="w-full"
-                  required
-                />
+                <label className="block text-sm mb-1">Título *</label>
+                <input type="text" name="title" required
+                  className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
               </div>
               <div>
                 <label className="block text-sm mb-1">Contenido</label>
-                <textarea
-                  value={form.content}
-                  onChange={(e) => setForm({ ...form, content: e.target.value })}
-                  className="w-full h-40"
-                />
+                <textarea name="content"
+                  className="w-full h-32 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
               </div>
-              <button type="submit" className="bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors w-full">
-                Crear
+              <div>
+                <label className="block text-sm mb-1">Proyecto *</label>
+                <select name="projectId" required defaultValue=""
+                  className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                  <option value="" disabled>Selecciona un proyecto...</option>
+                  {projects.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                type="submit"
+                disabled={projects.length === 0}
+                className="bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors w-full disabled:bg-gray-600 disabled:cursor-not-allowed"
+              >
+                Crear Nota
               </button>
             </form>
           </div>

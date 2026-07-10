@@ -2,22 +2,22 @@
 ## Feature Backlog
 
 ### High Priority
-- [ ] Connect Projects CRUD to Prisma Server Actions
-- [ ] Connect Tasks CRUD to Prisma Server Actions
-- [ ] Connect Notes CRUD to Prisma Server Actions
-- [ ] Add form validation (required fields, type checking)
-- [ ] Implement delete confirmation dialogs
+- [x] Connect Projects CRUD to Prisma Server Actions (Sprint 0.2)
+- [x] Connect Tasks CRUD to Prisma Server Actions (Sprint 0.3)
+- [x] Connect Notes CRUD to Prisma Server Actions (Sprint 0.4)
+- [x] Add form validation (required fields, type checking) — hecho por CRUD conectado
+- [x] Implement delete confirmation dialogs — ConfirmButton en Proyectos/Tareas/Notas
+- [ ] Dashboard real statistics from database (Sprint 0.5, en curso)
 
 ### Medium Priority
 - [ ] Search and filter functionality for each module
 - [ ] Project progress calculation based on tasks
-- [ ] Dashboard real statistics from database
 - [ ] Bulk actions (delete multiple items)
 - [ ] Export data to JSON/CSV
+- [ ] Asociar una nota a una tarea específica dentro del proyecto (Nota.taskId ya existe y es opcional desde Sprint 0.1, pero la UI no lo expone todavía — fuera de alcance de Fase 0)
 
 ### Low Priority
 - [ ] Keyboard shortcuts
-- [ ] Dark/light theme toggle
 - [ ] Mobile-optimized sidebar (drawer)
 - [ ] Drag-and-drop task reordering
 - [ ] Tags/categories for projects
@@ -28,6 +28,11 @@
 - [ ] Add ESLint custom rules
 - [ ] Document component API
 - [ ] Performance monitoring setup
+- [ ] `app/projects/page.tsx` y `app/notes/page.tsx` reimplementan su propio wrapper (`min-h-screen bg-gray-950` + `container mx-auto p-4`) en vez de usar solo el `<main>` de `app/layout.tsx` — viola ui-guidelines ("las páginas hijas no deben reimplementar su propio wrapper de layout"). Hallazgo del reviewer en Sprint 0.4, no bloqueante, pendiente de limpieza (candidato: Sprint 1.5 o 7.2).
+- [ ] `app/dashboard/page.tsx` sigue con clases `dark:`/`bg-white` (tema claro), inconsistente con el resto de la app que es dark-only — corregir en Sprint 0.5.
 
 ### Known Issues
-- None currently reported
+- Ninguno bloqueante actualmente. Ver Technical Debt para deuda no bloqueante conocida.
+
+### Descartado (contradice decisiones ya tomadas)
+- ~~Dark/light theme toggle~~ — la app es dark-only por decisión de diseño (ver skill `ui-guidelines`), no se agrega toggle de tema.
