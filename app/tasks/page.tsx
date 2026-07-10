@@ -20,12 +20,12 @@ export default async function TasksPage() {
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <div className="container mx-auto p-4">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Tasks</h1>
+          <h1 className="text-2xl font-bold">Tareas</h1>
         </div>
 
         {projects.length === 0 && (
           <p className="text-amber-400 mb-4">
-            ⚠️ You need to create a Project first before creating tasks.
+            ⚠️ Necesitas crear un proyecto primero antes de crear tareas.
           </p>
         )}
 
@@ -33,7 +33,7 @@ export default async function TasksPage() {
           <div className="lg:col-span-2">
             <div className="space-y-4">
               {tasks.length === 0 ? (
-                <p className="text-gray-500">No tasks yet. Create one below!</p>
+                <p className="text-gray-500">No hay tareas todavía. ¡Crea una abajo!</p>
               ) : (
                 tasks.map((task) => (
                   <div key={task.id} className="bg-gray-800 p-4 rounded-lg">
@@ -42,7 +42,7 @@ export default async function TasksPage() {
                         <div className="flex items-center gap-2">
                           <h3 className="text-lg font-semibold">{task.title}</h3>
                           {task.status === 'DONE' && (
-                            <span className="text-green-400 text-sm">✓ Done</span>
+                            <span className="text-green-400 text-sm">✓ Completada</span>
                           )}
                         </div>
                         {task.description && (
@@ -57,14 +57,13 @@ export default async function TasksPage() {
                             </span>
                           )}
                           <span className="badge bg-gray-700">
-                            {task.project?.name ?? 'No project'}
+                            {task.project?.name ?? 'Sin proyecto'}
                           </span>
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 items-end">
                         <form action={updateTaskStatus} className="flex items-center gap-2">
                           <input type="hidden" name="id" value={task.id} />
-                          <input type="hidden" name="projectId" value={task.projectId} />
                           <AutoSubmitSelect
                             name="status"
                             defaultValue={task.status}
@@ -79,12 +78,11 @@ export default async function TasksPage() {
                         </form>
                         <form action={deleteTask}>
                           <input type="hidden" name="id" value={task.id} />
-                          <input type="hidden" name="projectId" value={task.projectId} />
                           <ConfirmButton
                             className="text-danger-500 hover:text-white text-sm"
-                            confirmMessage="Delete this task?"
+                            confirmMessage="¿Eliminar esta tarea?"
                           >
-                            Delete
+                            Eliminar
                           </ConfirmButton>
                         </form>
                       </div>
@@ -96,10 +94,10 @@ export default async function TasksPage() {
           </div>
 
           <div className="bg-gray-800 p-4 rounded-lg h-fit">
-            <h2 className="text-lg font-semibold mb-4">New Task</h2>
+            <h2 className="text-lg font-semibold mb-4">Nueva Tarea</h2>
             <form action={createTask} className="space-y-4">
               <div>
-                <label className="block text-sm mb-1">Title *</label>
+                <label className="block text-sm mb-1">Título *</label>
                 <input
                   type="text"
                   name="title"
@@ -108,28 +106,28 @@ export default async function TasksPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Description</label>
+                <label className="block text-sm mb-1">Descripción</label>
                 <textarea
                   name="description"
                   className="w-full h-20 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Project *</label>
+                <label className="block text-sm mb-1">Proyecto *</label>
                 <select
                   name="projectId"
                   required
                   defaultValue=""
                   className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
-                  <option value="" disabled>Select a project...</option>
+                  <option value="" disabled>Selecciona un proyecto...</option>
                   {projects.map((p) => (
                     <option key={p.id} value={p.id}>{p.name}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm mb-1">Priority</label>
+                <label className="block text-sm mb-1">Prioridad</label>
                 <select
                   name="priority"
                   defaultValue="LOW"
@@ -142,7 +140,7 @@ export default async function TasksPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm mb-1">Status</label>
+                <label className="block text-sm mb-1">Estado</label>
                 <select
                   name="status"
                   defaultValue="TODO"
@@ -155,7 +153,7 @@ export default async function TasksPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm mb-1">Due Date</label>
+                <label className="block text-sm mb-1">Fecha límite</label>
                 <input
                   type="date"
                   name="dueDate"
@@ -167,7 +165,7 @@ export default async function TasksPage() {
                 disabled={projects.length === 0}
                 className="bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors w-full disabled:bg-gray-600 disabled:cursor-not-allowed"
               >
-                Create Task
+                Crear Tarea
               </button>
             </form>
           </div>

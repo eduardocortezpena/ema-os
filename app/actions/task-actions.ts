@@ -34,7 +34,6 @@ export async function createTask(formData: FormData) {
     });
 
     revalidatePath('/tasks');
-    revalidatePath(`/projects/${projectId}`);
     revalidatePath('/dashboard');
   } catch (error: any) {
     console.error('Error creando tarea:', error.message);
@@ -44,7 +43,6 @@ export async function createTask(formData: FormData) {
 export async function updateTaskStatus(formData: FormData) {
   try {
     const id = formData.get('id')?.toString() || '';
-    const projectId = formData.get('projectId')?.toString() || null;
     const status = formData.get('status')?.toString() as 'TODO' | 'IN_PROGRESS' | 'WAITING' | 'DONE';
 
     if (!id) {
@@ -62,7 +60,6 @@ export async function updateTaskStatus(formData: FormData) {
     });
 
     revalidatePath('/tasks');
-    if (projectId) revalidatePath(`/projects/${projectId}`);
     revalidatePath('/dashboard');
   } catch (error: any) {
     console.error('Error actualizando status de tarea:', error.message);
@@ -72,7 +69,6 @@ export async function updateTaskStatus(formData: FormData) {
 export async function deleteTask(formData: FormData) {
   try {
     const id = formData.get('id')?.toString() || '';
-    const projectId = formData.get('projectId')?.toString() || null;
 
     if (!id) {
       console.error('ID de tarea requerido');
@@ -84,7 +80,6 @@ export async function deleteTask(formData: FormData) {
     });
 
     revalidatePath('/tasks');
-    if (projectId) revalidatePath(`/projects/${projectId}`);
     revalidatePath('/dashboard');
   } catch (error: any) {
     console.error('Error eliminando tarea:', error.message);
