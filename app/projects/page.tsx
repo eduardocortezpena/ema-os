@@ -1,4 +1,4 @@
-import { prisma } from '@/app/lib/prisma';
+import { prisma } from '@/app/lib/db';
 import { createProject, updateProject, deleteProject } from '../actions';
 import { ConfirmButton } from '../components/ConfirmButton';
 

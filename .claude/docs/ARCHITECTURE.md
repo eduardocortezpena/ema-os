@@ -39,5 +39,6 @@ EMA OS follows a modern web application architecture with the following layers:
 ├── settings/          # Configuration
 ├── src/              # Shared types and utilities
 ├── prisma/           # Database schema
-├── app/lib/prisma/   # Generated Prisma Client + singleton (index.ts)
+├── app/lib/prisma/   # Generated Prisma Client (solo output, nunca editar a mano)
+├── app/lib/db.ts     # Singleton exportado `prisma` (fuera del output, sobrevive a `prisma generate`)
 ```

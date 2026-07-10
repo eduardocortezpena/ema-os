@@ -1,4 +1,4 @@
-import { prisma } from '@/app/lib/prisma';
+import { prisma } from '@/app/lib/db';
 import { createTask, updateTaskStatus, deleteTask } from '../actions';
 import { ConfirmButton } from '../components/ConfirmButton';
 import { AutoSubmitSelect } from '../components/AutoSubmitSelect';

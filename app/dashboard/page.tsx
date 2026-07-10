@@ -1,4 +1,4 @@
-import { prisma } from '@/app/lib/prisma';
+import { prisma } from '@/app/lib/db';
 
 export default async function DashboardPage() {
   const projects = await prisma.proyecto.findMany({

@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { prisma } from '@/app/lib/prisma';
+import { prisma } from '@/app/lib/db';
 export async function createTask(formData: FormData) {
   try {
     const title = formData.get('title')?.toString().trim();
