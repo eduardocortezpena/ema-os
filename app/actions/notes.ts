@@ -5,20 +5,22 @@ import { prisma } from '@/app/lib/prisma';
 export async function createNote(data: {
   title: string;
   content: string;
-  taskId: string;
+  projectId: string;
+  taskId?: string;
 }) {
   return prisma.nota.create({
     data: {
       title: data.title,
       content: data.content,
+      projectId: data.projectId,
       taskId: data.taskId,
     },
   });
 }
 
-export async function getNotes(taskId?: string) {
+export async function getNotes(projectId: string) {
   return prisma.nota.findMany({
-    where: { taskId },
+    where: { projectId },
     orderBy: { createdAt: 'desc' },
   });
 }

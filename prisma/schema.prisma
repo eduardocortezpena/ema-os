@@ -18,6 +18,7 @@ model Proyecto {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   tasks       Tarea[]
+  notes       Nota[]
 }
 
 model Tarea {
@@ -40,8 +41,10 @@ model Nota {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  taskId    String
-  task      Tarea    @relation(fields: [taskId], references: [id])
+  projectId String
+  project   Proyecto @relation(fields: [projectId], references: [id])
+  taskId    String?
+  task      Tarea?   @relation(fields: [taskId], references: [id])
 }
 
 enum Priority {

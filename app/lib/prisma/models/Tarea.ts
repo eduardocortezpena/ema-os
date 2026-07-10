@@ -412,9 +412,9 @@ export type TareaMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type TareaScalarRelationFilter = {
-  is?: Prisma.TareaWhereInput
-  isNot?: Prisma.TareaWhereInput
+export type TareaNullableScalarRelationFilter = {
+  is?: Prisma.TareaWhereInput | null
+  isNot?: Prisma.TareaWhereInput | null
 }
 
 export type TareaCreateNestedManyWithoutProjectInput = {
@@ -473,10 +473,12 @@ export type TareaCreateNestedOneWithoutNotesInput = {
   connect?: Prisma.TareaWhereUniqueInput
 }
 
-export type TareaUpdateOneRequiredWithoutNotesNestedInput = {
+export type TareaUpdateOneWithoutNotesNestedInput = {
   create?: Prisma.XOR<Prisma.TareaCreateWithoutNotesInput, Prisma.TareaUncheckedCreateWithoutNotesInput>
   connectOrCreate?: Prisma.TareaCreateOrConnectWithoutNotesInput
   upsert?: Prisma.TareaUpsertWithoutNotesInput
+  disconnect?: Prisma.TareaWhereInput | boolean
+  delete?: Prisma.TareaWhereInput | boolean
   connect?: Prisma.TareaWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.TareaUpdateToOneWithWhereWithoutNotesInput, Prisma.TareaUpdateWithoutNotesInput>, Prisma.TareaUncheckedUpdateWithoutNotesInput>
 }

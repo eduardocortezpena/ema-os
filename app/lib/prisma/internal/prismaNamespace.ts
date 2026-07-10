@@ -700,6 +700,7 @@ export const NotaScalarFieldEnum = {
   content: 'content',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  projectId: 'projectId',
   taskId: 'taskId'
 } as const
 

@@ -30,6 +30,7 @@ export type NotaMinAggregateOutputType = {
   content: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  projectId: string | null
   taskId: string | null
 }
 
@@ -39,6 +40,7 @@ export type NotaMaxAggregateOutputType = {
   content: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  projectId: string | null
   taskId: string | null
 }
 
@@ -48,6 +50,7 @@ export type NotaCountAggregateOutputType = {
   content: number
   createdAt: number
   updatedAt: number
+  projectId: number
   taskId: number
   _all: number
 }
@@ -59,6 +62,7 @@ export type NotaMinAggregateInputType = {
   content?: true
   createdAt?: true
   updatedAt?: true
+  projectId?: true
   taskId?: true
 }
 
@@ -68,6 +72,7 @@ export type NotaMaxAggregateInputType = {
   content?: true
   createdAt?: true
   updatedAt?: true
+  projectId?: true
   taskId?: true
 }
 
@@ -77,6 +82,7 @@ export type NotaCountAggregateInputType = {
   content?: true
   createdAt?: true
   updatedAt?: true
+  projectId?: true
   taskId?: true
   _all?: true
 }
@@ -159,7 +165,8 @@ export type NotaGroupByOutputType = {
   content: string
   createdAt: Date
   updatedAt: Date
-  taskId: string
+  projectId: string
+  taskId: string | null
   _count: NotaCountAggregateOutputType | null
   _min: NotaMinAggregateOutputType | null
   _max: NotaMaxAggregateOutputType | null
@@ -189,8 +196,10 @@ export type NotaWhereInput = {
   content?: Prisma.StringFilter<"Nota"> | string
   createdAt?: Prisma.DateTimeFilter<"Nota"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Nota"> | Date | string
-  taskId?: Prisma.StringFilter<"Nota"> | string
-  task?: Prisma.XOR<Prisma.TareaScalarRelationFilter, Prisma.TareaWhereInput>
+  projectId?: Prisma.StringFilter<"Nota"> | string
+  taskId?: Prisma.StringNullableFilter<"Nota"> | string | null
+  project?: Prisma.XOR<Prisma.ProyectoScalarRelationFilter, Prisma.ProyectoWhereInput>
+  task?: Prisma.XOR<Prisma.TareaNullableScalarRelationFilter, Prisma.TareaWhereInput> | null
 }
 
 export type NotaOrderByWithRelationInput = {
@@ -199,7 +208,9 @@ export type NotaOrderByWithRelationInput = {
   content?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  taskId?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
+  taskId?: Prisma.SortOrderInput | Prisma.SortOrder
+  project?: Prisma.ProyectoOrderByWithRelationInput
   task?: Prisma.TareaOrderByWithRelationInput
 }
 
@@ -212,8 +223,10 @@ export type NotaWhereUniqueInput = Prisma.AtLeast<{
   content?: Prisma.StringFilter<"Nota"> | string
   createdAt?: Prisma.DateTimeFilter<"Nota"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Nota"> | Date | string
-  taskId?: Prisma.StringFilter<"Nota"> | string
-  task?: Prisma.XOR<Prisma.TareaScalarRelationFilter, Prisma.TareaWhereInput>
+  projectId?: Prisma.StringFilter<"Nota"> | string
+  taskId?: Prisma.StringNullableFilter<"Nota"> | string | null
+  project?: Prisma.XOR<Prisma.ProyectoScalarRelationFilter, Prisma.ProyectoWhereInput>
+  task?: Prisma.XOR<Prisma.TareaNullableScalarRelationFilter, Prisma.TareaWhereInput> | null
 }, "id">
 
 export type NotaOrderByWithAggregationInput = {
@@ -222,7 +235,8 @@ export type NotaOrderByWithAggregationInput = {
   content?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  taskId?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
+  taskId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.NotaCountOrderByAggregateInput
   _max?: Prisma.NotaMaxOrderByAggregateInput
   _min?: Prisma.NotaMinOrderByAggregateInput
@@ -237,7 +251,8 @@ export type NotaScalarWhereWithAggregatesInput = {
   content?: Prisma.StringWithAggregatesFilter<"Nota"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Nota"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Nota"> | Date | string
-  taskId?: Prisma.StringWithAggregatesFilter<"Nota"> | string
+  projectId?: Prisma.StringWithAggregatesFilter<"Nota"> | string
+  taskId?: Prisma.StringNullableWithAggregatesFilter<"Nota"> | string | null
 }
 
 export type NotaCreateInput = {
@@ -246,7 +261,8 @@ export type NotaCreateInput = {
   content: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  task: Prisma.TareaCreateNestedOneWithoutNotesInput
+  project: Prisma.ProyectoCreateNestedOneWithoutNotesInput
+  task?: Prisma.TareaCreateNestedOneWithoutNotesInput
 }
 
 export type NotaUncheckedCreateInput = {
@@ -255,7 +271,8 @@ export type NotaUncheckedCreateInput = {
   content: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  taskId: string
+  projectId: string
+  taskId?: string | null
 }
 
 export type NotaUpdateInput = {
@@ -264,7 +281,8 @@ export type NotaUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  task?: Prisma.TareaUpdateOneRequiredWithoutNotesNestedInput
+  project?: Prisma.ProyectoUpdateOneRequiredWithoutNotesNestedInput
+  task?: Prisma.TareaUpdateOneWithoutNotesNestedInput
 }
 
 export type NotaUncheckedUpdateInput = {
@@ -273,7 +291,8 @@ export type NotaUncheckedUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NotaCreateManyInput = {
@@ -282,7 +301,8 @@ export type NotaCreateManyInput = {
   content: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  taskId: string
+  projectId: string
+  taskId?: string | null
 }
 
 export type NotaUpdateManyMutationInput = {
@@ -299,7 +319,8 @@ export type NotaUncheckedUpdateManyInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  taskId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NotaListRelationFilter = {
@@ -318,6 +339,7 @@ export type NotaCountOrderByAggregateInput = {
   content?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
 }
 
@@ -327,6 +349,7 @@ export type NotaMaxOrderByAggregateInput = {
   content?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
 }
 
@@ -336,7 +359,50 @@ export type NotaMinOrderByAggregateInput = {
   content?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  projectId?: Prisma.SortOrder
   taskId?: Prisma.SortOrder
+}
+
+export type NotaCreateNestedManyWithoutProjectInput = {
+  create?: Prisma.XOR<Prisma.NotaCreateWithoutProjectInput, Prisma.NotaUncheckedCreateWithoutProjectInput> | Prisma.NotaCreateWithoutProjectInput[] | Prisma.NotaUncheckedCreateWithoutProjectInput[]
+  connectOrCreate?: Prisma.NotaCreateOrConnectWithoutProjectInput | Prisma.NotaCreateOrConnectWithoutProjectInput[]
+  createMany?: Prisma.NotaCreateManyProjectInputEnvelope
+  connect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
+}
+
+export type NotaUncheckedCreateNestedManyWithoutProjectInput = {
+  create?: Prisma.XOR<Prisma.NotaCreateWithoutProjectInput, Prisma.NotaUncheckedCreateWithoutProjectInput> | Prisma.NotaCreateWithoutProjectInput[] | Prisma.NotaUncheckedCreateWithoutProjectInput[]
+  connectOrCreate?: Prisma.NotaCreateOrConnectWithoutProjectInput | Prisma.NotaCreateOrConnectWithoutProjectInput[]
+  createMany?: Prisma.NotaCreateManyProjectInputEnvelope
+  connect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
+}
+
+export type NotaUpdateManyWithoutProjectNestedInput = {
+  create?: Prisma.XOR<Prisma.NotaCreateWithoutProjectInput, Prisma.NotaUncheckedCreateWithoutProjectInput> | Prisma.NotaCreateWithoutProjectInput[] | Prisma.NotaUncheckedCreateWithoutProjectInput[]
+  connectOrCreate?: Prisma.NotaCreateOrConnectWithoutProjectInput | Prisma.NotaCreateOrConnectWithoutProjectInput[]
+  upsert?: Prisma.NotaUpsertWithWhereUniqueWithoutProjectInput | Prisma.NotaUpsertWithWhereUniqueWithoutProjectInput[]
+  createMany?: Prisma.NotaCreateManyProjectInputEnvelope
+  set?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
+  disconnect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
+  delete?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
+  connect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
+  update?: Prisma.NotaUpdateWithWhereUniqueWithoutProjectInput | Prisma.NotaUpdateWithWhereUniqueWithoutProjectInput[]
+  updateMany?: Prisma.NotaUpdateManyWithWhereWithoutProjectInput | Prisma.NotaUpdateManyWithWhereWithoutProjectInput[]
+  deleteMany?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
+}
+
+export type NotaUncheckedUpdateManyWithoutProjectNestedInput = {
+  create?: Prisma.XOR<Prisma.NotaCreateWithoutProjectInput, Prisma.NotaUncheckedCreateWithoutProjectInput> | Prisma.NotaCreateWithoutProjectInput[] | Prisma.NotaUncheckedCreateWithoutProjectInput[]
+  connectOrCreate?: Prisma.NotaCreateOrConnectWithoutProjectInput | Prisma.NotaCreateOrConnectWithoutProjectInput[]
+  upsert?: Prisma.NotaUpsertWithWhereUniqueWithoutProjectInput | Prisma.NotaUpsertWithWhereUniqueWithoutProjectInput[]
+  createMany?: Prisma.NotaCreateManyProjectInputEnvelope
+  set?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
+  disconnect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
+  delete?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
+  connect?: Prisma.NotaWhereUniqueInput | Prisma.NotaWhereUniqueInput[]
+  update?: Prisma.NotaUpdateWithWhereUniqueWithoutProjectInput | Prisma.NotaUpdateWithWhereUniqueWithoutProjectInput[]
+  updateMany?: Prisma.NotaUpdateManyWithWhereWithoutProjectInput | Prisma.NotaUpdateManyWithWhereWithoutProjectInput[]
+  deleteMany?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
 }
 
 export type NotaCreateNestedManyWithoutTaskInput = {
@@ -381,12 +447,69 @@ export type NotaUncheckedUpdateManyWithoutTaskNestedInput = {
   deleteMany?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
 }
 
+export type NotaCreateWithoutProjectInput = {
+  id?: string
+  title: string
+  content: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  task?: Prisma.TareaCreateNestedOneWithoutNotesInput
+}
+
+export type NotaUncheckedCreateWithoutProjectInput = {
+  id?: string
+  title: string
+  content: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  taskId?: string | null
+}
+
+export type NotaCreateOrConnectWithoutProjectInput = {
+  where: Prisma.NotaWhereUniqueInput
+  create: Prisma.XOR<Prisma.NotaCreateWithoutProjectInput, Prisma.NotaUncheckedCreateWithoutProjectInput>
+}
+
+export type NotaCreateManyProjectInputEnvelope = {
+  data: Prisma.NotaCreateManyProjectInput | Prisma.NotaCreateManyProjectInput[]
+}
+
+export type NotaUpsertWithWhereUniqueWithoutProjectInput = {
+  where: Prisma.NotaWhereUniqueInput
+  update: Prisma.XOR<Prisma.NotaUpdateWithoutProjectInput, Prisma.NotaUncheckedUpdateWithoutProjectInput>
+  create: Prisma.XOR<Prisma.NotaCreateWithoutProjectInput, Prisma.NotaUncheckedCreateWithoutProjectInput>
+}
+
+export type NotaUpdateWithWhereUniqueWithoutProjectInput = {
+  where: Prisma.NotaWhereUniqueInput
+  data: Prisma.XOR<Prisma.NotaUpdateWithoutProjectInput, Prisma.NotaUncheckedUpdateWithoutProjectInput>
+}
+
+export type NotaUpdateManyWithWhereWithoutProjectInput = {
+  where: Prisma.NotaScalarWhereInput
+  data: Prisma.XOR<Prisma.NotaUpdateManyMutationInput, Prisma.NotaUncheckedUpdateManyWithoutProjectInput>
+}
+
+export type NotaScalarWhereInput = {
+  AND?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
+  OR?: Prisma.NotaScalarWhereInput[]
+  NOT?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
+  id?: Prisma.StringFilter<"Nota"> | string
+  title?: Prisma.StringFilter<"Nota"> | string
+  content?: Prisma.StringFilter<"Nota"> | string
+  createdAt?: Prisma.DateTimeFilter<"Nota"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Nota"> | Date | string
+  projectId?: Prisma.StringFilter<"Nota"> | string
+  taskId?: Prisma.StringNullableFilter<"Nota"> | string | null
+}
+
 export type NotaCreateWithoutTaskInput = {
   id?: string
   title: string
   content: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  project: Prisma.ProyectoCreateNestedOneWithoutNotesInput
 }
 
 export type NotaUncheckedCreateWithoutTaskInput = {
@@ -395,6 +518,7 @@ export type NotaUncheckedCreateWithoutTaskInput = {
   content: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  projectId: string
 }
 
 export type NotaCreateOrConnectWithoutTaskInput = {
@@ -422,16 +546,40 @@ export type NotaUpdateManyWithWhereWithoutTaskInput = {
   data: Prisma.XOR<Prisma.NotaUpdateManyMutationInput, Prisma.NotaUncheckedUpdateManyWithoutTaskInput>
 }
 
-export type NotaScalarWhereInput = {
-  AND?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
-  OR?: Prisma.NotaScalarWhereInput[]
-  NOT?: Prisma.NotaScalarWhereInput | Prisma.NotaScalarWhereInput[]
-  id?: Prisma.StringFilter<"Nota"> | string
-  title?: Prisma.StringFilter<"Nota"> | string
-  content?: Prisma.StringFilter<"Nota"> | string
-  createdAt?: Prisma.DateTimeFilter<"Nota"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Nota"> | Date | string
-  taskId?: Prisma.StringFilter<"Nota"> | string
+export type NotaCreateManyProjectInput = {
+  id?: string
+  title: string
+  content: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  taskId?: string | null
+}
+
+export type NotaUpdateWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  task?: Prisma.TareaUpdateOneWithoutNotesNestedInput
+}
+
+export type NotaUncheckedUpdateWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type NotaUncheckedUpdateManyWithoutProjectInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NotaCreateManyTaskInput = {
@@ -440,6 +588,7 @@ export type NotaCreateManyTaskInput = {
   content: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  projectId: string
 }
 
 export type NotaUpdateWithoutTaskInput = {
@@ -448,6 +597,7 @@ export type NotaUpdateWithoutTaskInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProyectoUpdateOneRequiredWithoutNotesNestedInput
 }
 
 export type NotaUncheckedUpdateWithoutTaskInput = {
@@ -456,6 +606,7 @@ export type NotaUncheckedUpdateWithoutTaskInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type NotaUncheckedUpdateManyWithoutTaskInput = {
@@ -464,6 +615,7 @@ export type NotaUncheckedUpdateManyWithoutTaskInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -474,8 +626,10 @@ export type NotaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   content?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  projectId?: boolean
   taskId?: boolean
-  task?: boolean | Prisma.TareaDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  task?: boolean | Prisma.Nota$taskArgs<ExtArgs>
 }, ExtArgs["result"]["nota"]>
 
 export type NotaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -484,8 +638,10 @@ export type NotaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   content?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  projectId?: boolean
   taskId?: boolean
-  task?: boolean | Prisma.TareaDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  task?: boolean | Prisma.Nota$taskArgs<ExtArgs>
 }, ExtArgs["result"]["nota"]>
 
 export type NotaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -494,8 +650,10 @@ export type NotaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   content?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  projectId?: boolean
   taskId?: boolean
-  task?: boolean | Prisma.TareaDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  task?: boolean | Prisma.Nota$taskArgs<ExtArgs>
 }, ExtArgs["result"]["nota"]>
 
 export type NotaSelectScalar = {
@@ -504,24 +662,29 @@ export type NotaSelectScalar = {
   content?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  projectId?: boolean
   taskId?: boolean
 }
 
-export type NotaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "createdAt" | "updatedAt" | "taskId", ExtArgs["result"]["nota"]>
+export type NotaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "createdAt" | "updatedAt" | "projectId" | "taskId", ExtArgs["result"]["nota"]>
 export type NotaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  task?: boolean | Prisma.TareaDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  task?: boolean | Prisma.Nota$taskArgs<ExtArgs>
 }
 export type NotaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  task?: boolean | Prisma.TareaDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  task?: boolean | Prisma.Nota$taskArgs<ExtArgs>
 }
 export type NotaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  task?: boolean | Prisma.TareaDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  task?: boolean | Prisma.Nota$taskArgs<ExtArgs>
 }
 
 export type $NotaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Nota"
   objects: {
-    task: Prisma.$TareaPayload<ExtArgs>
+    project: Prisma.$ProyectoPayload<ExtArgs>
+    task: Prisma.$TareaPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -529,7 +692,8 @@ export type $NotaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     content: string
     createdAt: Date
     updatedAt: Date
-    taskId: string
+    projectId: string
+    taskId: string | null
   }, ExtArgs["result"]["nota"]>
   composites: {}
 }
@@ -924,7 +1088,8 @@ readonly fields: NotaFieldRefs;
  */
 export interface Prisma__NotaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  task<T extends Prisma.TareaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TareaDefaultArgs<ExtArgs>>): Prisma.Prisma__TareaClient<runtime.Types.Result.GetResult<Prisma.$TareaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  project<T extends Prisma.ProyectoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProyectoDefaultArgs<ExtArgs>>): Prisma.Prisma__ProyectoClient<runtime.Types.Result.GetResult<Prisma.$ProyectoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  task<T extends Prisma.Nota$taskArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Nota$taskArgs<ExtArgs>>): Prisma.Prisma__TareaClient<runtime.Types.Result.GetResult<Prisma.$TareaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -959,6 +1124,7 @@ export interface NotaFieldRefs {
   readonly content: Prisma.FieldRef<"Nota", 'String'>
   readonly createdAt: Prisma.FieldRef<"Nota", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Nota", 'DateTime'>
+  readonly projectId: Prisma.FieldRef<"Nota", 'String'>
   readonly taskId: Prisma.FieldRef<"Nota", 'String'>
 }
     
@@ -1356,6 +1522,25 @@ export type NotaDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Limit how many Notas to delete.
    */
   limit?: number
+}
+
+/**
+ * Nota.task
+ */
+export type Nota$taskArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tarea
+   */
+  select?: Prisma.TareaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tarea
+   */
+  omit?: Prisma.TareaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TareaInclude<ExtArgs> | null
+  where?: Prisma.TareaWhereInput
 }
 
 /**
