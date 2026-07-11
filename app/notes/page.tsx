@@ -1,6 +1,8 @@
 import { prisma } from '@/app/lib/db';
-import { createNote, updateNote, deleteNote } from '../actions/notes';
+import { createNote, updateNote, deleteNote, getNoteContent } from '../actions/notes';
 import { ConfirmButton } from '../components/ConfirmButton';
+import { MarkdownEditor } from '../components/MarkdownEditor';
+import { renderMarkdown } from '@/app/lib/markdown';
 
 export default async function NotesPage({
   searchParams,
@@ -9,7 +11,8 @@ export default async function NotesPage({
 }) {
   const { error } = await searchParams;
   const [notes, projects] = await Promise.all([
-    prisma.nota.findMany({
+    prisma.archivo.findMany({
+      where: { kind: 'NOTE' },
       include: { project: true },
       orderBy: { createdAt: 'desc' },
     }),
@@ -17,6 +20,9 @@ export default async function NotesPage({
       orderBy: { name: 'asc' },
     }),
   ]);
+
+  // El contenido vive en el .md (local o Drive), no en la DB: cargarlo por nota.
+  const contents = await Promise.all(notes.map((n) => getNoteContent(n.id)));
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
@@ -43,13 +49,19 @@ export default async function NotesPage({
               {notes.length === 0 ? (
                 <p className="text-gray-500">No hay notas todavía. ¡Crea una abajo!</p>
               ) : (
-                notes.map((note) => (
+                notes.map((note, i) => (
                   <div key={note.id} className="bg-gray-800 p-4 rounded-lg">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold">{note.title}</h3>
-                        <p className="text-gray-400 text-sm mt-1 whitespace-pre-wrap">{note.content}</p>
-                        <span className="badge bg-gray-700 mt-2 inline-block">{note.project.name}</span>
+                        <div
+                          className="text-gray-300 text-sm mt-1"
+                          dangerouslySetInnerHTML={{ __html: renderMarkdown(contents[i]) }}
+                        />
+                        <div className="flex gap-2 mt-2">
+                          <span className="badge bg-gray-700 inline-block">{note.project.name}</span>
+                          {note.driveFileId && <span className="badge bg-gray-700 inline-block">en Drive</span>}
+                        </div>
                       </div>
                       <form action={deleteNote}>
                         <input type="hidden" name="id" value={note.id} />
@@ -72,9 +84,8 @@ export default async function NotesPage({
                             className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
                         </div>
                         <div>
-                          <label className="block text-sm mb-1">Contenido</label>
-                          <textarea name="content" defaultValue={note.content}
-                            className="w-full h-32 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                          <label className="block text-sm mb-1">Contenido (Markdown)</label>
+                          <MarkdownEditor name="content" defaultValue={contents[i]} />
                         </div>
                         <button type="submit" className="bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors text-sm">
                           Guardar cambios
@@ -96,9 +107,8 @@ export default async function NotesPage({
                   className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
               </div>
               <div>
-                <label className="block text-sm mb-1">Contenido</label>
-                <textarea name="content"
-                  className="w-full h-32 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                <label className="block text-sm mb-1">Contenido (Markdown)</label>
+                <MarkdownEditor name="content" />
               </div>
               <div>
                 <label className="block text-sm mb-1">Proyecto *</label>

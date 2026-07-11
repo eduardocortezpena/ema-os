@@ -32,6 +32,7 @@ export type ArchivoMinAggregateOutputType = {
   path: string | null
   mimeType: string | null
   driveFileId: string | null
+  sourceNotaId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +45,7 @@ export type ArchivoMaxAggregateOutputType = {
   path: string | null
   mimeType: string | null
   driveFileId: string | null
+  sourceNotaId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +58,7 @@ export type ArchivoCountAggregateOutputType = {
   path: number
   mimeType: number
   driveFileId: number
+  sourceNotaId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -70,6 +73,7 @@ export type ArchivoMinAggregateInputType = {
   path?: true
   mimeType?: true
   driveFileId?: true
+  sourceNotaId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +86,7 @@ export type ArchivoMaxAggregateInputType = {
   path?: true
   mimeType?: true
   driveFileId?: true
+  sourceNotaId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -94,6 +99,7 @@ export type ArchivoCountAggregateInputType = {
   path?: true
   mimeType?: true
   driveFileId?: true
+  sourceNotaId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -179,6 +185,7 @@ export type ArchivoGroupByOutputType = {
   path: string
   mimeType: string | null
   driveFileId: string | null
+  sourceNotaId: string | null
   createdAt: Date
   updatedAt: Date
   _count: ArchivoCountAggregateOutputType | null
@@ -212,6 +219,7 @@ export type ArchivoWhereInput = {
   path?: Prisma.StringFilter<"Archivo"> | string
   mimeType?: Prisma.StringNullableFilter<"Archivo"> | string | null
   driveFileId?: Prisma.StringNullableFilter<"Archivo"> | string | null
+  sourceNotaId?: Prisma.StringNullableFilter<"Archivo"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Archivo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Archivo"> | Date | string
   project?: Prisma.XOR<Prisma.ProyectoScalarRelationFilter, Prisma.ProyectoWhereInput>
@@ -225,6 +233,7 @@ export type ArchivoOrderByWithRelationInput = {
   path?: Prisma.SortOrder
   mimeType?: Prisma.SortOrderInput | Prisma.SortOrder
   driveFileId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sourceNotaId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   project?: Prisma.ProyectoOrderByWithRelationInput
@@ -232,6 +241,7 @@ export type ArchivoOrderByWithRelationInput = {
 
 export type ArchivoWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  sourceNotaId?: string
   AND?: Prisma.ArchivoWhereInput | Prisma.ArchivoWhereInput[]
   OR?: Prisma.ArchivoWhereInput[]
   NOT?: Prisma.ArchivoWhereInput | Prisma.ArchivoWhereInput[]
@@ -244,7 +254,7 @@ export type ArchivoWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Archivo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Archivo"> | Date | string
   project?: Prisma.XOR<Prisma.ProyectoScalarRelationFilter, Prisma.ProyectoWhereInput>
-}, "id">
+}, "id" | "sourceNotaId">
 
 export type ArchivoOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -254,6 +264,7 @@ export type ArchivoOrderByWithAggregationInput = {
   path?: Prisma.SortOrder
   mimeType?: Prisma.SortOrderInput | Prisma.SortOrder
   driveFileId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sourceNotaId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ArchivoCountOrderByAggregateInput
@@ -272,6 +283,7 @@ export type ArchivoScalarWhereWithAggregatesInput = {
   path?: Prisma.StringWithAggregatesFilter<"Archivo"> | string
   mimeType?: Prisma.StringNullableWithAggregatesFilter<"Archivo"> | string | null
   driveFileId?: Prisma.StringNullableWithAggregatesFilter<"Archivo"> | string | null
+  sourceNotaId?: Prisma.StringNullableWithAggregatesFilter<"Archivo"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Archivo"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Archivo"> | Date | string
 }
@@ -283,6 +295,7 @@ export type ArchivoCreateInput = {
   path: string
   mimeType?: string | null
   driveFileId?: string | null
+  sourceNotaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProyectoCreateNestedOneWithoutArchivosInput
@@ -296,6 +309,7 @@ export type ArchivoUncheckedCreateInput = {
   path: string
   mimeType?: string | null
   driveFileId?: string | null
+  sourceNotaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -307,6 +321,7 @@ export type ArchivoUpdateInput = {
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveFileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceNotaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProyectoUpdateOneRequiredWithoutArchivosNestedInput
@@ -320,6 +335,7 @@ export type ArchivoUncheckedUpdateInput = {
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveFileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceNotaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -332,6 +348,7 @@ export type ArchivoCreateManyInput = {
   path: string
   mimeType?: string | null
   driveFileId?: string | null
+  sourceNotaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -343,6 +360,7 @@ export type ArchivoUpdateManyMutationInput = {
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveFileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceNotaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -355,6 +373,7 @@ export type ArchivoUncheckedUpdateManyInput = {
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveFileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceNotaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -377,6 +396,7 @@ export type ArchivoCountOrderByAggregateInput = {
   path?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
   driveFileId?: Prisma.SortOrder
+  sourceNotaId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -389,6 +409,7 @@ export type ArchivoMaxOrderByAggregateInput = {
   path?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
   driveFileId?: Prisma.SortOrder
+  sourceNotaId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -401,6 +422,7 @@ export type ArchivoMinOrderByAggregateInput = {
   path?: Prisma.SortOrder
   mimeType?: Prisma.SortOrder
   driveFileId?: Prisma.SortOrder
+  sourceNotaId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -458,6 +480,7 @@ export type ArchivoCreateWithoutProjectInput = {
   path: string
   mimeType?: string | null
   driveFileId?: string | null
+  sourceNotaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -469,6 +492,7 @@ export type ArchivoUncheckedCreateWithoutProjectInput = {
   path: string
   mimeType?: string | null
   driveFileId?: string | null
+  sourceNotaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -509,6 +533,7 @@ export type ArchivoScalarWhereInput = {
   path?: Prisma.StringFilter<"Archivo"> | string
   mimeType?: Prisma.StringNullableFilter<"Archivo"> | string | null
   driveFileId?: Prisma.StringNullableFilter<"Archivo"> | string | null
+  sourceNotaId?: Prisma.StringNullableFilter<"Archivo"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Archivo"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Archivo"> | Date | string
 }
@@ -520,6 +545,7 @@ export type ArchivoCreateManyProjectInput = {
   path: string
   mimeType?: string | null
   driveFileId?: string | null
+  sourceNotaId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -531,6 +557,7 @@ export type ArchivoUpdateWithoutProjectInput = {
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveFileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceNotaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -542,6 +569,7 @@ export type ArchivoUncheckedUpdateWithoutProjectInput = {
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveFileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceNotaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -553,6 +581,7 @@ export type ArchivoUncheckedUpdateManyWithoutProjectInput = {
   path?: Prisma.StringFieldUpdateOperationsInput | string
   mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   driveFileId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceNotaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -567,6 +596,7 @@ export type ArchivoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   path?: boolean
   mimeType?: boolean
   driveFileId?: boolean
+  sourceNotaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
@@ -580,6 +610,7 @@ export type ArchivoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   path?: boolean
   mimeType?: boolean
   driveFileId?: boolean
+  sourceNotaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
@@ -593,6 +624,7 @@ export type ArchivoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   path?: boolean
   mimeType?: boolean
   driveFileId?: boolean
+  sourceNotaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
@@ -606,11 +638,12 @@ export type ArchivoSelectScalar = {
   path?: boolean
   mimeType?: boolean
   driveFileId?: boolean
+  sourceNotaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ArchivoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "kind" | "title" | "path" | "mimeType" | "driveFileId" | "createdAt" | "updatedAt", ExtArgs["result"]["archivo"]>
+export type ArchivoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "kind" | "title" | "path" | "mimeType" | "driveFileId" | "sourceNotaId" | "createdAt" | "updatedAt", ExtArgs["result"]["archivo"]>
 export type ArchivoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
 }
@@ -634,6 +667,7 @@ export type $ArchivoPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     path: string
     mimeType: string | null
     driveFileId: string | null
+    sourceNotaId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["archivo"]>
@@ -1067,6 +1101,7 @@ export interface ArchivoFieldRefs {
   readonly path: Prisma.FieldRef<"Archivo", 'String'>
   readonly mimeType: Prisma.FieldRef<"Archivo", 'String'>
   readonly driveFileId: Prisma.FieldRef<"Archivo", 'String'>
+  readonly sourceNotaId: Prisma.FieldRef<"Archivo", 'String'>
   readonly createdAt: Prisma.FieldRef<"Archivo", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Archivo", 'DateTime'>
 }

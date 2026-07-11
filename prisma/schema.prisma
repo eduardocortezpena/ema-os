@@ -53,16 +53,20 @@ model Nota {
 }
 
 model Archivo {
-  id          String      @id @default(cuid())
-  projectId   String
-  project     Proyecto    @relation(fields: [projectId], references: [id])
-  kind        ArchivoKind
-  title       String
-  path        String
-  mimeType    String?
-  driveFileId String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id           String      @id @default(cuid())
+  projectId    String
+  project      Proyecto    @relation(fields: [projectId], references: [id])
+  kind         ArchivoKind
+  title        String
+  path         String
+  mimeType     String?
+  driveFileId  String?
+  // Trazabilidad de la migración Nota->Archivo (Sprint 3.3). Nullable:
+  // solo las notas migradas lo tienen. @unique para que el backfill sea
+  // idempotente (no duplica). Se retira cuando se dropee el modelo Nota.
+  sourceNotaId String?     @unique
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 enum ArchivoKind {

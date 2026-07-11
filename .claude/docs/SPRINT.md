@@ -33,11 +33,32 @@ Start: 2026-07-11
       seguridad del reviewer corregidos antes de cerrar (mensajes de
       error sanitizados, limpieza de `invalid_grant`).
 
+- [x] **Sprint 3.3 — Notas como Markdown en Drive.** Decisión de architect:
+      consolidar notas en `Archivo(kind=NOTE)`, `Nota` INTACTA como respaldo
+      reversible (no se dropea este sprint). Schema delta mínimo:
+      `Archivo.sourceNotaId String? @unique` (migración aditiva
+      `20260711120000_archivo_source_nota`, aplicada con `migrate deploy`).
+      Fuente de verdad = `.md` local (`files/{projectId}/notes/{archivoId}.md`),
+      Drive = espejo, SQLite = índice. Editor Markdown ligero (textarea +
+      toggle preview, renderer propio sin librería). Al re-guardar hace PATCH
+      del `driveFileId` (no duplica). Espejo degrada graceful si Drive falla.
+      Backfill idempotente `migrateLegacyNotes` (botón en Settings, NO gateado
+      por Drive) — 0 notas legacy en la DB, así que es no-op verificado.
+      **Verificado end-to-end contra el Drive real del usuario**: nota creada
+      en la web → `Nota de prueba 3.3.md` (text/markdown) confirmada vía Drive
+      API en la cuenta `eduardocortezpena@gmail.com`, contenido idéntico;
+      edición → PATCH al mismo fileId, sin duplicado (búsqueda por nombre = 1).
+      Reviewer corrió build limpio y encontró 2 blockers + issues; corregidos
+      antes de cerrar: **H1 XSS** en el render de enlaces Markdown (escapar
+      comillas — verificado con payload real: 0 handlers vivos inyectados),
+      **H2** migración ya no gateada por Drive (recuperación de notas legacy
+      sin conexión), **M2** `getNoteContent` busca por id en DB (no confía en
+      params del cliente), **M3** `createNote` valida que el proyecto exista
+      antes de escribir a disco (cierra path traversal). Resto de findings
+      (M1, M4-M6, L1-L4) anotados como deuda no bloqueante en BACKLOG.md.
+      Artefactos de prueba limpiados de DB, disco y Drive.
+
 #### To Do (siguiente, en orden — ver ROADMAP.md Fase 3)
-- [ ] Sprint 3.3 — Notas como Markdown en Drive: editor en la web, guardar
-      escribe `.md` local + sube a Drive, migrar notas de SQLite a este
-      modelo. **Requiere decisión de architect sobre la relación
-      Nota↔Archivo** (pendiente desde Sprint 3.1).
 - [ ] Sprint 3.4 — Subir/crear archivos y carpetas sueltas en Drive.
 - [ ] Sprint 3.5 (OPCIONAL) — rclone bisync bidireccional.
 

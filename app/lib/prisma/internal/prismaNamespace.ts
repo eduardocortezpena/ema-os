@@ -867,6 +867,7 @@ export const ArchivoScalarFieldEnum = {
   path: 'path',
   mimeType: 'mimeType',
   driveFileId: 'driveFileId',
+  sourceNotaId: 'sourceNotaId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

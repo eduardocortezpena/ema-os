@@ -1,12 +1,13 @@
 import { headers } from 'next/headers';
 import { buildAuthUrl, isDriveConnected } from '@/app/lib/google-drive-auth';
+import { migrateLegacyNotes } from '@/app/actions/notes';
 
 export default async function Settings({
   searchParams,
 }: {
-  searchParams: Promise<{ drive?: string; error?: string }>;
+  searchParams: Promise<{ drive?: string; error?: string; count?: string }>;
 }) {
-  const { drive, error } = await searchParams;
+  const { drive, error, count } = await searchParams;
   const headersList = await headers();
   const host = headersList.get('host') ?? 'localhost:3000';
   const redirectUri = `http://${host}/settings/drive/callback`;
@@ -33,6 +34,11 @@ export default async function Settings({
         {drive === 'connected' && (
           <p className="bg-success-500/10 border border-success-500 text-success-500 rounded px-3 py-2 mb-4 text-sm">
             Google Drive conectado correctamente.
+          </p>
+        )}
+        {drive === 'migrated' && (
+          <p className="bg-success-500/10 border border-success-500 text-success-500 rounded px-3 py-2 mb-4 text-sm">
+            Migración de notas antiguas completada: {count ?? 0} nota(s) movida(s) a Drive.
           </p>
         )}
 
@@ -63,6 +69,23 @@ export default async function Settings({
                 </a>
               </div>
             )}
+          </div>
+
+          {/* Migración disponible SIEMPRE (no gateada por Drive): si Drive no
+              está conectado, el espejo degrada y las notas quedan al menos
+              locales + visibles en /notes. Ver reviewer H2. */}
+          <div className="border-t border-gray-700 pt-4">
+            <form action={migrateLegacyNotes}>
+              <button
+                type="submit"
+                className="inline-block bg-gray-700 px-3 py-2 rounded hover:bg-gray-600 transition-colors text-sm"
+              >
+                Migrar notas antiguas a Drive
+              </button>
+              <span className="text-gray-500 text-xs ml-2">
+                Copia notas previas (SQLite) a archivos .md (locales + Drive si está conectado). No borra nada. Idempotente.
+              </span>
+            </form>
           </div>
         </div>
 
