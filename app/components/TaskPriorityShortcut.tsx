@@ -32,7 +32,10 @@ export function TaskPriorityShortcut() {
       if (e.key.toLowerCase() !== 'p') return;
       if (isTypingTarget(e.target)) return;
       const hovered = hoveredRef.current;
-      if (!hovered || busyRef.current) return;
+      // Ignorar filas optimistas (Sprint 7.3, TaskBoard): todavía no tienen
+      // id real en la DB, así que updateTaskPriority fallaría con un error
+      // confuso para el usuario.
+      if (!hovered || busyRef.current || hovered.id.startsWith('optimistic-')) return;
 
       busyRef.current = true;
       try {

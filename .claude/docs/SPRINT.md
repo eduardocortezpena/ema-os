@@ -61,6 +61,33 @@ Start: 2026-07-11 (Fase 7). Fase 3 (Drive) completa, ver historial abajo.
       (un módulo `'use server'` no puede exportar constantes, solo
       funciones async).
 
+- [x] **Sprint 7.3 — Optimistic UI en crear tarea/nota.** `TaskBoard.tsx` y
+      `NoteBoard.tsx` (client components nuevos, reemplazan el listado+form
+      que antes vivía directo en `/tasks` y `/notes`) usan `useOptimistic`
+      de React 19: la entidad aparece al instante (opacidad reducida +
+      "Guardando…") pasado directo como `action` del `<form>` (React 19
+      envuelve las form actions en una transición automáticamente, sin
+      `useTransition` manual). Sin librerías nuevas.
+      **Verificado en navegador contra la DB real**: camino feliz de tarea
+      y nota (nota confirmada con espejo a Drive intacto); **rollback
+      forzado** — borré el proyecto de la DB sin recargar la página (dejando
+      el `<option>` obsoleto en el `<select>`) y envié el form apuntando a
+      ese proyecto ya borrado: la URL navegó a `?error=Proyecto no
+      encontrado`, el banner se mostró, CERO rastro de la entrada optimista
+      en el DOM, y 0 filas huérfanas en la DB.
+      Reviewer encontró un **bug bloqueante real**: doble-submit (doble
+      clic) creaba dos filas reales duplicadas — el guard inicial con
+      `useState` no bastaba. **Corregido y re-verificado con el caso más
+      agresivo** (dos `requestSubmit()` en el mismo tick JS, que antes sí
+      duplicaba): cambiado a `useRef` (síncrono, no sujeto al timing de la
+      transición de React) — confirmado 1 sola fila tanto en tareas como en
+      notas tras el fix. También corregido: atajo "P" (Sprint 7.2) ahora
+      ignora filas optimistas (`optimistic-*`) para no disparar un error
+      confuso sobre un id que no existe en DB todavía. Hallazgo cosmético
+      (tarea CRITICAL optimista aparece al final en vez de su posición
+      ordenada) anotado en BACKLOG.md, no bloqueante.
+      **Fase 7: 7.1, 7.2, 7.3 completos — falta 7.4 (siguiente).**
+
 #### Completed (Fase 3, sesiones previas)
 - [x] Fase 0 — MVP completo.
 - [x] Fase 1 — Priorización completa (Next Action, My Day, prioridad+orden).
