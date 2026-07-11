@@ -57,17 +57,23 @@ proyecto, sin que el usuario tenga que pedirlo:
 
 ## Mapa de fases
 
-Fuente de verdad: `.claude/docs/ROADMAP.md`. Numeración fijada el
-2026-07-11 para que coincida con lo realmente ejecutado (antes hubo
-confusión entre sesiones sobre qué fase era cuál — no reintroducirla).
+Fuente de verdad: `.claude/docs/ROADMAP.md`. Numeración renumerada dos
+veces (2026-07-11): primero para fijar Fase 0=MVP/Fase 1=Priorización,
+después para reservar la Fase 2 y mover Drive a Fase 3. Esto ya causó
+confusión entre sesiones más de una vez — ante cualquier duda, confirmar
+el número de fase contra `ROADMAP.md`, nunca asumirlo del prompt del
+usuario.
 
 - **Fase 0** — Cerrar el MVP existente ✅ completa
 - **Fase 1** — Núcleo de priorización "¿qué hago ahora?" ✅ completa
   (incluye Next Action por proyecto y vista "My Day"; Sprint 1.5 —orden
   sugerido automático— opcional, pendiente)
-- **Fase 2** — Notas Markdown + sincronización con Google Drive
-- **Fase 3** — Google Calendar como pilar
-- **Fase 4** — IA con OpenRouter (BYOK)
-- **Fase 5** — Documentos automáticos
-- **Fase 6** — UX avanzada
-- **Fase 7** — Endurecimiento y pulido final
+- **Fase 2** — Reservada, sin sprints planificados (candidata:
+  "Clasificador de archivos", ver `BACKLOG.md`)
+- **Fase 3** — Google Drive: archivos y notas Markdown editables desde
+  la web
+- **Fase 4** — Google Calendar como pilar
+- **Fase 5** — IA con OpenRouter (BYOK)
+- **Fase 6** — Documentos automáticos
+- **Fase 7** — UX avanzada
+- **Fase 8** — Endurecimiento y pulido final

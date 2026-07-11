@@ -25,12 +25,16 @@ documentación de estado (`SPRINT.md`, `BACKLOG.md`, este `ROADMAP.md`) se
 actualiza en el mismo cambio que cierra el sprint, reflejando el estado
 real verificado, no el deseado.
 
-> **Nota de numeración (2026-07-11):** este roadmap se renumeró para que
-> coincida con lo que de verdad se ejecutó en sesión (antes tenía "Fase 1"
-> para cerrar el MVP y arrancaba ahí; en la práctica se trabajó como
-> **Fase 0 = MVP** y **Fase 1 = Priorización**, y así queda fijado de aquí
-> en adelante). "Next Action" y "My Day" se movieron de la antigua Fase 6
-> a la Fase 1, porque ya se construyeron ahí.
+> **Nota de numeración (actualizada 2026-07-11):** este roadmap se
+> renumeró DOS veces. Primero para que Fase 0 = MVP y Fase 1 =
+> Priorización coincidieran con lo realmente ejecutado. Segundo, a
+> pedido explícito del dueño, para reservar la **Fase 2** (aún sin
+> sprints planificados — candidata: "Clasificador de archivos", ver
+> `BACKLOG.md`) y mover **Google Drive a Fase 3**. Todo lo que antes era
+> Fase 3+ se corrió un lugar: Calendar→4, IA→5, Documentos→6, UX→7,
+> Endurecimiento→8. Si esto vuelve a generar confusión entre sesiones,
+> el número de fase de CADA sprint activo debe confirmarse contra este
+> archivo antes de arrancar, nunca asumirse del prompt.
 
 ---
 
@@ -56,54 +60,74 @@ datos, con singleton único de Prisma (`app/lib/db.ts`,
 - Sprint 1.5 — Orden sugerido automático (score: prioridad + cercanía de
   deadline + antigüedad). **OPCIONAL, pendiente** (ver `BACKLOG.md`).
 
+## Fase 2 — Reservada (sin sprints planificados todavía)
+
+Candidata: "Clasificador de archivos" (ver `BACKLOG.md` Medium Priority)
+— analizar carpetas locales del usuario y proponer a qué proyecto
+pertenece cada archivo, con aprobación manual antes de mover. Esta
+carpeta ordenada sería la carpeta madre que se sincroniza con Drive en
+la Fase 3. No planificar sprints aquí sin aprobación explícita del
+dueño — de momento es solo contexto anotado en el backlog.
+
 ---
 
-## Fase 2 — Notas Markdown + sincronización con Google Drive
+## Fase 3 — Google Drive: archivos y notas Markdown editables desde la web
 
-### Sprint 2.1 — Notas como archivos Markdown en disco (~5h)
-- Alcance: migrar el almacenamiento de contenido de notas de SQLite a
-  archivos `.md` organizados en carpetas por proyecto en el filesystem
-  local. SQLite pasa a guardar solo el índice de metadatos (ruta, título,
-  fecha) — nunca el contenido completo.
+### Sprint 3.1 — Carpeta local por proyecto + entidad índice (~4h)
+- Alcance: convención `./files/{proyecto}/` en disco. Modelo Prisma que
+  indexe archivos/notas (ruta, projectId, título, mimeType, fechas).
+  Consultar a `architect` antes de definir el schema exacto.
 - Dependencias: Fase 1 completa (ya cumplido).
-- DoD: `npm run build` sin errores; crear una nota en la UI produce un
-  archivo `.md` real en la carpeta del proyecto correspondiente (verificado
-  con el explorador de archivos), y `emaos.db` solo contiene el
-  metadato/índice, no el cuerpo del texto.
+- DoD: cada proyecto tiene su carpeta local; la app lista su contenido
+  desde el índice, verificado en `npm run dev`.
 
-### Sprint 2.2 — Editor Markdown en la web de EMA OS (~4h)
-- Alcance: la página de notas permite editar el contenido del `.md` desde
-  el navegador (lectura y escritura sobre el archivo real en disco).
-- Dependencias: Sprint 2.1.
-- DoD: editar una nota en `npm run dev` modifica el archivo `.md` en disco
-  (confirmado abriéndolo fuera de la app); recargar la página muestra el
-  contenido actualizado.
+### Sprint 3.2 — OAuth "Desktop app" + refresh token cifrado (~6h)
+- Alcance: flujo loopback (`127.0.0.1:puerto`), `access_type=offline`,
+  scope `drive.file` (no-sensible, evita verificación pesada de Google),
+  token guardado cifrado en SQLite. Config en `.env` (en `.gitignore`,
+  nunca commitear claves).
+- **Requiere pasos manuales del dueño en Google Cloud Console antes de
+  tocar código** (crear proyecto OAuth, habilitar Drive API, credenciales
+  tipo "Desktop app", publicar a "In Production" para evitar expiración
+  de refresh token a 7 días del modo Testing). No se empieza a programar
+  hasta que el dueño confirme que esos pasos están hechos.
+- Dependencias: Sprint 3.1.
+- DoD: el dueño autoriza una vez con su cuenta de Google y la app
+  conserva acceso tras reiniciar `npm run dev` (sin volver a pedir login).
+- **Sprint más delicado del proyecto hasta ahora**: si se empieza, se
+  termina entero o se deja en estado limpio y revertible — nunca a
+  medias con credenciales colgadas.
 
-### Sprint 2.3 — Integración con Google Drive API (scope `drive.file`) (~6h)
-- Alcance: configurar OAuth con scope `drive.file` (acceso limitado solo a
-  archivos creados por la app, sin verificación sensible de Google). Subida
-  inicial de la carpeta de notas a Drive.
-- Dependencias: Sprint 2.1 (necesita que las notas ya sean archivos reales
-  en disco).
-- DoD: tras autenticar con una cuenta de Google de prueba, una nota creada
-  localmente aparece en Google Drive dentro de la carpeta correspondiente
-  (verificado abriendo drive.google.com).
+### Sprint 3.3 — Notas como Markdown en Drive (~6h)
+- Alcance: editor Markdown en la app; guardar escribe el `.md` local y lo
+  sube vía Drive API; abrir lee el `.md`. Migrar las notas que hoy viven
+  en SQLite a este modelo (SQLite queda solo como índice de metadatos).
+- Dependencias: Sprint 3.2.
+- DoD: crear/editar una nota en la web y el `.md` aparece o se actualiza
+  en Drive, verificado abriendo Drive directamente.
 
-### Sprint 2.4 — rclone bisync para sincronización continua (~5h)
-- Alcance: configurar `rclone bisync` entre la carpeta local de notas y la
-  carpeta remota de Drive, documentando que `rclone bisync` está en beta
-  (riesgo de conflictos de sincronización no resueltos automáticamente).
-- Dependencias: Sprint 2.3.
-- DoD: un cambio hecho localmente aparece reflejado en Drive tras correr
-  la sincronización, y viceversa (probado en ambas direcciones); el
-  procedimiento de resolución manual de conflictos queda documentado en
-  `.claude/docs/ARCHITECTURE.md`.
+### Sprint 3.4 — Subir/crear otros archivos y carpetas en Drive (~4h)
+- Alcance: crear carpetas de proyecto en Drive y subir archivos desde la
+  web de EMA OS.
+- Dependencias: Sprint 3.2.
+- DoD: se crea una carpeta de proyecto en Drive y se sube un archivo
+  desde la web; verificado en Drive.
+
+### Sprint 3.5 — Espejo bidireccional con rclone bisync (~5h, OPCIONAL)
+- Alcance: `rclone bisync` entre la carpeta local y Drive. Primera
+  corrida con `--resync` y respaldo previo; flags robustos (`--resilient
+  --recover --conflict-resolve newer --drive-skip-gdocs`). Documentar que
+  `bisync` está en beta.
+- Dependencias: Sprint 3.4.
+- DoD: un cambio local aparece en Drive tras sincronizar y viceversa
+  (probado en ambas direcciones); procedimiento de resolución manual de
+  conflictos documentado en `.claude/docs/ARCHITECTURE.md`.
 
 ---
 
-## Fase 3 — Google Calendar como pilar
+## Fase 4 — Google Calendar como pilar
 
-### Sprint 3.1 — OAuth y verificación del scope sensible de Calendar (~5h)
+### Sprint 4.1 — OAuth y verificación del scope sensible de Calendar (~5h)
 - Alcance: configurar credenciales OAuth de Google Cloud para el scope de
   Calendar (marcado "sensible", requiere pantalla de consentimiento con
   verificación). Resolver el proceso de verificación/re-autorización
@@ -114,28 +138,28 @@ datos, con singleton único de Prisma (`app/lib/db.ts`,
   login real); el estado de verificación queda documentado (aprobado,
   pendiente, o en modo de prueba con usuarios de prueba explícitos).
 
-### Sprint 3.2 — Tarea con fecha/hora crea evento de Calendar (~4h)
+### Sprint 4.2 — Tarea con fecha/hora crea evento de Calendar (~4h)
 - Alcance: al asignar fecha/hora a una tarea en EMA OS, se crea (o
   actualiza) un evento correspondiente en Google Calendar vía la API.
-- Dependencias: Sprint 3.1.
+- Dependencias: Sprint 4.1.
 - DoD: crear una tarea con fecha/hora en `npm run dev` produce un evento
   visible en calendar.google.com con el mismo título y horario; editar la
   fecha en EMA OS actualiza el evento existente (no crea uno duplicado).
 
-### Sprint 3.3 — Recordatorios configurables 3-5 días antes (~3h)
+### Sprint 4.3 — Recordatorios configurables 3-5 días antes (~3h)
 - Alcance: usar `reminders.overrides` de la API de Calendar para
   configurar recordatorios entre 3 y 5 días antes del evento, con el valor
   configurable por el usuario.
-- Dependencias: Sprint 3.2.
+- Dependencias: Sprint 4.2.
 - DoD: un evento creado desde EMA OS muestra en Google Calendar un
   recordatorio configurado con el offset elegido (verificado inspeccionando
   el evento en la interfaz de Calendar o vía la API).
 
 ---
 
-## Fase 4 — IA con OpenRouter (BYOK)
+## Fase 5 — IA con OpenRouter (BYOK)
 
-### Sprint 4.1 — Cliente OpenRouter compatible con OpenAI SDK (~3h)
+### Sprint 5.1 — Cliente OpenRouter compatible con OpenAI SDK (~3h)
 - Alcance: configurar cliente usando `base_url
   https://openrouter.ai/api/v1` y API key en `.env` (arquitectura BYOK,
   llave del propio usuario). Modelo por defecto: `openrouter/free`.
@@ -145,31 +169,31 @@ datos, con singleton único de Prisma (`app/lib/db.ts`,
   `npm run dev`; la API key no queda hardcodeada en el código, solo en
   `.env`.
 
-### Sprint 4.2 — Manejo de rate limit (429) con fallback a modelo de pago barato (~4h)
+### Sprint 5.2 — Manejo de rate limit (429) con fallback a modelo de pago barato (~4h)
 - Alcance: detectar HTTP 429 del pool gratuito y hacer fallback automático
   a un modelo de pago barato usando el saldo ya existente de $10 en la
   cuenta de OpenRouter (no es gasto nuevo). Documentar el límite aproximado
   del tier gratuito (~200 requests/día) como supuesto no garantizado, no
   como constante fija.
-- Dependencias: Sprint 4.1.
+- Dependencias: Sprint 5.1.
 - DoD: forzando o simulando una respuesta 429, el sistema reintenta con el
   modelo de fallback y la petición del usuario se completa igual
   (verificado con una prueba manual o un mock del error 429).
 
-### Sprint 4.3 — Primera integración de IA visible en la UI (~5h)
+### Sprint 5.3 — Primera integración de IA visible en la UI (~5h)
 - Alcance: una función concreta y acotada que use IA (ej. sugerencia del
   "Next Action" de un proyecto, o resumen de una nota) — el alcance exacto
   se decide en el momento según lo que el dueño apruebe explícitamente, sin
   exceder una sola función por sprint.
-- Dependencias: Sprint 4.2.
+- Dependencias: Sprint 5.2.
 - DoD: la función de IA elegida produce una respuesta visible en la UI
   usando datos reales del proyecto, probada en `npm run dev`.
 
 ---
 
-## Fase 5 — Documentos automáticos
+## Fase 6 — Documentos automáticos
 
-### Sprint 5.1 — Generación de .docx desde plantillas (docxtemplater) (~5h)
+### Sprint 6.1 — Generación de .docx desde plantillas (docxtemplater) (~5h)
 - Alcance: plantilla `.docx` con variables reemplazables por datos reales
   de un proyecto/tarea, usando `docxtemplater`.
 - Dependencias: Fase 1 completa (ya cumplido).
@@ -177,32 +201,32 @@ datos, con singleton único de Prisma (`app/lib/db.ts`,
   las variables sustituidas correctamente por datos reales (abierto y
   verificado manualmente).
 
-### Sprint 5.2 — Generación de PDF desde Markdown (md-to-pdf) (~3h)
+### Sprint 6.2 — Generación de PDF desde Markdown (md-to-pdf) (~3h)
 - Alcance: exportar una nota o plantilla Markdown a PDF usando
   `md-to-pdf`.
-- Dependencias: Fase 2 (notas como archivos Markdown reales).
+- Dependencias: Fase 3 (notas como archivos Markdown reales).
 - DoD: exportar una nota real produce un `.pdf` legible con el contenido
   correcto (abierto y verificado manualmente).
 
 ---
 
-## Fase 6 — UX avanzada
+## Fase 7 — UX avanzada
 
-### Sprint 6.1 — Command palette con `cmdk` (~4h)
+### Sprint 7.1 — Command palette con `cmdk` (~4h)
 - Alcance: paleta de comandos accesible con atajo de teclado, con acciones
   básicas de navegación (ir a proyectos, tareas, notas, dashboard, my day).
 - Dependencias: Fase 1 completa (ya cumplido).
 - DoD: abrir la paleta con el atajo definido y ejecutar al menos una
   acción de navegación funciona en `npm run dev`.
 
-### Sprint 6.2 — Atajos de teclado globales (~3h)
+### Sprint 7.2 — Atajos de teclado globales (~3h)
 - Alcance: atajos para acciones frecuentes (crear tarea rápida, abrir
   inbox de captura).
-- Dependencias: Sprint 6.1.
+- Dependencias: Sprint 7.1.
 - DoD: cada atajo documentado se probó manualmente en el navegador y
   ejecuta la acción esperada sin conflicto con atajos del navegador.
 
-### Sprint 6.3 — Optimistic UI en mutaciones (~4h)
+### Sprint 7.3 — Optimistic UI en mutaciones (~4h)
 - Alcance: las mutaciones de tareas/notas/proyectos actualizan la UI de
   inmediato antes de confirmar la respuesta del servidor, con reversión si
   falla.
@@ -211,7 +235,7 @@ datos, con singleton único de Prisma (`app/lib/db.ts`,
   refleja el cambio antes de que la petición termine, y revierte
   correctamente si se fuerza un error del servidor.
 
-### Sprint 6.4 — Inbox de captura rápida (~4h)
+### Sprint 7.4 — Inbox de captura rápida (~4h)
 - Alcance: vista/campo para capturar ideas o tareas sueltas sin asignarlas
   a un proyecto todavía, con opción de clasificarlas después.
 - Dependencias: Fase 1 completa (ya cumplido).
@@ -225,9 +249,9 @@ datos, con singleton único de Prisma (`app/lib/db.ts`,
 
 ---
 
-## Fase 7 — Endurecimiento y pulido final
+## Fase 8 — Endurecimiento y pulido final
 
-### Sprint 7.1 — Configuración mínima de usuario (~3h)
+### Sprint 8.1 — Configuración mínima de usuario (~3h)
 - Alcance: pantalla de configuración con las preferencias mínimas del MVP
   original (tema, preferencias básicas) — sin exceder lo ya aprobado.
 - Dependencias: Fase 1 completa (ya cumplido).
@@ -235,7 +259,7 @@ datos, con singleton único de Prisma (`app/lib/db.ts`,
   la página (verificado en `emaos.db` o almacenamiento local, según se
   implemente).
 
-### Sprint 7.2 — Revisión de rendimiento y limpieza final (~4h)
+### Sprint 8.2 — Revisión de rendimiento y limpieza final (~4h)
 - Alcance: revisar queries N+1 evidentes, imports muertos, y consistencia
   general del código antes de considerar el sistema estable para uso
   diario.
@@ -259,6 +283,9 @@ datos, con singleton único de Prisma (`app/lib/db.ts`,
   localmente; la vía de IA es OpenRouter (BYOK).
 - No usar Google Keep — su API solo aplica a cuentas Google Workspace
   (enterprise), no a un usuario individual.
+- No usar APIs no oficiales ni scraping de WhatsApp (viola términos de
+  servicio y arriesga baneo del número) — cualquier integración con
+  WhatsApp es solo vía archivos exportados manualmente por el usuario.
 - No agregar funcionalidades no solicitadas, aunque parezcan una mejora
   natural (regla de `CLAUDE.md`).
 
@@ -271,12 +298,14 @@ datos, con singleton único de Prisma (`app/lib/db.ts`,
   ~200 requests/día en el tier gratuito, cifra no garantizada por
   OpenRouter). El sistema debe tolerar cambios de modelo y agotamiento de
   cuota, nunca asumir un modelo fijo ni una cuota fija — de ahí el
-  fallback obligatorio del Sprint 4.2.
+  fallback obligatorio del Sprint 5.2.
 - **`rclone bisync` está en beta:** posibilidad real de conflictos de
   sincronización no resueltos automáticamente entre la carpeta local y
   Google Drive. No tratarlo como 100% confiable; documentar el
-  procedimiento manual de resolución de conflictos (Sprint 2.4).
+  procedimiento manual de resolución de conflictos (Sprint 3.5).
 - **Scope de Calendar es "sensible" (no "restringido"):** requiere
   pantalla de consentimiento con verificación de Google, lo cual puede
-  tardar. Debe resolverse dentro del Sprint 3.1, no postergarse, porque
-  bloquea toda la Fase 3 si queda pendiente.
+  tardar. Debe resolverse dentro del Sprint 4.1, no postergarse, porque
+  bloquea toda la Fase 4 si queda pendiente.
+- **Sprint 3.2 (OAuth Drive) requiere pasos manuales del dueño en Google
+  Cloud Console** antes de escribir código — ver detalle en la Fase 3.
