@@ -387,7 +387,8 @@ export const ModelName = {
   Proyecto: 'Proyecto',
   Tarea: 'Tarea',
   Nota: 'Nota',
-  Archivo: 'Archivo'
+  Archivo: 'Archivo',
+  GoogleDriveToken: 'GoogleDriveToken'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -403,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "proyecto" | "tarea" | "nota" | "archivo"
+    modelProps: "proyecto" | "tarea" | "nota" | "archivo" | "googleDriveToken"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -703,6 +704,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    GoogleDriveToken: {
+      payload: Prisma.$GoogleDriveTokenPayload<ExtArgs>
+      fields: Prisma.GoogleDriveTokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GoogleDriveTokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GoogleDriveTokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload>
+        }
+        findFirst: {
+          args: Prisma.GoogleDriveTokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GoogleDriveTokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload>
+        }
+        findMany: {
+          args: Prisma.GoogleDriveTokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload>[]
+        }
+        create: {
+          args: Prisma.GoogleDriveTokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload>
+        }
+        createMany: {
+          args: Prisma.GoogleDriveTokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GoogleDriveTokenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload>[]
+        }
+        delete: {
+          args: Prisma.GoogleDriveTokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload>
+        }
+        update: {
+          args: Prisma.GoogleDriveTokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.GoogleDriveTokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GoogleDriveTokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GoogleDriveTokenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload>[]
+        }
+        upsert: {
+          args: Prisma.GoogleDriveTokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleDriveTokenPayload>
+        }
+        aggregate: {
+          args: Prisma.GoogleDriveTokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGoogleDriveToken>
+        }
+        groupBy: {
+          args: Prisma.GoogleDriveTokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GoogleDriveTokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GoogleDriveTokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GoogleDriveTokenCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -797,6 +872,19 @@ export const ArchivoScalarFieldEnum = {
 } as const
 
 export type ArchivoScalarFieldEnum = (typeof ArchivoScalarFieldEnum)[keyof typeof ArchivoScalarFieldEnum]
+
+
+export const GoogleDriveTokenScalarFieldEnum = {
+  id: 'id',
+  refreshTokenCipher: 'refreshTokenCipher',
+  refreshTokenIv: 'refreshTokenIv',
+  refreshTokenAuthTag: 'refreshTokenAuthTag',
+  accessToken: 'accessToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GoogleDriveTokenScalarFieldEnum = (typeof GoogleDriveTokenScalarFieldEnum)[keyof typeof GoogleDriveTokenScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -990,6 +1078,7 @@ export type GlobalOmitConfig = {
   tarea?: Prisma.TareaOmit
   nota?: Prisma.NotaOmit
   archivo?: Prisma.ArchivoOmit
+  googleDriveToken?: Prisma.GoogleDriveTokenOmit
 }
 
 /* Types for Logging */

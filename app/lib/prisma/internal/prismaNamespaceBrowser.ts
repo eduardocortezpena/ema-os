@@ -54,7 +54,8 @@ export const ModelName = {
   Proyecto: 'Proyecto',
   Tarea: 'Tarea',
   Nota: 'Nota',
-  Archivo: 'Archivo'
+  Archivo: 'Archivo',
+  GoogleDriveToken: 'GoogleDriveToken'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -128,6 +129,19 @@ export const ArchivoScalarFieldEnum = {
 } as const
 
 export type ArchivoScalarFieldEnum = (typeof ArchivoScalarFieldEnum)[keyof typeof ArchivoScalarFieldEnum]
+
+
+export const GoogleDriveTokenScalarFieldEnum = {
+  id: 'id',
+  refreshTokenCipher: 'refreshTokenCipher',
+  refreshTokenIv: 'refreshTokenIv',
+  refreshTokenAuthTag: 'refreshTokenAuthTag',
+  accessToken: 'accessToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GoogleDriveTokenScalarFieldEnum = (typeof GoogleDriveTokenScalarFieldEnum)[keyof typeof GoogleDriveTokenScalarFieldEnum]
 
 
 export const SortOrder = {

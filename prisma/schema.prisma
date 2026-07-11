@@ -70,6 +70,16 @@ enum ArchivoKind {
   FILE
 }
 
+model GoogleDriveToken {
+  id                   String    @id @default("default")
+  refreshTokenCipher   String
+  refreshTokenIv       String
+  refreshTokenAuthTag  String
+  accessToken          String?
+  accessTokenExpiresAt DateTime?
+  updatedAt            DateTime  @updatedAt
+}
+
 enum Priority {
   LOW
   MEDIUM

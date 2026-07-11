@@ -37,3 +37,8 @@ export type Nota = Prisma.NotaModel
  * 
  */
 export type Archivo = Prisma.ArchivoModel
+/**
+ * Model GoogleDriveToken
+ * 
+ */
+export type GoogleDriveToken = Prisma.GoogleDriveTokenModel
