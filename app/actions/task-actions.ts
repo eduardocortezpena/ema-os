@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
+import { toUserMessage } from '@/app/lib/errors';
 
 export async function createTask(formData: FormData) {
   try {
@@ -37,7 +38,7 @@ export async function createTask(formData: FormData) {
     revalidatePath('/dashboard');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/tasks?error=${encodeURIComponent('Error creando tarea: ' + error.message)}`);
+    redirect(`/tasks?error=${encodeURIComponent(toUserMessage(error, 'Error creando tarea. Intenta de nuevo.'))}`);
   }
 }
 
@@ -62,7 +63,7 @@ export async function updateTaskStatus(formData: FormData) {
     revalidatePath('/dashboard');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/tasks?error=${encodeURIComponent('Error actualizando status de tarea: ' + error.message)}`);
+    redirect(`/tasks?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando la tarea. Intenta de nuevo.'))}`);
   }
 }
 
@@ -82,6 +83,6 @@ export async function deleteTask(formData: FormData) {
     revalidatePath('/dashboard');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/tasks?error=${encodeURIComponent('Error eliminando tarea: ' + error.message)}`);
+    redirect(`/tasks?error=${encodeURIComponent(toUserMessage(error, 'Error eliminando tarea. Intenta de nuevo.'))}`);
   }
 }

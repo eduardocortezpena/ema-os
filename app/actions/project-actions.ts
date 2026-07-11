@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
+import { toUserMessage } from '@/app/lib/errors';
 
 export async function createProject(formData: FormData) {
   try {
@@ -30,7 +31,7 @@ export async function createProject(formData: FormData) {
     revalidatePath('/dashboard');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/projects?error=${encodeURIComponent('Error creando proyecto: ' + error.message)}`);
+    redirect(`/projects?error=${encodeURIComponent(toUserMessage(error, 'Error creando proyecto. Intenta de nuevo.'))}`);
   }
 }
 
@@ -61,7 +62,7 @@ export async function updateProject(formData: FormData) {
     revalidatePath('/dashboard');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/projects?error=${encodeURIComponent('Error actualizando proyecto: ' + error.message)}`);
+    redirect(`/projects?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando proyecto. Intenta de nuevo.'))}`);
   }
 }
 
@@ -81,6 +82,6 @@ export async function deleteProject(formData: FormData) {
     revalidatePath('/dashboard');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/projects?error=${encodeURIComponent('Error eliminando proyecto: ' + error.message)}`);
+    redirect(`/projects?error=${encodeURIComponent(toUserMessage(error, 'Error eliminando proyecto. Intenta de nuevo.'))}`);
   }
 }

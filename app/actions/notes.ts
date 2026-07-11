@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
+import { toUserMessage } from '@/app/lib/errors';
 
 export async function createNote(formData: FormData) {
   try {
@@ -25,7 +26,7 @@ export async function createNote(formData: FormData) {
     revalidatePath('/dashboard');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/notes?error=${encodeURIComponent('Error creando nota: ' + error.message)}`);
+    redirect(`/notes?error=${encodeURIComponent(toUserMessage(error, 'Error creando nota. Intenta de nuevo.'))}`);
   }
 }
 
@@ -50,7 +51,7 @@ export async function updateNote(formData: FormData) {
     revalidatePath('/notes');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/notes?error=${encodeURIComponent('Error actualizando nota: ' + error.message)}`);
+    redirect(`/notes?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando nota. Intenta de nuevo.'))}`);
   }
 }
 
@@ -70,6 +71,6 @@ export async function deleteNote(formData: FormData) {
     revalidatePath('/dashboard');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/notes?error=${encodeURIComponent('Error eliminando nota: ' + error.message)}`);
+    redirect(`/notes?error=${encodeURIComponent(toUserMessage(error, 'Error eliminando nota. Intenta de nuevo.'))}`);
   }
 }
