@@ -10,6 +10,39 @@ OAuth. Ver sección "⚠️ BLOQUEADO" más abajo con instrucciones exactas.
 Start: 2026-07-11 (Fase 7, completa). Fase 4 iniciada 2026-07-11, bloqueada
 en 4.1 en la misma sesión.
 
+### 🌱 Sesión de seed inicial completada (2026-07-11)
+
+**9 proyectos reales cargados con contexto y tareas concretas. Dashboard
+poblado. Sistema en uso real desde este punto.** No fue un sprint del
+ROADMAP — fue una carga de contenido real del usuario, vía los Server
+Actions existentes (`createProject`, `createTask`, `createNote`,
+`setNextAction`), sin tocar código de features ni arquitectura.
+
+Resultado verificado contra la DB y en el dashboard real:
+- **9 proyectos**: Xalma Residencial (CRITICAL, prioridad #1), Barrera de
+  sargazo (HIGH), Panga recolectora de sargazo (MEDIUM), Restaurante
+  Veracruzano (MEDIUM), Asociación Civil / Salsa Fest (MEDIUM), Aprendizaje
+  personal (HIGH), Arte en Madera y Hierro (LOW, PAUSED), Organización
+  personal (LOW), EMA OS (HIGH).
+- **32 tareas totales** repartidas entre los proyectos (13 en Xalma —
+  incluye el calendario de 4 publicaciones 13/15/17/19 jul 2026 — 4 en
+  Barrera de sargazo, 1 en Panga, 1 en Restaurante, 1 en Asociación Civil,
+  4 en Aprendizaje personal, 1 en Arte en Madera, 0 en Organización
+  personal a propósito, 7 en EMA OS).
+- **9 notas de contexto** en Markdown (una por proyecto, Sprint 3.3),
+  todas espejadas a Google Drive con `driveFileId` confirmado.
+- **8 Next Actions** marcadas (todas menos Organización personal, que
+  queda sin Next Action a propósito para que el usuario la pueble desde
+  el Inbox conforme surjan compromisos personales).
+- Verificado en `/my-day` que se puede planificar una tarea para hoy
+  (`planForToday`) — probado y revertido tras confirmar que funciona, no
+  se dejó ninguna tarea real planificada de más.
+- Un commit por proyecto (9 commits `seed: ...`), cada uno verificado
+  contra la DB (conteo de tareas, nota presente, Next Action correcta)
+  antes de avanzar al siguiente, como pidió el usuario.
+- Sin incidentes: ningún Server Action rechazó, no hizo falta revertir
+  ningún proyecto a medias.
+
 ### ⚠️ BLOQUEADO — Sprint 4.1, esperando acción manual del dueño
 
 **No se escribió código de Calendar todavía** (a propósito, mismo criterio
