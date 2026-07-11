@@ -44,6 +44,7 @@ export type ProyectoMinAggregateOutputType = {
   nextAction: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  nextActionTaskId: string | null
 }
 
 export type ProyectoMaxAggregateOutputType = {
@@ -56,6 +57,7 @@ export type ProyectoMaxAggregateOutputType = {
   nextAction: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  nextActionTaskId: string | null
 }
 
 export type ProyectoCountAggregateOutputType = {
@@ -68,6 +70,7 @@ export type ProyectoCountAggregateOutputType = {
   nextAction: number
   createdAt: number
   updatedAt: number
+  nextActionTaskId: number
   _all: number
 }
 
@@ -90,6 +93,7 @@ export type ProyectoMinAggregateInputType = {
   nextAction?: true
   createdAt?: true
   updatedAt?: true
+  nextActionTaskId?: true
 }
 
 export type ProyectoMaxAggregateInputType = {
@@ -102,6 +106,7 @@ export type ProyectoMaxAggregateInputType = {
   nextAction?: true
   createdAt?: true
   updatedAt?: true
+  nextActionTaskId?: true
 }
 
 export type ProyectoCountAggregateInputType = {
@@ -114,6 +119,7 @@ export type ProyectoCountAggregateInputType = {
   nextAction?: true
   createdAt?: true
   updatedAt?: true
+  nextActionTaskId?: true
   _all?: true
 }
 
@@ -213,6 +219,7 @@ export type ProyectoGroupByOutputType = {
   nextAction: string | null
   createdAt: Date
   updatedAt: Date
+  nextActionTaskId: string | null
   _count: ProyectoCountAggregateOutputType | null
   _avg: ProyectoAvgAggregateOutputType | null
   _sum: ProyectoSumAggregateOutputType | null
@@ -248,8 +255,10 @@ export type ProyectoWhereInput = {
   nextAction?: Prisma.StringNullableFilter<"Proyecto"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Proyecto"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Proyecto"> | Date | string
+  nextActionTaskId?: Prisma.StringNullableFilter<"Proyecto"> | string | null
   tasks?: Prisma.TareaListRelationFilter
   notes?: Prisma.NotaListRelationFilter
+  nextActionTask?: Prisma.XOR<Prisma.TareaNullableScalarRelationFilter, Prisma.TareaWhereInput> | null
 }
 
 export type ProyectoOrderByWithRelationInput = {
@@ -262,12 +271,15 @@ export type ProyectoOrderByWithRelationInput = {
   nextAction?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  nextActionTaskId?: Prisma.SortOrderInput | Prisma.SortOrder
   tasks?: Prisma.TareaOrderByRelationAggregateInput
   notes?: Prisma.NotaOrderByRelationAggregateInput
+  nextActionTask?: Prisma.TareaOrderByWithRelationInput
 }
 
 export type ProyectoWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  nextActionTaskId?: string
   AND?: Prisma.ProyectoWhereInput | Prisma.ProyectoWhereInput[]
   OR?: Prisma.ProyectoWhereInput[]
   NOT?: Prisma.ProyectoWhereInput | Prisma.ProyectoWhereInput[]
@@ -281,7 +293,8 @@ export type ProyectoWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Proyecto"> | Date | string
   tasks?: Prisma.TareaListRelationFilter
   notes?: Prisma.NotaListRelationFilter
-}, "id">
+  nextActionTask?: Prisma.XOR<Prisma.TareaNullableScalarRelationFilter, Prisma.TareaWhereInput> | null
+}, "id" | "nextActionTaskId">
 
 export type ProyectoOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -293,6 +306,7 @@ export type ProyectoOrderByWithAggregationInput = {
   nextAction?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  nextActionTaskId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ProyectoCountOrderByAggregateInput
   _avg?: Prisma.ProyectoAvgOrderByAggregateInput
   _max?: Prisma.ProyectoMaxOrderByAggregateInput
@@ -313,6 +327,7 @@ export type ProyectoScalarWhereWithAggregatesInput = {
   nextAction?: Prisma.StringNullableWithAggregatesFilter<"Proyecto"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Proyecto"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Proyecto"> | Date | string
+  nextActionTaskId?: Prisma.StringNullableWithAggregatesFilter<"Proyecto"> | string | null
 }
 
 export type ProyectoCreateInput = {
@@ -327,6 +342,7 @@ export type ProyectoCreateInput = {
   updatedAt?: Date | string
   tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
+  nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
 }
 
 export type ProyectoUncheckedCreateInput = {
@@ -339,6 +355,7 @@ export type ProyectoUncheckedCreateInput = {
   nextAction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  nextActionTaskId?: string | null
   tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -355,6 +372,7 @@ export type ProyectoUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
+  nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
 }
 
 export type ProyectoUncheckedUpdateInput = {
@@ -367,6 +385,7 @@ export type ProyectoUncheckedUpdateInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextActionTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -381,6 +400,7 @@ export type ProyectoCreateManyInput = {
   nextAction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  nextActionTaskId?: string | null
 }
 
 export type ProyectoUpdateManyMutationInput = {
@@ -405,6 +425,7 @@ export type ProyectoUncheckedUpdateManyInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextActionTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProyectoCountOrderByAggregateInput = {
@@ -417,6 +438,7 @@ export type ProyectoCountOrderByAggregateInput = {
   nextAction?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  nextActionTaskId?: Prisma.SortOrder
 }
 
 export type ProyectoAvgOrderByAggregateInput = {
@@ -433,6 +455,7 @@ export type ProyectoMaxOrderByAggregateInput = {
   nextAction?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  nextActionTaskId?: Prisma.SortOrder
 }
 
 export type ProyectoMinOrderByAggregateInput = {
@@ -445,6 +468,7 @@ export type ProyectoMinOrderByAggregateInput = {
   nextAction?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  nextActionTaskId?: Prisma.SortOrder
 }
 
 export type ProyectoSumOrderByAggregateInput = {
@@ -454,6 +478,11 @@ export type ProyectoSumOrderByAggregateInput = {
 export type ProyectoScalarRelationFilter = {
   is?: Prisma.ProyectoWhereInput
   isNot?: Prisma.ProyectoWhereInput
+}
+
+export type ProyectoNullableScalarRelationFilter = {
+  is?: Prisma.ProyectoWhereInput | null
+  isNot?: Prisma.ProyectoWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -490,12 +519,44 @@ export type ProyectoCreateNestedOneWithoutTasksInput = {
   connect?: Prisma.ProyectoWhereUniqueInput
 }
 
+export type ProyectoCreateNestedOneWithoutNextActionTaskInput = {
+  create?: Prisma.XOR<Prisma.ProyectoCreateWithoutNextActionTaskInput, Prisma.ProyectoUncheckedCreateWithoutNextActionTaskInput>
+  connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutNextActionTaskInput
+  connect?: Prisma.ProyectoWhereUniqueInput
+}
+
+export type ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput = {
+  create?: Prisma.XOR<Prisma.ProyectoCreateWithoutNextActionTaskInput, Prisma.ProyectoUncheckedCreateWithoutNextActionTaskInput>
+  connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutNextActionTaskInput
+  connect?: Prisma.ProyectoWhereUniqueInput
+}
+
 export type ProyectoUpdateOneRequiredWithoutTasksNestedInput = {
   create?: Prisma.XOR<Prisma.ProyectoCreateWithoutTasksInput, Prisma.ProyectoUncheckedCreateWithoutTasksInput>
   connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutTasksInput
   upsert?: Prisma.ProyectoUpsertWithoutTasksInput
   connect?: Prisma.ProyectoWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProyectoUpdateToOneWithWhereWithoutTasksInput, Prisma.ProyectoUpdateWithoutTasksInput>, Prisma.ProyectoUncheckedUpdateWithoutTasksInput>
+}
+
+export type ProyectoUpdateOneWithoutNextActionTaskNestedInput = {
+  create?: Prisma.XOR<Prisma.ProyectoCreateWithoutNextActionTaskInput, Prisma.ProyectoUncheckedCreateWithoutNextActionTaskInput>
+  connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutNextActionTaskInput
+  upsert?: Prisma.ProyectoUpsertWithoutNextActionTaskInput
+  disconnect?: Prisma.ProyectoWhereInput | boolean
+  delete?: Prisma.ProyectoWhereInput | boolean
+  connect?: Prisma.ProyectoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProyectoUpdateToOneWithWhereWithoutNextActionTaskInput, Prisma.ProyectoUpdateWithoutNextActionTaskInput>, Prisma.ProyectoUncheckedUpdateWithoutNextActionTaskInput>
+}
+
+export type ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput = {
+  create?: Prisma.XOR<Prisma.ProyectoCreateWithoutNextActionTaskInput, Prisma.ProyectoUncheckedCreateWithoutNextActionTaskInput>
+  connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutNextActionTaskInput
+  upsert?: Prisma.ProyectoUpsertWithoutNextActionTaskInput
+  disconnect?: Prisma.ProyectoWhereInput | boolean
+  delete?: Prisma.ProyectoWhereInput | boolean
+  connect?: Prisma.ProyectoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProyectoUpdateToOneWithWhereWithoutNextActionTaskInput, Prisma.ProyectoUpdateWithoutNextActionTaskInput>, Prisma.ProyectoUncheckedUpdateWithoutNextActionTaskInput>
 }
 
 export type ProyectoCreateNestedOneWithoutNotesInput = {
@@ -523,6 +584,7 @@ export type ProyectoCreateWithoutTasksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
+  nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
 }
 
 export type ProyectoUncheckedCreateWithoutTasksInput = {
@@ -535,12 +597,46 @@ export type ProyectoUncheckedCreateWithoutTasksInput = {
   nextAction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  nextActionTaskId?: string | null
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoCreateOrConnectWithoutTasksInput = {
   where: Prisma.ProyectoWhereUniqueInput
   create: Prisma.XOR<Prisma.ProyectoCreateWithoutTasksInput, Prisma.ProyectoUncheckedCreateWithoutTasksInput>
+}
+
+export type ProyectoCreateWithoutNextActionTaskInput = {
+  id?: string
+  name: string
+  description?: string | null
+  priority?: $Enums.Priority
+  status?: $Enums.Status
+  progress?: number
+  nextAction?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
+  notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
+}
+
+export type ProyectoUncheckedCreateWithoutNextActionTaskInput = {
+  id?: string
+  name: string
+  description?: string | null
+  priority?: $Enums.Priority
+  status?: $Enums.Status
+  progress?: number
+  nextAction?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
+  notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProyectoCreateOrConnectWithoutNextActionTaskInput = {
+  where: Prisma.ProyectoWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProyectoCreateWithoutNextActionTaskInput, Prisma.ProyectoUncheckedCreateWithoutNextActionTaskInput>
 }
 
 export type ProyectoUpsertWithoutTasksInput = {
@@ -565,6 +661,7 @@ export type ProyectoUpdateWithoutTasksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
+  nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
 }
 
 export type ProyectoUncheckedUpdateWithoutTasksInput = {
@@ -577,6 +674,46 @@ export type ProyectoUncheckedUpdateWithoutTasksInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextActionTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProyectoUpsertWithoutNextActionTaskInput = {
+  update: Prisma.XOR<Prisma.ProyectoUpdateWithoutNextActionTaskInput, Prisma.ProyectoUncheckedUpdateWithoutNextActionTaskInput>
+  create: Prisma.XOR<Prisma.ProyectoCreateWithoutNextActionTaskInput, Prisma.ProyectoUncheckedCreateWithoutNextActionTaskInput>
+  where?: Prisma.ProyectoWhereInput
+}
+
+export type ProyectoUpdateToOneWithWhereWithoutNextActionTaskInput = {
+  where?: Prisma.ProyectoWhereInput
+  data: Prisma.XOR<Prisma.ProyectoUpdateWithoutNextActionTaskInput, Prisma.ProyectoUncheckedUpdateWithoutNextActionTaskInput>
+}
+
+export type ProyectoUpdateWithoutNextActionTaskInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  status?: Prisma.EnumStatusFieldUpdateOperationsInput | $Enums.Status
+  progress?: Prisma.IntFieldUpdateOperationsInput | number
+  nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
+  notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
+}
+
+export type ProyectoUncheckedUpdateWithoutNextActionTaskInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  status?: Prisma.EnumStatusFieldUpdateOperationsInput | $Enums.Status
+  progress?: Prisma.IntFieldUpdateOperationsInput | number
+  nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -591,6 +728,7 @@ export type ProyectoCreateWithoutNotesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
+  nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
 }
 
 export type ProyectoUncheckedCreateWithoutNotesInput = {
@@ -603,6 +741,7 @@ export type ProyectoUncheckedCreateWithoutNotesInput = {
   nextAction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  nextActionTaskId?: string | null
   tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
 }
 
@@ -633,6 +772,7 @@ export type ProyectoUpdateWithoutNotesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
+  nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
 }
 
 export type ProyectoUncheckedUpdateWithoutNotesInput = {
@@ -645,6 +785,7 @@ export type ProyectoUncheckedUpdateWithoutNotesInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextActionTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
 }
 
@@ -698,8 +839,10 @@ export type ProyectoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   nextAction?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  nextActionTaskId?: boolean
   tasks?: boolean | Prisma.Proyecto$tasksArgs<ExtArgs>
   notes?: boolean | Prisma.Proyecto$notesArgs<ExtArgs>
+  nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
   _count?: boolean | Prisma.ProyectoCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["proyecto"]>
 
@@ -713,6 +856,8 @@ export type ProyectoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   nextAction?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  nextActionTaskId?: boolean
+  nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
 }, ExtArgs["result"]["proyecto"]>
 
 export type ProyectoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -725,6 +870,8 @@ export type ProyectoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   nextAction?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  nextActionTaskId?: boolean
+  nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
 }, ExtArgs["result"]["proyecto"]>
 
 export type ProyectoSelectScalar = {
@@ -737,22 +884,29 @@ export type ProyectoSelectScalar = {
   nextAction?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  nextActionTaskId?: boolean
 }
 
-export type ProyectoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "priority" | "status" | "progress" | "nextAction" | "createdAt" | "updatedAt", ExtArgs["result"]["proyecto"]>
+export type ProyectoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "priority" | "status" | "progress" | "nextAction" | "createdAt" | "updatedAt" | "nextActionTaskId", ExtArgs["result"]["proyecto"]>
 export type ProyectoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tasks?: boolean | Prisma.Proyecto$tasksArgs<ExtArgs>
   notes?: boolean | Prisma.Proyecto$notesArgs<ExtArgs>
+  nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
   _count?: boolean | Prisma.ProyectoCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type ProyectoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type ProyectoIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type ProyectoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
+}
+export type ProyectoIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
+}
 
 export type $ProyectoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Proyecto"
   objects: {
     tasks: Prisma.$TareaPayload<ExtArgs>[]
     notes: Prisma.$NotaPayload<ExtArgs>[]
+    nextActionTask: Prisma.$TareaPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -764,6 +918,7 @@ export type $ProyectoPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     nextAction: string | null
     createdAt: Date
     updatedAt: Date
+    nextActionTaskId: string | null
   }, ExtArgs["result"]["proyecto"]>
   composites: {}
 }
@@ -1160,6 +1315,7 @@ export interface Prisma__ProyectoClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tasks<T extends Prisma.Proyecto$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proyecto$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TareaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notes<T extends Prisma.Proyecto$notesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proyecto$notesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  nextActionTask<T extends Prisma.Proyecto$nextActionTaskArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proyecto$nextActionTaskArgs<ExtArgs>>): Prisma.Prisma__TareaClient<runtime.Types.Result.GetResult<Prisma.$TareaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1198,6 +1354,7 @@ export interface ProyectoFieldRefs {
   readonly nextAction: Prisma.FieldRef<"Proyecto", 'String'>
   readonly createdAt: Prisma.FieldRef<"Proyecto", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Proyecto", 'DateTime'>
+  readonly nextActionTaskId: Prisma.FieldRef<"Proyecto", 'String'>
 }
     
 
@@ -1450,6 +1607,10 @@ export type ProyectoCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * The data used to create many Proyectos.
    */
   data: Prisma.ProyectoCreateManyInput | Prisma.ProyectoCreateManyInput[]
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProyectoIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1520,6 +1681,10 @@ export type ProyectoUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extens
    * Limit how many Proyectos to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProyectoIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1634,6 +1799,25 @@ export type Proyecto$notesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.NotaScalarFieldEnum | Prisma.NotaScalarFieldEnum[]
+}
+
+/**
+ * Proyecto.nextActionTask
+ */
+export type Proyecto$nextActionTaskArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Tarea
+   */
+  select?: Prisma.TareaSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Tarea
+   */
+  omit?: Prisma.TareaOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TareaInclude<ExtArgs> | null
+  where?: Prisma.TareaWhereInput
 }
 
 /**

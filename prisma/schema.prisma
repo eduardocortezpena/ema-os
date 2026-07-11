@@ -17,8 +17,10 @@ model Proyecto {
   nextAction  String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  tasks       Tarea[]
+  tasks       Tarea[]  @relation("ProjectTasks")
   notes       Nota[]
+  nextActionTaskId String? @unique
+  nextActionTask   Tarea?  @relation("ProjectNextAction", fields: [nextActionTaskId], references: [id])
 }
 
 model Tarea {
@@ -31,8 +33,9 @@ model Tarea {
   dueDate     DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  project     Proyecto @relation(fields: [projectId], references: [id])
+  project     Proyecto @relation("ProjectTasks", fields: [projectId], references: [id])
   notes       Nota[]
+  isNextActionFor Proyecto? @relation("ProjectNextAction")
 }
 
 model Nota {

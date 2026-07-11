@@ -216,6 +216,7 @@ export type TareaWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   project?: Prisma.XOR<Prisma.ProyectoScalarRelationFilter, Prisma.ProyectoWhereInput>
   notes?: Prisma.NotaListRelationFilter
+  isNextActionFor?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
 }
 
 export type TareaOrderByWithRelationInput = {
@@ -230,6 +231,7 @@ export type TareaOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   project?: Prisma.ProyectoOrderByWithRelationInput
   notes?: Prisma.NotaOrderByRelationAggregateInput
+  isNextActionFor?: Prisma.ProyectoOrderByWithRelationInput
 }
 
 export type TareaWhereUniqueInput = Prisma.AtLeast<{
@@ -247,6 +249,7 @@ export type TareaWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   project?: Prisma.XOR<Prisma.ProyectoScalarRelationFilter, Prisma.ProyectoWhereInput>
   notes?: Prisma.NotaListRelationFilter
+  isNextActionFor?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
 }, "id">
 
 export type TareaOrderByWithAggregationInput = {
@@ -290,6 +293,7 @@ export type TareaCreateInput = {
   updatedAt?: Date | string
   project: Prisma.ProyectoCreateNestedOneWithoutTasksInput
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
+  isNextActionFor?: Prisma.ProyectoCreateNestedOneWithoutNextActionTaskInput
 }
 
 export type TareaUncheckedCreateInput = {
@@ -303,6 +307,7 @@ export type TareaUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
+  isNextActionFor?: Prisma.ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput
 }
 
 export type TareaUpdateInput = {
@@ -316,6 +321,7 @@ export type TareaUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProyectoUpdateOneRequiredWithoutTasksNestedInput
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
+  isNextActionFor?: Prisma.ProyectoUpdateOneWithoutNextActionTaskNestedInput
 }
 
 export type TareaUncheckedUpdateInput = {
@@ -329,6 +335,7 @@ export type TareaUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
+  isNextActionFor?: Prisma.ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput
 }
 
 export type TareaCreateManyInput = {
@@ -372,6 +379,11 @@ export type TareaListRelationFilter = {
   none?: Prisma.TareaWhereInput
 }
 
+export type TareaNullableScalarRelationFilter = {
+  is?: Prisma.TareaWhereInput | null
+  isNot?: Prisma.TareaWhereInput | null
+}
+
 export type TareaOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
@@ -412,16 +424,17 @@ export type TareaMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
-export type TareaNullableScalarRelationFilter = {
-  is?: Prisma.TareaWhereInput | null
-  isNot?: Prisma.TareaWhereInput | null
-}
-
 export type TareaCreateNestedManyWithoutProjectInput = {
   create?: Prisma.XOR<Prisma.TareaCreateWithoutProjectInput, Prisma.TareaUncheckedCreateWithoutProjectInput> | Prisma.TareaCreateWithoutProjectInput[] | Prisma.TareaUncheckedCreateWithoutProjectInput[]
   connectOrCreate?: Prisma.TareaCreateOrConnectWithoutProjectInput | Prisma.TareaCreateOrConnectWithoutProjectInput[]
   createMany?: Prisma.TareaCreateManyProjectInputEnvelope
   connect?: Prisma.TareaWhereUniqueInput | Prisma.TareaWhereUniqueInput[]
+}
+
+export type TareaCreateNestedOneWithoutIsNextActionForInput = {
+  create?: Prisma.XOR<Prisma.TareaCreateWithoutIsNextActionForInput, Prisma.TareaUncheckedCreateWithoutIsNextActionForInput>
+  connectOrCreate?: Prisma.TareaCreateOrConnectWithoutIsNextActionForInput
+  connect?: Prisma.TareaWhereUniqueInput
 }
 
 export type TareaUncheckedCreateNestedManyWithoutProjectInput = {
@@ -443,6 +456,16 @@ export type TareaUpdateManyWithoutProjectNestedInput = {
   update?: Prisma.TareaUpdateWithWhereUniqueWithoutProjectInput | Prisma.TareaUpdateWithWhereUniqueWithoutProjectInput[]
   updateMany?: Prisma.TareaUpdateManyWithWhereWithoutProjectInput | Prisma.TareaUpdateManyWithWhereWithoutProjectInput[]
   deleteMany?: Prisma.TareaScalarWhereInput | Prisma.TareaScalarWhereInput[]
+}
+
+export type TareaUpdateOneWithoutIsNextActionForNestedInput = {
+  create?: Prisma.XOR<Prisma.TareaCreateWithoutIsNextActionForInput, Prisma.TareaUncheckedCreateWithoutIsNextActionForInput>
+  connectOrCreate?: Prisma.TareaCreateOrConnectWithoutIsNextActionForInput
+  upsert?: Prisma.TareaUpsertWithoutIsNextActionForInput
+  disconnect?: Prisma.TareaWhereInput | boolean
+  delete?: Prisma.TareaWhereInput | boolean
+  connect?: Prisma.TareaWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TareaUpdateToOneWithWhereWithoutIsNextActionForInput, Prisma.TareaUpdateWithoutIsNextActionForInput>, Prisma.TareaUncheckedUpdateWithoutIsNextActionForInput>
 }
 
 export type TareaUncheckedUpdateManyWithoutProjectNestedInput = {
@@ -493,6 +516,7 @@ export type TareaCreateWithoutProjectInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
+  isNextActionFor?: Prisma.ProyectoCreateNestedOneWithoutNextActionTaskInput
 }
 
 export type TareaUncheckedCreateWithoutProjectInput = {
@@ -505,6 +529,7 @@ export type TareaUncheckedCreateWithoutProjectInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
+  isNextActionFor?: Prisma.ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput
 }
 
 export type TareaCreateOrConnectWithoutProjectInput = {
@@ -514,6 +539,37 @@ export type TareaCreateOrConnectWithoutProjectInput = {
 
 export type TareaCreateManyProjectInputEnvelope = {
   data: Prisma.TareaCreateManyProjectInput | Prisma.TareaCreateManyProjectInput[]
+}
+
+export type TareaCreateWithoutIsNextActionForInput = {
+  id?: string
+  title: string
+  description?: string | null
+  priority?: $Enums.Priority
+  status?: $Enums.TareaStatus
+  dueDate?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProyectoCreateNestedOneWithoutTasksInput
+  notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
+}
+
+export type TareaUncheckedCreateWithoutIsNextActionForInput = {
+  id?: string
+  projectId: string
+  title: string
+  description?: string | null
+  priority?: $Enums.Priority
+  status?: $Enums.TareaStatus
+  dueDate?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
+}
+
+export type TareaCreateOrConnectWithoutIsNextActionForInput = {
+  where: Prisma.TareaWhereUniqueInput
+  create: Prisma.XOR<Prisma.TareaCreateWithoutIsNextActionForInput, Prisma.TareaUncheckedCreateWithoutIsNextActionForInput>
 }
 
 export type TareaUpsertWithWhereUniqueWithoutProjectInput = {
@@ -547,6 +603,43 @@ export type TareaScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
 }
 
+export type TareaUpsertWithoutIsNextActionForInput = {
+  update: Prisma.XOR<Prisma.TareaUpdateWithoutIsNextActionForInput, Prisma.TareaUncheckedUpdateWithoutIsNextActionForInput>
+  create: Prisma.XOR<Prisma.TareaCreateWithoutIsNextActionForInput, Prisma.TareaUncheckedCreateWithoutIsNextActionForInput>
+  where?: Prisma.TareaWhereInput
+}
+
+export type TareaUpdateToOneWithWhereWithoutIsNextActionForInput = {
+  where?: Prisma.TareaWhereInput
+  data: Prisma.XOR<Prisma.TareaUpdateWithoutIsNextActionForInput, Prisma.TareaUncheckedUpdateWithoutIsNextActionForInput>
+}
+
+export type TareaUpdateWithoutIsNextActionForInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProyectoUpdateOneRequiredWithoutTasksNestedInput
+  notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
+}
+
+export type TareaUncheckedUpdateWithoutIsNextActionForInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
+  dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
+}
+
 export type TareaCreateWithoutNotesInput = {
   id?: string
   title: string
@@ -557,6 +650,7 @@ export type TareaCreateWithoutNotesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProyectoCreateNestedOneWithoutTasksInput
+  isNextActionFor?: Prisma.ProyectoCreateNestedOneWithoutNextActionTaskInput
 }
 
 export type TareaUncheckedCreateWithoutNotesInput = {
@@ -569,6 +663,7 @@ export type TareaUncheckedCreateWithoutNotesInput = {
   dueDate?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  isNextActionFor?: Prisma.ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput
 }
 
 export type TareaCreateOrConnectWithoutNotesInput = {
@@ -597,6 +692,7 @@ export type TareaUpdateWithoutNotesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProyectoUpdateOneRequiredWithoutTasksNestedInput
+  isNextActionFor?: Prisma.ProyectoUpdateOneWithoutNextActionTaskNestedInput
 }
 
 export type TareaUncheckedUpdateWithoutNotesInput = {
@@ -609,6 +705,7 @@ export type TareaUncheckedUpdateWithoutNotesInput = {
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isNextActionFor?: Prisma.ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput
 }
 
 export type TareaCreateManyProjectInput = {
@@ -632,6 +729,7 @@ export type TareaUpdateWithoutProjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
+  isNextActionFor?: Prisma.ProyectoUpdateOneWithoutNextActionTaskNestedInput
 }
 
 export type TareaUncheckedUpdateWithoutProjectInput = {
@@ -644,6 +742,7 @@ export type TareaUncheckedUpdateWithoutProjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
+  isNextActionFor?: Prisma.ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput
 }
 
 export type TareaUncheckedUpdateManyWithoutProjectInput = {
@@ -700,6 +799,7 @@ export type TareaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   updatedAt?: boolean
   project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
   notes?: boolean | Prisma.Tarea$notesArgs<ExtArgs>
+  isNextActionFor?: boolean | Prisma.Tarea$isNextActionForArgs<ExtArgs>
   _count?: boolean | Prisma.TareaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tarea"]>
 
@@ -745,6 +845,7 @@ export type TareaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
 export type TareaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
   notes?: boolean | Prisma.Tarea$notesArgs<ExtArgs>
+  isNextActionFor?: boolean | Prisma.Tarea$isNextActionForArgs<ExtArgs>
   _count?: boolean | Prisma.TareaCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TareaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -759,6 +860,7 @@ export type $TareaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   objects: {
     project: Prisma.$ProyectoPayload<ExtArgs>
     notes: Prisma.$NotaPayload<ExtArgs>[]
+    isNextActionFor: Prisma.$ProyectoPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1166,6 +1268,7 @@ export interface Prisma__TareaClient<T, Null = never, ExtArgs extends runtime.Ty
   readonly [Symbol.toStringTag]: "PrismaPromise"
   project<T extends Prisma.ProyectoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProyectoDefaultArgs<ExtArgs>>): Prisma.Prisma__ProyectoClient<runtime.Types.Result.GetResult<Prisma.$ProyectoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   notes<T extends Prisma.Tarea$notesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tarea$notesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  isNextActionFor<T extends Prisma.Tarea$isNextActionForArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tarea$isNextActionForArgs<ExtArgs>>): Prisma.Prisma__ProyectoClient<runtime.Types.Result.GetResult<Prisma.$ProyectoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1624,6 +1727,25 @@ export type Tarea$notesArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.NotaScalarFieldEnum | Prisma.NotaScalarFieldEnum[]
+}
+
+/**
+ * Tarea.isNextActionFor
+ */
+export type Tarea$isNextActionForArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Proyecto
+   */
+  select?: Prisma.ProyectoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Proyecto
+   */
+  omit?: Prisma.ProyectoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProyectoInclude<ExtArgs> | null
+  where?: Prisma.ProyectoWhereInput
 }
 
 /**

@@ -66,6 +66,35 @@ export async function updateProject(formData: FormData) {
   }
 }
 
+export async function setNextAction(formData: FormData) {
+  try {
+    const projectId = formData.get('projectId')?.toString() || '';
+    const taskId = formData.get('taskId')?.toString() || '';
+
+    if (!projectId) {
+      redirect(`/projects?error=${encodeURIComponent('ID de proyecto requerido')}`);
+    }
+
+    if (taskId) {
+      const task = await prisma.tarea.findFirst({ where: { id: taskId, projectId } });
+      if (!task) {
+        redirect(`/projects?error=${encodeURIComponent('La tarea no pertenece a este proyecto')}`);
+      }
+    }
+
+    await prisma.proyecto.update({
+      where: { id: projectId },
+      data: { nextActionTaskId: taskId || null },
+    });
+
+    revalidatePath('/projects');
+    revalidatePath('/dashboard');
+  } catch (error: any) {
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/projects?error=${encodeURIComponent(toUserMessage(error, 'Error marcando la siguiente acción. Intenta de nuevo.'))}`);
+  }
+}
+
 export async function deleteProject(formData: FormData) {
   try {
     const id = formData.get('id')?.toString() || '';

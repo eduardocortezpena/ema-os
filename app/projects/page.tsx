@@ -1,6 +1,7 @@
 import { prisma } from '@/app/lib/db';
-import { createProject, updateProject, deleteProject } from '../actions';
+import { createProject, updateProject, setNextAction, deleteProject } from '../actions';
 import { ConfirmButton } from '../components/ConfirmButton';
+import { AutoSubmitSelect } from '../components/AutoSubmitSelect';
 
 export default async function ProjectsPage({
   searchParams,
@@ -9,6 +10,10 @@ export default async function ProjectsPage({
 }) {
   const { error } = await searchParams;
   const projects = await prisma.proyecto.findMany({
+    include: {
+      tasks: { orderBy: { title: 'asc' } },
+      nextActionTask: true,
+    },
     orderBy: { createdAt: 'desc' },
   });
 
@@ -40,13 +45,31 @@ export default async function ProjectsPage({
                           <p className="text-gray-400 text-sm mt-1">{project.description}</p>
                         )}
                         {project.nextAction && (
-                          <p className="text-primary-500 text-sm mt-1">→ {project.nextAction}</p>
+                          <p className="text-gray-400 text-sm mt-1">Nota: {project.nextAction}</p>
+                        )}
+                        {project.nextActionTask && (
+                          <p className="text-primary-500 text-sm mt-1">→ Next Action: {project.nextActionTask.title}</p>
                         )}
                         <div className="flex gap-2 mt-2 flex-wrap">
                           <span className={`badge badge-${project.priority.toLowerCase()}`}>{project.priority}</span>
                           <span className={`badge badge-${project.status.toLowerCase()}`}>{project.status}</span>
                           <span className="badge bg-gray-700">{project.progress}%</span>
                         </div>
+                        {project.tasks.length > 0 && (
+                          <form action={setNextAction} className="flex items-center gap-2 mt-2">
+                            <input type="hidden" name="projectId" value={project.id} />
+                            <label className="text-xs text-gray-500">Next Action:</label>
+                            <AutoSubmitSelect
+                              name="taskId"
+                              defaultValue={project.nextActionTaskId ?? ''}
+                              className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              options={[
+                                { value: '', label: '(ninguna)' },
+                                ...project.tasks.map((t) => ({ value: t.id, label: t.title })),
+                              ]}
+                            />
+                          </form>
+                        )}
                       </div>
                       <div className="flex flex-col gap-2 items-end">
                         <form action={deleteProject}>

@@ -29,7 +29,8 @@
 - [ ] Document component API
 - [ ] Performance monitoring setup
 - [ ] `app/projects/page.tsx` y `app/notes/page.tsx` reimplementan su propio wrapper (`min-h-screen bg-gray-950` + `container mx-auto p-4`) en vez de usar solo el `<main>` de `app/layout.tsx` — viola ui-guidelines ("las páginas hijas no deben reimplementar su propio wrapper de layout"). Hallazgo del reviewer en Sprint 0.4, no bloqueante, pendiente de limpieza (candidato: Sprint 1.5 o 7.2).
-- [ ] `app/dashboard/page.tsx` sigue con clases `dark:`/`bg-white` (tema claro), inconsistente con el resto de la app que es dark-only — corregir en Sprint 0.5.
+- [x] `app/dashboard/page.tsx` tema claro — corregido en Sprint 0.5.
+- [ ] Borrar un Proyecto con Tareas/Notas asociadas falla por restricción de FK (mensaje genérico, hay que borrar hijos primero manualmente). Considerar `onDelete: Cascade` en el schema o un mensaje explícito guiando al usuario. Detectado en Sprint 1.1, preexistente desde Sprint 0.2.
 
 ### Known Issues
 - Ninguno bloqueante actualmente. Ver Technical Debt para deuda no bloqueante conocida.

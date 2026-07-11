@@ -673,7 +673,8 @@ export const ProyectoScalarFieldEnum = {
   progress: 'progress',
   nextAction: 'nextAction',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  nextActionTaskId: 'nextActionTaskId'
 } as const
 
 export type ProyectoScalarFieldEnum = (typeof ProyectoScalarFieldEnum)[keyof typeof ProyectoScalarFieldEnum]
