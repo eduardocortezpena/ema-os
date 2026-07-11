@@ -16,6 +16,8 @@
 - [ ] Bulk actions (delete multiple items)
 - [ ] Export data to JSON/CSV
 - [ ] Asociar una nota a una tarea específica dentro del proyecto (Nota.taskId ya existe y es opcional desde Sprint 0.1, pero la UI no lo expone todavía — fuera de alcance de Fase 0)
+- [ ] **Clasificador de archivos**: analizar ~5 carpetas ACOTADAS del disco del usuario y PROPONER a qué proyecto pertenece cada archivo (PDFs, Word, hojas de cálculo, imágenes). Aprobación manual antes de mover — nunca borrar, solo copiar/enlazar. La carpeta resultante ordenada sería la carpeta madre que se sincroniza con Drive en la Fase 3 (`./files/{proyecto}/`). Candidata a Fase 2 (reservada, sin sprints todavía) del ROADMAP.md. Anotado 2026-07-11, sin implementar.
+- [ ] **Importar chat de WhatsApp exportado**: ingerir un `.txt` exportado manualmente desde WhatsApp (Chat > Exportar chat > Sin multimedia/Con multimedia) y asociarlo a un proyecto como nota o archivo indexado. NO usar APIs no oficiales ni scraping de WhatsApp — viola sus términos de servicio y arriesga el baneo del número del usuario (ya reflejado en ROADMAP.md, sección "Qué NO hacer"). Solo archivos exportados manualmente por el usuario. Sin fase asignada todavía. Anotado 2026-07-11, sin implementar.
 
 ### Low Priority
 - [ ] Keyboard shortcuts
