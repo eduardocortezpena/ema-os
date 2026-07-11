@@ -1,4 +1,5 @@
 import { getValidAccessToken } from '@/app/lib/google-drive-auth';
+import { prisma } from '@/app/lib/db';
 
 const UPLOAD_URL = 'https://www.googleapis.com/upload/drive/v3/files';
 const FILES_URL = 'https://www.googleapis.com/drive/v3/files';
@@ -89,4 +90,84 @@ export async function downloadMarkdownFromDrive(driveFileId: string): Promise<st
     throw new Error('Error descargando el archivo desde Google Drive.');
   }
   return res.text();
+}
+
+const FOLDER_MIME = 'application/vnd.google-apps.folder';
+
+/**
+ * Crea una carpeta en Drive (opcionalmente dentro de otra) y devuelve su id.
+ * Usado por ensureProjectDriveFolder para la carpeta de proyecto (Sprint 3.4).
+ */
+export async function createDriveFolder(name: string, parentFolderId?: string): Promise<string> {
+  const accessToken = await getValidAccessToken();
+  const metadata: Record<string, unknown> = { name, mimeType: FOLDER_MIME };
+  if (parentFolderId) metadata.parents = [parentFolderId];
+
+  const res = await fetch(`${FILES_URL}?fields=id`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(metadata),
+  });
+
+  if (!res.ok) {
+    const errBody = await res.text();
+    console.error(`[google-drive-files] Error creando carpeta (${res.status}):`, errBody);
+    throw new Error('Error creando la carpeta en Google Drive.');
+  }
+
+  const data = await res.json();
+  return data.id as string;
+}
+
+/**
+ * Devuelve el driveFolderId del proyecto, creándolo en Drive de forma
+ * perezosa (lazy) si todavía no existe. Idempotente: si el proyecto ya tiene
+ * driveFolderId, no llama a la API. Lanza si Drive no está conectado —
+ * el caller decide degradar (guardar solo local).
+ */
+export async function ensureProjectDriveFolder(projectId: string, projectName: string): Promise<string> {
+  const project = await prisma.proyecto.findUnique({ where: { id: projectId } });
+  if (project?.driveFolderId) return project.driveFolderId;
+
+  const folderId = await createDriveFolder(projectName);
+  await prisma.proyecto.update({ where: { id: projectId }, data: { driveFolderId: folderId } });
+  return folderId;
+}
+
+/**
+ * Sube un archivo binario (o de texto) a Drive dentro de una carpeta, usando
+ * FormData/Blob nativo de fetch en vez de concatenar el contenido como string
+ * (el multipart hecho a mano de createMarkdownInDrive corrompería binarios).
+ * Devuelve el driveFileId.
+ */
+export async function uploadFileToDrive(
+  name: string,
+  mimeType: string,
+  content: Buffer,
+  parentFolderId: string
+): Promise<string> {
+  const accessToken = await getValidAccessToken();
+  const metadata = { name, parents: [parentFolderId] };
+
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+  form.append('file', new Blob([new Uint8Array(content)], { type: mimeType }), name);
+
+  const res = await fetch(`${UPLOAD_URL}?uploadType=multipart&fields=id`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: form,
+  });
+
+  if (!res.ok) {
+    const errBody = await res.text();
+    console.error(`[google-drive-files] Error subiendo archivo (${res.status}):`, errBody);
+    throw new Error('Error subiendo el archivo a Google Drive. Revisa los logs del servidor.');
+  }
+
+  const data = await res.json();
+  return data.id as string;
 }

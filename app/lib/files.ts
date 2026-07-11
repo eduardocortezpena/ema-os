@@ -49,3 +49,34 @@ export function deleteNoteMd(projectId: string, archivoId: string): void {
   const abs = noteAbsPath(projectId, archivoId);
   if (fs.existsSync(abs)) fs.rmSync(abs);
 }
+
+// --- Archivos sueltos subidos (Sprint 3.4) ---
+// Viven en files/{projectId}/uploads/{archivoId}-{nombreOriginal}. El prefijo
+// del archivoId evita colisiones de nombre entre uploads distintos.
+
+function projectUploadsDir(projectId: string): string {
+  return path.join(projectFilesDir(projectId), 'uploads');
+}
+
+function safeOriginalName(originalName: string): string {
+  // Solo el basename, sin separadores de ruta, para no escapar de uploads/.
+  return path.basename(originalName).replace(/[/\\]/g, '_');
+}
+
+export function uploadedFileRelPath(projectId: string, archivoId: string, originalName: string): string {
+  return path.join('files', projectId, 'uploads', `${archivoId}-${safeOriginalName(originalName)}`);
+}
+
+function uploadedFileAbsPath(projectId: string, archivoId: string, originalName: string): string {
+  return path.join(FILES_ROOT, projectId, 'uploads', `${archivoId}-${safeOriginalName(originalName)}`);
+}
+
+export function writeUploadedFile(
+  projectId: string,
+  archivoId: string,
+  originalName: string,
+  content: Buffer
+): void {
+  fs.mkdirSync(projectUploadsDir(projectId), { recursive: true });
+  fs.writeFileSync(uploadedFileAbsPath(projectId, archivoId, originalName), content);
+}

@@ -58,15 +58,80 @@ Start: 2026-07-11
       (M1, M4-M6, L1-L4) anotados como deuda no bloqueante en BACKLOG.md.
       Artefactos de prueba limpiados de DB, disco y Drive.
 
+- [x] **Sprint 3.4 — Subir/crear archivos y carpetas en Drive.** Decisión de
+      architect: `driveFolderId` en `Proyecto` (nullable), migración aditiva
+      `20260711140000_proyecto_drive_folder`. Carpeta del proyecto se crea de
+      forma **perezosa** en el primer upload (`ensureProjectDriveFolder`,
+      idempotente) — `createProject` sigue sin dependencia de red, verificado
+      (proyecto creado con `driveFolderId: null` hasta el primer upload).
+      `Archivo(kind=FILE)` reusado sin cambios de schema. Subida de binarios
+      vía `FormData`/`Blob` nativo de `fetch` (`uploadFileToDrive`) — NO el
+      multipart de string de las notas (3.3), que habría corrompido binarios;
+      decisión explícita de architect, verificada con un PDF real (MD5 local
+      == MD5 en Drive). UI: formulario de subida por proyecto en `/files`,
+      enlaces "Ver carpeta en Drive" / "en Drive" por archivo.
+      **Verificado end-to-end contra Drive real**: carpeta
+      "Proyecto Archivos 3.4" creada en la cuenta `eduardocortezpena@gmail.com`,
+      archivo `prueba-3.4.pdf` confirmado DENTRO de esa carpeta (`parents`
+      coincide), hash MD5 idéntico entre disco local y Drive. Reviewer corrió
+      build limpio + su propia verificación end-to-end independiente contra
+      Drive real (incluyendo pruebas de path traversal con `/` y `\` —
+      `safeOriginalName` confirmado seguro en ambos separadores). Sin
+      bloqueantes; findings de bajo impacto (límite de tamaño ya cubierto por
+      default de Next 1MB, patrón `mirror*ToDrive` duplicado a propósito,
+      fila huérfana si falla el update final) anotados en BACKLOG.md.
+      Artefactos de prueba limpiados de DB, disco y Drive (por mí y también
+      por el propio reviewer en su verificación independiente).
+
 #### To Do (siguiente, en orden — ver ROADMAP.md Fase 3)
-- [ ] Sprint 3.4 — Subir/crear archivos y carpetas sueltas en Drive.
-- [ ] Sprint 3.5 (OPCIONAL) — rclone bisync bidireccional.
+- [ ] Sprint 3.5 (OPCIONAL) — rclone bisync bidireccional. Ver BACKLOG.md
+      para las advertencias — **requiere sesión con supervisión humana**,
+      explícitamente excluido de sesiones sin supervisión (riesgo real de
+      pérdida de datos documentado por rclone).
+
+### ⚠️ BLOQUEADO — esperando decisión del usuario (NO implementado)
+
+**"Fase 2" tal como se describió en el prompt de esta sesión (command
+palette Cmd+K, atajos de teclado + panel de ayuda, optimistic UI + inbox de
+captura) NO coincide con lo que dice `ROADMAP.md`:**
+
+- `ROADMAP.md` dice textualmente que la **Fase 2 está "Reservada (sin
+  sprints planificados todavía)"**, con "Clasificador de archivos" como
+  única candidata, y "**No planificar sprints aquí sin aprobación explícita
+  del dueño**".
+- Los 3 sprints que el prompt llamó "2.1/2.2/2.3" (command palette, atajos,
+  optimistic UI+inbox) son textualmente **Fase 7** en `ROADMAP.md`:
+  Sprint 7.1 (cmdk), 7.2 (atajos), 7.3 (optimistic UI), 7.4 (inbox).
+- `CLAUDE.md` advierte explícitamente que esta confusión de numeración
+  "ya causó confusión entre sesiones más de una vez" y que el número de
+  fase de cualquier sprint activo **nunca debe asumirse del prompt del
+  usuario**, siempre confirmarse contra `ROADMAP.md`.
+
+Por la regla especial de esta sesión ("decisión que NO es puramente
+técnica → PARA y documenta, no decidas por tu cuenta"), NO implementé
+ninguno de estos 3 sprints bajo ninguna numeración. Necesito que el dueño
+confirme, la próxima vez que esté disponible, UNA de estas opciones:
+
+1. Adelantar la Fase 7 (UX avanzada) ahora, saltándose la Fase 2 reservada
+   — y renumerar/actualizar `ROADMAP.md` en consecuencia, o
+2. Ejecutar esos 3 sprints efectivamente como contenido nuevo de la Fase 2
+   (reemplazando la candidata "Clasificador de archivos" o conviviendo con
+   ella) — y actualizar `ROADMAP.md` para reflejarlo, o
+3. Otra cosa que decida el dueño.
+
+No hay ningún sprint "independiente" de este bloque para seguir en su
+lugar (2.1→2.2→2.3 son secuenciales entre sí y dependen de esta misma
+decisión de alcance). Sprint 3.5 y Fase 4 están explícitamente excluidos de
+esta sesión por instrucción directa. **La sesión se detiene aquí,
+limpia.**
 
 ### Definition of Done
 Reference: .claude/skills/definition-of-done/SKILL.md
 
 ### Blockers
-- Ninguno. El bloqueo de pasos manuales de Google Cloud Console
+- Ninguno para lo ejecutado. Ver sección "BLOQUEADO — esperando decisión
+  del usuario" arriba para lo que falta.
+- El bloqueo de pasos manuales de Google Cloud Console
   (proyecto, Drive API, OAuth consent screen, credenciales Desktop app,
   publicar a producción) ya se resolvió — confirmado por el usuario.
 
@@ -127,3 +192,19 @@ de archivos + verificación propia). **Sprint 3.5 documentado en BACKLOG.md**
 con las advertencias de rclone bisync (beta/pérdida de datos, --resync
 obligatorio + respaldo, flags robustos). Próxima sesión: empezar por Sprint
 3.4 con presupuesto holgado.
+2026-07-11 (sesión larga sin supervisión): **Sprint 3.4 completado y
+verificado end-to-end contra Drive real** (carpeta de proyecto creada lazy
+en primer upload, archivo subido confirmado DENTRO de la carpeta correcta,
+MD5 idéntico local vs Drive — integridad binaria confirmada). Reviewer
+corrió su propia verificación independiente contra Drive real, sin
+bloqueantes. **Fase 3 queda así: 3.1, 3.2, 3.3, 3.4 completos; solo falta
+3.5 (opcional, requiere sesión supervisada, NO intentado en esta sesión por
+instrucción explícita).** El bloque de "Fase 2" del prompt (command
+palette, atajos, optimistic UI+inbox) **NO se implementó**: no coincide con
+`ROADMAP.md` (Fase 2 está reservada sin sprints aprobados; ese contenido es
+textualmente Fase 7). Documentado como "esperando decisión del usuario" más
+arriba en este archivo — no hay sprint independiente para seguir en su
+lugar dentro del alcance permitido de esta sesión. **Primero que hay que
+mirar al despertar: la sección "⚠️ BLOQUEADO — esperando decisión del
+usuario" arriba, para decidir si esos 3 sprints van a Fase 2 o Fase 7 (y
+actualizar ROADMAP.md en consecuencia) antes de que se puedan ejecutar.**

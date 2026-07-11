@@ -45,6 +45,7 @@ export type ProyectoMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   nextActionTaskId: string | null
+  driveFolderId: string | null
 }
 
 export type ProyectoMaxAggregateOutputType = {
@@ -58,6 +59,7 @@ export type ProyectoMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   nextActionTaskId: string | null
+  driveFolderId: string | null
 }
 
 export type ProyectoCountAggregateOutputType = {
@@ -71,6 +73,7 @@ export type ProyectoCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   nextActionTaskId: number
+  driveFolderId: number
   _all: number
 }
 
@@ -94,6 +97,7 @@ export type ProyectoMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   nextActionTaskId?: true
+  driveFolderId?: true
 }
 
 export type ProyectoMaxAggregateInputType = {
@@ -107,6 +111,7 @@ export type ProyectoMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   nextActionTaskId?: true
+  driveFolderId?: true
 }
 
 export type ProyectoCountAggregateInputType = {
@@ -120,6 +125,7 @@ export type ProyectoCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   nextActionTaskId?: true
+  driveFolderId?: true
   _all?: true
 }
 
@@ -220,6 +226,7 @@ export type ProyectoGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   nextActionTaskId: string | null
+  driveFolderId: string | null
   _count: ProyectoCountAggregateOutputType | null
   _avg: ProyectoAvgAggregateOutputType | null
   _sum: ProyectoSumAggregateOutputType | null
@@ -256,6 +263,7 @@ export type ProyectoWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Proyecto"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Proyecto"> | Date | string
   nextActionTaskId?: Prisma.StringNullableFilter<"Proyecto"> | string | null
+  driveFolderId?: Prisma.StringNullableFilter<"Proyecto"> | string | null
   tasks?: Prisma.TareaListRelationFilter
   notes?: Prisma.NotaListRelationFilter
   nextActionTask?: Prisma.XOR<Prisma.TareaNullableScalarRelationFilter, Prisma.TareaWhereInput> | null
@@ -273,6 +281,7 @@ export type ProyectoOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   nextActionTaskId?: Prisma.SortOrderInput | Prisma.SortOrder
+  driveFolderId?: Prisma.SortOrderInput | Prisma.SortOrder
   tasks?: Prisma.TareaOrderByRelationAggregateInput
   notes?: Prisma.NotaOrderByRelationAggregateInput
   nextActionTask?: Prisma.TareaOrderByWithRelationInput
@@ -293,6 +302,7 @@ export type ProyectoWhereUniqueInput = Prisma.AtLeast<{
   nextAction?: Prisma.StringNullableFilter<"Proyecto"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Proyecto"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Proyecto"> | Date | string
+  driveFolderId?: Prisma.StringNullableFilter<"Proyecto"> | string | null
   tasks?: Prisma.TareaListRelationFilter
   notes?: Prisma.NotaListRelationFilter
   nextActionTask?: Prisma.XOR<Prisma.TareaNullableScalarRelationFilter, Prisma.TareaWhereInput> | null
@@ -310,6 +320,7 @@ export type ProyectoOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   nextActionTaskId?: Prisma.SortOrderInput | Prisma.SortOrder
+  driveFolderId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ProyectoCountOrderByAggregateInput
   _avg?: Prisma.ProyectoAvgOrderByAggregateInput
   _max?: Prisma.ProyectoMaxOrderByAggregateInput
@@ -331,6 +342,7 @@ export type ProyectoScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Proyecto"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Proyecto"> | Date | string
   nextActionTaskId?: Prisma.StringNullableWithAggregatesFilter<"Proyecto"> | string | null
+  driveFolderId?: Prisma.StringNullableWithAggregatesFilter<"Proyecto"> | string | null
 }
 
 export type ProyectoCreateInput = {
@@ -343,6 +355,7 @@ export type ProyectoCreateInput = {
   nextAction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  driveFolderId?: string | null
   tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
   nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
@@ -360,6 +373,7 @@ export type ProyectoUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   nextActionTaskId?: string | null
+  driveFolderId?: string | null
   tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
   archivos?: Prisma.ArchivoUncheckedCreateNestedManyWithoutProjectInput
@@ -375,6 +389,7 @@ export type ProyectoUpdateInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
   nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
@@ -392,6 +407,7 @@ export type ProyectoUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nextActionTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
   archivos?: Prisma.ArchivoUncheckedUpdateManyWithoutProjectNestedInput
@@ -408,6 +424,7 @@ export type ProyectoCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   nextActionTaskId?: string | null
+  driveFolderId?: string | null
 }
 
 export type ProyectoUpdateManyMutationInput = {
@@ -420,6 +437,7 @@ export type ProyectoUpdateManyMutationInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProyectoUncheckedUpdateManyInput = {
@@ -433,6 +451,7 @@ export type ProyectoUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nextActionTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type ProyectoCountOrderByAggregateInput = {
@@ -446,6 +465,7 @@ export type ProyectoCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   nextActionTaskId?: Prisma.SortOrder
+  driveFolderId?: Prisma.SortOrder
 }
 
 export type ProyectoAvgOrderByAggregateInput = {
@@ -463,6 +483,7 @@ export type ProyectoMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   nextActionTaskId?: Prisma.SortOrder
+  driveFolderId?: Prisma.SortOrder
 }
 
 export type ProyectoMinOrderByAggregateInput = {
@@ -476,6 +497,7 @@ export type ProyectoMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   nextActionTaskId?: Prisma.SortOrder
+  driveFolderId?: Prisma.SortOrder
 }
 
 export type ProyectoSumOrderByAggregateInput = {
@@ -604,6 +626,7 @@ export type ProyectoCreateWithoutTasksInput = {
   nextAction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  driveFolderId?: string | null
   notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
   nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
   archivos?: Prisma.ArchivoCreateNestedManyWithoutProjectInput
@@ -620,6 +643,7 @@ export type ProyectoUncheckedCreateWithoutTasksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   nextActionTaskId?: string | null
+  driveFolderId?: string | null
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
   archivos?: Prisma.ArchivoUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -639,6 +663,7 @@ export type ProyectoCreateWithoutNextActionTaskInput = {
   nextAction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  driveFolderId?: string | null
   tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
   archivos?: Prisma.ArchivoCreateNestedManyWithoutProjectInput
@@ -654,6 +679,7 @@ export type ProyectoUncheckedCreateWithoutNextActionTaskInput = {
   nextAction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  driveFolderId?: string | null
   tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
   archivos?: Prisma.ArchivoUncheckedCreateNestedManyWithoutProjectInput
@@ -685,6 +711,7 @@ export type ProyectoUpdateWithoutTasksInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
   nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
   archivos?: Prisma.ArchivoUpdateManyWithoutProjectNestedInput
@@ -701,6 +728,7 @@ export type ProyectoUncheckedUpdateWithoutTasksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nextActionTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
   archivos?: Prisma.ArchivoUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -726,6 +754,7 @@ export type ProyectoUpdateWithoutNextActionTaskInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
   archivos?: Prisma.ArchivoUpdateManyWithoutProjectNestedInput
@@ -741,6 +770,7 @@ export type ProyectoUncheckedUpdateWithoutNextActionTaskInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
   archivos?: Prisma.ArchivoUncheckedUpdateManyWithoutProjectNestedInput
@@ -756,6 +786,7 @@ export type ProyectoCreateWithoutNotesInput = {
   nextAction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  driveFolderId?: string | null
   tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
   nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
   archivos?: Prisma.ArchivoCreateNestedManyWithoutProjectInput
@@ -772,6 +803,7 @@ export type ProyectoUncheckedCreateWithoutNotesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   nextActionTaskId?: string | null
+  driveFolderId?: string | null
   tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
   archivos?: Prisma.ArchivoUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -802,6 +834,7 @@ export type ProyectoUpdateWithoutNotesInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
   nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
   archivos?: Prisma.ArchivoUpdateManyWithoutProjectNestedInput
@@ -818,6 +851,7 @@ export type ProyectoUncheckedUpdateWithoutNotesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nextActionTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
   archivos?: Prisma.ArchivoUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -832,6 +866,7 @@ export type ProyectoCreateWithoutArchivosInput = {
   nextAction?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  driveFolderId?: string | null
   tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
   nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
@@ -848,6 +883,7 @@ export type ProyectoUncheckedCreateWithoutArchivosInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   nextActionTaskId?: string | null
+  driveFolderId?: string | null
   tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
 }
@@ -878,6 +914,7 @@ export type ProyectoUpdateWithoutArchivosInput = {
   nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
   nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
@@ -894,6 +931,7 @@ export type ProyectoUncheckedUpdateWithoutArchivosInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   nextActionTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -958,6 +996,7 @@ export type ProyectoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   createdAt?: boolean
   updatedAt?: boolean
   nextActionTaskId?: boolean
+  driveFolderId?: boolean
   tasks?: boolean | Prisma.Proyecto$tasksArgs<ExtArgs>
   notes?: boolean | Prisma.Proyecto$notesArgs<ExtArgs>
   nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
@@ -976,6 +1015,7 @@ export type ProyectoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   createdAt?: boolean
   updatedAt?: boolean
   nextActionTaskId?: boolean
+  driveFolderId?: boolean
   nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
 }, ExtArgs["result"]["proyecto"]>
 
@@ -990,6 +1030,7 @@ export type ProyectoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   createdAt?: boolean
   updatedAt?: boolean
   nextActionTaskId?: boolean
+  driveFolderId?: boolean
   nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
 }, ExtArgs["result"]["proyecto"]>
 
@@ -1004,9 +1045,10 @@ export type ProyectoSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   nextActionTaskId?: boolean
+  driveFolderId?: boolean
 }
 
-export type ProyectoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "priority" | "status" | "progress" | "nextAction" | "createdAt" | "updatedAt" | "nextActionTaskId", ExtArgs["result"]["proyecto"]>
+export type ProyectoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "priority" | "status" | "progress" | "nextAction" | "createdAt" | "updatedAt" | "nextActionTaskId" | "driveFolderId", ExtArgs["result"]["proyecto"]>
 export type ProyectoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tasks?: boolean | Prisma.Proyecto$tasksArgs<ExtArgs>
   notes?: boolean | Prisma.Proyecto$notesArgs<ExtArgs>
@@ -1040,6 +1082,7 @@ export type $ProyectoPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     createdAt: Date
     updatedAt: Date
     nextActionTaskId: string | null
+    driveFolderId: string | null
   }, ExtArgs["result"]["proyecto"]>
   composites: {}
 }
@@ -1477,6 +1520,7 @@ export interface ProyectoFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Proyecto", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Proyecto", 'DateTime'>
   readonly nextActionTaskId: Prisma.FieldRef<"Proyecto", 'String'>
+  readonly driveFolderId: Prisma.FieldRef<"Proyecto", 'String'>
 }
     
 

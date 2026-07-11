@@ -22,6 +22,10 @@ model Proyecto {
   nextActionTaskId String? @unique
   nextActionTask   Tarea?  @relation("ProjectNextAction", fields: [nextActionTaskId], references: [id])
   archivos         Archivo[]
+  // Carpeta del proyecto en Drive (Sprint 3.4). Nullable: se crea de forma
+  // perezosa en el primer upload, no al crear el proyecto (createProject no
+  // depende de red/Drive).
+  driveFolderId    String?
 }
 
 model Tarea {
