@@ -22,6 +22,14 @@ export async function createTask(formData: FormData) {
       redirect(`/tasks?error=${encodeURIComponent('Proyecto requerido para la tarea')}`);
     }
 
+    // Validar que el proyecto existe (mismo guard que createNote) — sin esto,
+    // un projectId de un proyecto borrado cae en un P2003 de FK sin mapear en
+    // toUserMessage y muestra un mensaje genérico en vez de uno específico.
+    const project = await prisma.proyecto.findUnique({ where: { id: projectId } });
+    if (!project) {
+      redirect(`/tasks?error=${encodeURIComponent('Proyecto no encontrado')}`);
+    }
+
     const dueDate = dueDateStr ? new Date(dueDateStr) : null;
 
     await prisma.tarea.create({

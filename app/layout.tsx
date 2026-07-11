@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { prisma } from "@/app/lib/db";
+import { CommandPalette } from "@/app/components/CommandPalette";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,11 +19,16 @@ export const metadata: Metadata = {
   description: "Personal project manager",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const projects = await prisma.proyecto.findMany({
+    select: { id: true, name: true },
+    orderBy: { name: 'asc' },
+  });
+
   return (
     <html
       lang="en"
@@ -29,7 +36,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex">
         <aside className="w-64 bg-gray-900 border-r border-gray-800 p-4 hidden md:block">
-          <h1 className="text-xl font-bold mb-6">EMA OS</h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-xl font-bold">EMA OS</h1>
+            <span className="text-gray-500 text-xs" title="Abrir paleta de comandos">Ctrl+K</span>
+          </div>
           <nav className="space-y-2">
             <a href="/dashboard" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Dashboard</a>
             <a href="/my-day" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">My Day</a>
@@ -43,6 +53,7 @@ export default function RootLayout({
         <main className="flex-1 p-6 overflow-auto">
           {children}
         </main>
+        <CommandPalette projects={projects} />
       </body>
     </html>
   );

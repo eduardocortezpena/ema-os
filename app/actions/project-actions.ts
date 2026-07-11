@@ -32,6 +32,9 @@ export async function createProject(formData: FormData) {
 
     revalidatePath('/projects');
     revalidatePath('/dashboard');
+    // El layout raíz lee la lista de proyectos (command palette, Sprint 7.1) y
+    // puede quedar cacheado estáticamente al no usar APIs dinámicas.
+    revalidatePath('/', 'layout');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
     redirect(`/projects?error=${encodeURIComponent(toUserMessage(error, 'Error creando proyecto. Intenta de nuevo.'))}`);
@@ -63,6 +66,7 @@ export async function updateProject(formData: FormData) {
 
     revalidatePath('/projects');
     revalidatePath('/dashboard');
+    revalidatePath('/', 'layout');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
     redirect(`/projects?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando proyecto. Intenta de nuevo.'))}`);
@@ -112,6 +116,7 @@ export async function deleteProject(formData: FormData) {
 
     revalidatePath('/projects');
     revalidatePath('/dashboard');
+    revalidatePath('/', 'layout');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
     redirect(`/projects?error=${encodeURIComponent(toUserMessage(error, 'Error eliminando proyecto. Intenta de nuevo.'))}`);

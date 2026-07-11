@@ -1,17 +1,39 @@
 # SPRINT.md
-## Current Sprint: Fase 3 — Google Drive: archivos y notas Markdown
+## Current Sprint: Fase 7 — UX de velocidad
 
 ### Sprint Goal
-Carpeta local por proyecto, conexión OAuth con Google Drive, notas
-Markdown editables desde la web sincronizadas a Drive, subida de otros
-archivos, y (opcional) espejo bidireccional con rclone.
+Command palette, atajos de teclado, optimistic UI, quick capture/inbox.
 
 ### Sprint Duration
-Start: 2026-07-11
+Start: 2026-07-11 (Fase 7). Fase 3 (Drive) completa, ver historial abajo.
 
-### Sprint Backlog
+### Sprint Backlog — Fase 7
 
-#### Completed (fases previas)
+- [x] **Sprint 7.1 — Command palette (Cmd/Ctrl+K) con `cmdk`.** Componente
+      cliente `CommandPalette.tsx` montado una vez en `layout.tsx` (ahora
+      async, lee proyectos vía Prisma). Modos: root (navegación + crear),
+      project-name, select-project, entity-title. `quickCreate*` en
+      `app/actions/quick-create.ts` delegan en las Server Actions existentes
+      (createProject/createTask/createNote) vía FormData — sin duplicar
+      validación. `revalidatePath('/', 'layout')` añadido en
+      create/update/deleteProject para no cachear la lista de proyectos
+      estáticamente. **Verificado end-to-end contra la DB real**: navegación,
+      creación de proyecto/tarea/nota desde la paleta (incl. espejo a Drive
+      de la nota, confirmado con driveFileId real). Reviewer encontró un bug
+      real: `await quickCreate*` se rechaza cuando la Server Action interna
+      hace `redirect()` en su rama de error (comportamiento de Next con
+      Server Actions invocadas directamente), dejando la paleta atascada sin
+      `catch`. **Corregido**: try/catch que cierra la paleta en error, más
+      alineación de `createTask` con la validación explícita de proyecto que
+      ya tenía `createNote`. Verificado de nuevo tras el fix (smoke test).
+      Hallazgos menores (input decorativo sin filtro en select-project, sin
+      cancelación de request en carrera con "atrás") anotados en BACKLOG.md.
+      Nota de entorno: el `key` nativo "Enter" del navegador de pruebas no
+      llega al keydown-handler interno de cmdk (confirmado con
+      `KeyboardEvent` vía JS que sí funciona) — limitación de la herramienta
+      de automatización, no de la app; no afecta a un teclado real.
+
+#### Completed (Fase 3, sesiones previas)
 - [x] Fase 0 — MVP completo.
 - [x] Fase 1 — Priorización completa (Next Action, My Day, prioridad+orden).
 
@@ -89,41 +111,14 @@ Start: 2026-07-11
       explícitamente excluido de sesiones sin supervisión (riesgo real de
       pérdida de datos documentado por rclone).
 
-### ⚠️ BLOQUEADO — esperando decisión del usuario (NO implementado)
+### ✅ RESUELTO — decisión del usuario sobre Fase 2 vs Fase 7
 
-**"Fase 2" tal como se describió en el prompt de esta sesión (command
-palette Cmd+K, atajos de teclado + panel de ayuda, optimistic UI + inbox de
-captura) NO coincide con lo que dice `ROADMAP.md`:**
-
-- `ROADMAP.md` dice textualmente que la **Fase 2 está "Reservada (sin
-  sprints planificados todavía)"**, con "Clasificador de archivos" como
-  única candidata, y "**No planificar sprints aquí sin aprobación explícita
-  del dueño**".
-- Los 3 sprints que el prompt llamó "2.1/2.2/2.3" (command palette, atajos,
-  optimistic UI+inbox) son textualmente **Fase 7** en `ROADMAP.md`:
-  Sprint 7.1 (cmdk), 7.2 (atajos), 7.3 (optimistic UI), 7.4 (inbox).
-- `CLAUDE.md` advierte explícitamente que esta confusión de numeración
-  "ya causó confusión entre sesiones más de una vez" y que el número de
-  fase de cualquier sprint activo **nunca debe asumirse del prompt del
-  usuario**, siempre confirmarse contra `ROADMAP.md`.
-
-Por la regla especial de esta sesión ("decisión que NO es puramente
-técnica → PARA y documenta, no decidas por tu cuenta"), NO implementé
-ninguno de estos 3 sprints bajo ninguna numeración. Necesito que el dueño
-confirme, la próxima vez que esté disponible, UNA de estas opciones:
-
-1. Adelantar la Fase 7 (UX avanzada) ahora, saltándose la Fase 2 reservada
-   — y renumerar/actualizar `ROADMAP.md` en consecuencia, o
-2. Ejecutar esos 3 sprints efectivamente como contenido nuevo de la Fase 2
-   (reemplazando la candidata "Clasificador de archivos" o conviviendo con
-   ella) — y actualizar `ROADMAP.md` para reflejarlo, o
-3. Otra cosa que decida el dueño.
-
-No hay ningún sprint "independiente" de este bloque para seguir en su
-lugar (2.1→2.2→2.3 son secuenciales entre sí y dependen de esta misma
-decisión de alcance). Sprint 3.5 y Fase 4 están explícitamente excluidos de
-esta sesión por instrucción directa. **La sesión se detiene aquí,
-limpia.**
+El dueño confirmó explícitamente (sesión 2026-07-11, "sin supervisión,
+larga"): **Fase 2 = oficialmente "Clasificador de archivos"**, se hará en
+otro chat, NO tocar en esta sesión. Los sprints de UX (command palette,
+atajos, optimistic UI, inbox) son **Fase 7**, tal como ya decía
+`ROADMAP.md` — se ejecutan con su numeración correcta, sin renumerar nada.
+Bloqueo cerrado, procediendo con Fase 7 en orden.
 
 ### Definition of Done
 Reference: .claude/skills/definition-of-done/SKILL.md

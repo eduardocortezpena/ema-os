@@ -82,6 +82,8 @@
 - [ ] **Nota (menor): `MARKDOWN_MIME` duplicado** en `app/actions/notes.ts` y `app/lib/google-drive-files.ts` (Sprint 3.3, reviewer L1). Unificar en un solo lugar.
 - [ ] **Nota (menor): sin cache-back tras bajar de Drive** (`getNoteContent`, Sprint 3.3, reviewer L2). Cuando baja el `.md` de Drive no lo reescribe local, así que /notes re-descarga cada nota en cada render si el local falta. Escribir el contenido bajado al `.md` local.
 - [ ] **Nota (menor): colisión de boundary multipart improbable** (`buildMultipartBody`, `app/lib/google-drive-files.ts`, Sprint 3.3, reviewer L3). Si el contenido de una nota contiene el string del boundary `--ema-os-<ts>`, corrompe el request. Probabilidad ínfima; considerar boundary aleatorio robusto.
+- [ ] **Command palette: el input de `select-project` no filtra la lista** (`app/components/CommandPalette.tsx`, Sprint 7.1, reviewer). En modo "elegir proyecto para tarea/nota" se renderiza un `<input>` plano cuyo valor no se usa para filtrar los `Command.Item` de proyectos — escribir ahí no hace nada. Con pocos proyectos no importa, pero si la lista crece hace falta buscar. Bajo impacto, no bloqueante.
+- [ ] **Command palette: sin cancelación de request en carrera con "atrás"** (`app/components/CommandPalette.tsx`, Sprint 7.1, reviewer). Si el usuario dispara una creación (`busy=true`) y hace clic en "←" antes de que resuelva, no hay cancelación; si la petición en vuelo resuelve después, cierra la paleta de golpe aunque el usuario ya esté en otro modo. Impacto bajo (app de un solo usuario, ventana de carrera muy corta).
 
 ### Known Issues
 - Ninguno bloqueante actualmente. Ver Technical Debt para deuda no bloqueante conocida.
