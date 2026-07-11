@@ -25,66 +25,36 @@ documentación de estado (`SPRINT.md`, `BACKLOG.md`, este `ROADMAP.md`) se
 actualiza en el mismo cambio que cierra el sprint, reflejando el estado
 real verificado, no el deseado.
 
+> **Nota de numeración (2026-07-11):** este roadmap se renumeró para que
+> coincida con lo que de verdad se ejecutó en sesión (antes tenía "Fase 1"
+> para cerrar el MVP y arrancaba ahí; en la práctica se trabajó como
+> **Fase 0 = MVP** y **Fase 1 = Priorización**, y así queda fijado de aquí
+> en adelante). "Next Action" y "My Day" se movieron de la antigua Fase 6
+> a la Fase 1, porque ya se construyeron ahí.
+
 ---
 
-## Fase 1 — Cerrar el MVP existente (PRERREQUISITO BLOQUEANTE)
+## Fase 0 — Cerrar el MVP existente ✅ COMPLETA
 
-Nada de las Fases 2-7 empieza hasta que esta fase esté verificada. El build
-ya no está roto (singleton único de Prisma en `app/lib/prisma/index.ts`
-con `@prisma/adapter-better-sqlite3`, `npm run build` y
-`npx tsc --noEmit` pasan limpio), pero varias páginas siguen desconectadas
-de la base de datos real a pesar de que las Server Actions ya existen.
+Dashboard, Proyectos, Tareas y Notas conectados de verdad a la base de
+datos, con singleton único de Prisma (`app/lib/db.ts`,
+`@prisma/adapter-better-sqlite3`).
 
-### Sprint 1.1 — Verificar tasks/page.tsx en ejecución (~1h)
-- Alcance: correr `npm run dev`, abrir `/tasks` en el navegador, crear una
-  tarea, marcarla completada, eliminarla. Confirmar en cada paso que
-  `emaos.db` cambió (consulta directa con `better-sqlite3` o Prisma
-  Studio).
-- Dependencias: ninguna (el CRUD ya está implementado).
-- DoD: las tres operaciones (crear/completar/eliminar) se ejecutaron en el
-  navegador contra datos reales y se verificó el cambio en `emaos.db`. Si
-  algo falla, se corrige antes de continuar a otro sprint.
+- Sprint 0.1 — Consolidar schema Prisma y migrar. ✅
+- Sprint 0.2 — Conectar Proyectos a la BD. ✅
+- Sprint 0.3 — Conectar Tareas a la BD. ✅
+- Sprint 0.4 — Conectar Notas a la BD. ✅
+- Sprint 0.5 — Dashboard con datos reales. ✅
 
-### Sprint 1.2 — Conectar notes/page.tsx a la base de datos real (~4h)
-- Alcance: reemplazar el `useState` local de `app/notes/page.tsx` por
-  llamadas reales a `createNote`, `getNotes`, `updateNote`, `deleteNote`
-  (ya existen en `app/actions/notes.ts`). CRUD completo visible en la UI.
-- Dependencias: Fase 1 / Sprint 1.1 (patrón de verificación ya probado en
-  tasks).
-- DoD: `npm run build` sin errores; en `npm run dev`, crear/editar/borrar
-  una nota persiste tras recargar la página (confirmado consultando
-  `emaos.db`); no queda ningún `useState` simulando datos.
+## Fase 1 — Núcleo de priorización "¿qué hago ahora?" ✅ COMPLETA
 
-### Sprint 1.3 — Conectar projects/page.tsx a la base de datos real (~4h)
-- Alcance: reemplazar el placeholder estático de `app/projects/page.tsx`
-  por CRUD real usando `app/actions/project-actions.ts`.
-- Dependencias: ninguna técnica, pero se hace después de 1.2 para reusar el
-  mismo patrón de UI ya verificado.
-- DoD: `npm run build` sin errores; crear/editar/borrar un proyecto en
-  `npm run dev` persiste tras recargar y se confirma en `emaos.db`.
-
-### Sprint 1.4 — Dashboard con datos reales (~3h)
-- Alcance: reemplazar el placeholder estático de `app/dashboard/page.tsx`
-  por conteos/listados reales derivados de proyectos y tareas existentes
-  (ej. total de proyectos activos, tareas pendientes, próximo "Next
-  Action" si ya hay datos).
-- Dependencias: Sprints 1.1, 1.2, 1.3 (necesita datos reales de las tres
-  entidades).
-- DoD: `npm run build` sin errores; al abrir `/dashboard` en `npm run dev`
-  con datos de prueba insertados, las cifras mostradas coinciden con lo
-  que hay en `emaos.db` (verificado con consulta directa).
-
-### Sprint 1.5 — Cierre de Fase 1: limpieza y actualización de memoria (~1h)
-- Alcance: eliminar cualquier archivo/código muerto que haya quedado
-  (versiones viejas de páginas, imports rotos), correr
-  `npx tsc --noEmit` y `npm run build` una vez más de punta a punta.
-  Actualizar `SPRINT.md`, `PROJECT_CONTEXT.md` y `PROJECT_MEMORY.md` para
-  que reflejen el MVP real y completo, no el deseado.
-- Dependencias: Sprints 1.1 a 1.4 completados y verificados.
-- DoD: `npm run build` y `npx tsc --noEmit` pasan limpio; `SPRINT.md`
-  marca las 4 entidades del MVP (Dashboard, Proyectos, Tareas, Notas)
-  como completadas solo si de verdad lo están; no queda ningún
-  placeholder estático en ninguna de las 4 páginas.
+- Sprint 1.1 — Next Action por proyecto (`Proyecto.nextActionTaskId`). ✅
+- Sprint 1.2 — Vista consolidada de Next Actions en el dashboard. ✅
+- Sprint 1.3 — Prioridad editable + ordenamiento (`Tarea.priority`,
+  sin campo nuevo — reuso decidido por `architect`). ✅
+- Sprint 1.4 — Vista "My Day" (`Tarea.plannedFor`, rollover manual). ✅
+- Sprint 1.5 — Orden sugerido automático (score: prioridad + cercanía de
+  deadline + antigüedad). **OPCIONAL, pendiente** (ver `BACKLOG.md`).
 
 ---
 
@@ -95,7 +65,7 @@ de la base de datos real a pesar de que las Server Actions ya existen.
   archivos `.md` organizados en carpetas por proyecto en el filesystem
   local. SQLite pasa a guardar solo el índice de metadatos (ruta, título,
   fecha) — nunca el contenido completo.
-- Dependencias: Fase 1 completa (CRUD de notas ya funcional en DB).
+- Dependencias: Fase 1 completa (ya cumplido).
 - DoD: `npm run build` sin errores; crear una nota en la UI produce un
   archivo `.md` real en la carpeta del proyecto correspondiente (verificado
   con el explorador de archivos), y `emaos.db` solo contiene el
@@ -138,7 +108,7 @@ de la base de datos real a pesar de que las Server Actions ya existen.
   Calendar (marcado "sensible", requiere pantalla de consentimiento con
   verificación). Resolver el proceso de verificación/re-autorización
   dentro de este mismo sprint, no dejarlo pendiente.
-- Dependencias: Fase 1 completa.
+- Dependencias: Fase 1 completa (ya cumplido).
 - DoD: login con Google Calendar funciona en `npm run dev` sin bloqueo de
   "app no verificada" para la cuenta del dueño (verificado con el flujo de
   login real); el estado de verificación queda documentado (aprobado,
@@ -169,7 +139,7 @@ de la base de datos real a pesar de que las Server Actions ya existen.
 - Alcance: configurar cliente usando `base_url
   https://openrouter.ai/api/v1` y API key en `.env` (arquitectura BYOK,
   llave del propio usuario). Modelo por defecto: `openrouter/free`.
-- Dependencias: Fase 1 completa.
+- Dependencias: Fase 1 completa (ya cumplido).
 - DoD: una llamada de prueba (script o endpoint mínimo) recibe respuesta
   exitosa del modelo `openrouter/free` corriendo localmente con
   `npm run dev`; la API key no queda hardcodeada en el código, solo en
@@ -202,7 +172,7 @@ de la base de datos real a pesar de que las Server Actions ya existen.
 ### Sprint 5.1 — Generación de .docx desde plantillas (docxtemplater) (~5h)
 - Alcance: plantilla `.docx` con variables reemplazables por datos reales
   de un proyecto/tarea, usando `docxtemplater`.
-- Dependencias: Fase 1 completa.
+- Dependencias: Fase 1 completa (ya cumplido).
 - DoD: generar un documento desde la UI produce un `.docx` descargable con
   las variables sustituidas correctamente por datos reales (abierto y
   verificado manualmente).
@@ -220,8 +190,8 @@ de la base de datos real a pesar de que las Server Actions ya existen.
 
 ### Sprint 6.1 — Command palette con `cmdk` (~4h)
 - Alcance: paleta de comandos accesible con atajo de teclado, con acciones
-  básicas de navegación (ir a proyectos, tareas, notas, dashboard).
-- Dependencias: Fase 1 completa.
+  básicas de navegación (ir a proyectos, tareas, notas, dashboard, my day).
+- Dependencias: Fase 1 completa (ya cumplido).
 - DoD: abrir la paleta con el atajo definido y ejecutar al menos una
   acción de navegación funciona en `npm run dev`.
 
@@ -244,25 +214,14 @@ de la base de datos real a pesar de que las Server Actions ya existen.
 ### Sprint 6.4 — Inbox de captura rápida (~4h)
 - Alcance: vista/campo para capturar ideas o tareas sueltas sin asignarlas
   a un proyecto todavía, con opción de clasificarlas después.
-- Dependencias: Fase 1 completa.
+- Dependencias: Fase 1 completa (ya cumplido).
 - DoD: crear un ítem en el inbox desde `npm run dev` lo persiste en
   `emaos.db` sin proyecto asignado, y puede moverse después a un proyecto
   real (verificado en la UI y en la base de datos).
 
-### Sprint 6.5 — Vista "My Day" con rollover de tareas no completadas (~5h)
-- Alcance: vista diaria que muestra las tareas del día y arrastra
-  automáticamente ("rollover") las no completadas del día anterior.
-- Dependencias: Sprint 6.4, Fase 1 completa.
-- DoD: con una tarea de fecha pasada sin completar en `emaos.db`, la vista
-  "My Day" la muestra al abrir `/my-day` en `npm run dev`.
-
-### Sprint 6.6 — "Next Action" visible por proyecto (~3h)
-- Alcance: cada proyecto muestra explícitamente cuál es su siguiente paso
-  concreto (visión original de `PROJECT_CONTEXT.md`).
-- Dependencias: Fase 1 completa.
-- DoD: al abrir la vista de un proyecto con tareas reales en `npm run dev`,
-  se muestra un "Next Action" derivado de datos reales (no un texto
-  estático).
+> Nota: "Vista My Day con rollover" y "Next Action visible por proyecto"
+> ya NO están en esta fase — se construyeron en la Fase 1 (Sprints 1.1 y
+> 1.4) y quedaron completas ahí.
 
 ---
 
@@ -271,7 +230,7 @@ de la base de datos real a pesar de que las Server Actions ya existen.
 ### Sprint 7.1 — Configuración mínima de usuario (~3h)
 - Alcance: pantalla de configuración con las preferencias mínimas del MVP
   original (tema, preferencias básicas) — sin exceder lo ya aprobado.
-- Dependencias: Fase 1 completa.
+- Dependencias: Fase 1 completa (ya cumplido).
 - DoD: un cambio de configuración en `npm run dev` persiste tras recargar
   la página (verificado en `emaos.db` o almacenamiento local, según se
   implemente).
