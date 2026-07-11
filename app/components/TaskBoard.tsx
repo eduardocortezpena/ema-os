@@ -52,7 +52,7 @@ export function TaskBoard({ tasks, projects }: { tasks: Task[]; projects: Projec
     const projectId = formData.get('projectId')?.toString() || '';
     const project = projects.find((p) => p.id === projectId) ?? null;
 
-    if (title && projectId) {
+    if (title) {
       addOptimisticTask({
         id: `optimistic-${Date.now()}`,
         title,
@@ -175,14 +175,13 @@ export function TaskBoard({ tasks, projects }: { tasks: Task[]; projects: Projec
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Proyecto *</label>
+            <label className="block text-sm mb-1">Proyecto</label>
             <select
               name="projectId"
-              required
               defaultValue=""
               className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              <option value="" disabled>Selecciona un proyecto...</option>
+              <option value="">Inbox (sin clasificar todavía)</option>
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
@@ -224,7 +223,7 @@ export function TaskBoard({ tasks, projects }: { tasks: Task[]; projects: Projec
           </div>
           <button
             type="submit"
-            disabled={projects.length === 0 || submitting}
+            disabled={submitting}
             className="bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors w-full disabled:bg-gray-600 disabled:cursor-not-allowed"
           >
             {submitting ? 'Creando…' : 'Crear Tarea'}

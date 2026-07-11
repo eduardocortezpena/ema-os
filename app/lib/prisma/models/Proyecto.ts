@@ -504,14 +504,14 @@ export type ProyectoSumOrderByAggregateInput = {
   progress?: Prisma.SortOrder
 }
 
-export type ProyectoScalarRelationFilter = {
-  is?: Prisma.ProyectoWhereInput
-  isNot?: Prisma.ProyectoWhereInput
-}
-
 export type ProyectoNullableScalarRelationFilter = {
   is?: Prisma.ProyectoWhereInput | null
   isNot?: Prisma.ProyectoWhereInput | null
+}
+
+export type ProyectoScalarRelationFilter = {
+  is?: Prisma.ProyectoWhereInput
+  isNot?: Prisma.ProyectoWhereInput
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -560,10 +560,12 @@ export type ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput = {
   connect?: Prisma.ProyectoWhereUniqueInput
 }
 
-export type ProyectoUpdateOneRequiredWithoutTasksNestedInput = {
+export type ProyectoUpdateOneWithoutTasksNestedInput = {
   create?: Prisma.XOR<Prisma.ProyectoCreateWithoutTasksInput, Prisma.ProyectoUncheckedCreateWithoutTasksInput>
   connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutTasksInput
   upsert?: Prisma.ProyectoUpsertWithoutTasksInput
+  disconnect?: Prisma.ProyectoWhereInput | boolean
+  delete?: Prisma.ProyectoWhereInput | boolean
   connect?: Prisma.ProyectoWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProyectoUpdateToOneWithWhereWithoutTasksInput, Prisma.ProyectoUpdateWithoutTasksInput>, Prisma.ProyectoUncheckedUpdateWithoutTasksInput>
 }

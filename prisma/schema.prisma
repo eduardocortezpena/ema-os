@@ -30,7 +30,13 @@ model Proyecto {
 
 model Tarea {
   id          String   @id @default(cuid())
-  projectId   String
+  // Nullable (Sprint 7.4, Quick Capture): una tarea sin projectId es un
+  // ítem del inbox — capturado sin clasificar todavía. "Clasificar" es un
+  // update de este campo, nada más. Invariante: una tarea de inbox NUNCA
+  // puede ser nextActionTask de un proyecto (Proyecto.tasks es la relación
+  // inversa por FK, así que projectId=null la excluye automáticamente del
+  // <select> de Next Action sin guard adicional).
+  projectId   String?
   title       String
   description String?
   priority    Priority @default(LOW)
@@ -39,7 +45,7 @@ model Tarea {
   plannedFor  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  project     Proyecto @relation("ProjectTasks", fields: [projectId], references: [id])
+  project     Proyecto? @relation("ProjectTasks", fields: [projectId], references: [id], onDelete: SetNull)
   notes       Nota[]
   isNextActionFor Proyecto? @relation("ProjectNextAction")
 }

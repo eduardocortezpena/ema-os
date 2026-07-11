@@ -76,7 +76,7 @@ export default async function ProjectsPage({
                           <input type="hidden" name="id" value={project.id} />
                           <ConfirmButton
                             className="text-danger-500 hover:text-white text-sm"
-                            confirmMessage="¿Eliminar este proyecto?"
+                            confirmMessage="¿Eliminar este proyecto? Sus tareas pasarán al Inbox sin clasificar (no se borran). Si tiene notas o archivos asociados, primero hay que borrarlos aparte."
                           >
                             Eliminar
                           </ConfirmButton>

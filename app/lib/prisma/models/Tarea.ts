@@ -179,7 +179,7 @@ export type TareaGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type TareaGroupByOutputType = {
   id: string
-  projectId: string
+  projectId: string | null
   title: string
   description: string | null
   priority: $Enums.Priority
@@ -213,7 +213,7 @@ export type TareaWhereInput = {
   OR?: Prisma.TareaWhereInput[]
   NOT?: Prisma.TareaWhereInput | Prisma.TareaWhereInput[]
   id?: Prisma.StringFilter<"Tarea"> | string
-  projectId?: Prisma.StringFilter<"Tarea"> | string
+  projectId?: Prisma.StringNullableFilter<"Tarea"> | string | null
   title?: Prisma.StringFilter<"Tarea"> | string
   description?: Prisma.StringNullableFilter<"Tarea"> | string | null
   priority?: Prisma.EnumPriorityFilter<"Tarea"> | $Enums.Priority
@@ -222,14 +222,14 @@ export type TareaWhereInput = {
   plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
-  project?: Prisma.XOR<Prisma.ProyectoScalarRelationFilter, Prisma.ProyectoWhereInput>
+  project?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
   notes?: Prisma.NotaListRelationFilter
   isNextActionFor?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
 }
 
 export type TareaOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  projectId?: Prisma.SortOrder
+  projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   priority?: Prisma.SortOrder
@@ -248,7 +248,7 @@ export type TareaWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.TareaWhereInput | Prisma.TareaWhereInput[]
   OR?: Prisma.TareaWhereInput[]
   NOT?: Prisma.TareaWhereInput | Prisma.TareaWhereInput[]
-  projectId?: Prisma.StringFilter<"Tarea"> | string
+  projectId?: Prisma.StringNullableFilter<"Tarea"> | string | null
   title?: Prisma.StringFilter<"Tarea"> | string
   description?: Prisma.StringNullableFilter<"Tarea"> | string | null
   priority?: Prisma.EnumPriorityFilter<"Tarea"> | $Enums.Priority
@@ -257,14 +257,14 @@ export type TareaWhereUniqueInput = Prisma.AtLeast<{
   plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
-  project?: Prisma.XOR<Prisma.ProyectoScalarRelationFilter, Prisma.ProyectoWhereInput>
+  project?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
   notes?: Prisma.NotaListRelationFilter
   isNextActionFor?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
 }, "id">
 
 export type TareaOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  projectId?: Prisma.SortOrder
+  projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   priority?: Prisma.SortOrder
@@ -283,7 +283,7 @@ export type TareaScalarWhereWithAggregatesInput = {
   OR?: Prisma.TareaScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TareaScalarWhereWithAggregatesInput | Prisma.TareaScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Tarea"> | string
-  projectId?: Prisma.StringWithAggregatesFilter<"Tarea"> | string
+  projectId?: Prisma.StringNullableWithAggregatesFilter<"Tarea"> | string | null
   title?: Prisma.StringWithAggregatesFilter<"Tarea"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Tarea"> | string | null
   priority?: Prisma.EnumPriorityWithAggregatesFilter<"Tarea"> | $Enums.Priority
@@ -304,14 +304,14 @@ export type TareaCreateInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  project: Prisma.ProyectoCreateNestedOneWithoutTasksInput
+  project?: Prisma.ProyectoCreateNestedOneWithoutTasksInput
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
   isNextActionFor?: Prisma.ProyectoCreateNestedOneWithoutNextActionTaskInput
 }
 
 export type TareaUncheckedCreateInput = {
   id?: string
-  projectId: string
+  projectId?: string | null
   title: string
   description?: string | null
   priority?: $Enums.Priority
@@ -334,14 +334,14 @@ export type TareaUpdateInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProyectoUpdateOneRequiredWithoutTasksNestedInput
+  project?: Prisma.ProyectoUpdateOneWithoutTasksNestedInput
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
   isNextActionFor?: Prisma.ProyectoUpdateOneWithoutNextActionTaskNestedInput
 }
 
 export type TareaUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -356,7 +356,7 @@ export type TareaUncheckedUpdateInput = {
 
 export type TareaCreateManyInput = {
   id?: string
-  projectId: string
+  projectId?: string | null
   title: string
   description?: string | null
   priority?: $Enums.Priority
@@ -381,7 +381,7 @@ export type TareaUpdateManyMutationInput = {
 
 export type TareaUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -575,13 +575,13 @@ export type TareaCreateWithoutIsNextActionForInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  project: Prisma.ProyectoCreateNestedOneWithoutTasksInput
+  project?: Prisma.ProyectoCreateNestedOneWithoutTasksInput
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
 }
 
 export type TareaUncheckedCreateWithoutIsNextActionForInput = {
   id?: string
-  projectId: string
+  projectId?: string | null
   title: string
   description?: string | null
   priority?: $Enums.Priority
@@ -619,7 +619,7 @@ export type TareaScalarWhereInput = {
   OR?: Prisma.TareaScalarWhereInput[]
   NOT?: Prisma.TareaScalarWhereInput | Prisma.TareaScalarWhereInput[]
   id?: Prisma.StringFilter<"Tarea"> | string
-  projectId?: Prisma.StringFilter<"Tarea"> | string
+  projectId?: Prisma.StringNullableFilter<"Tarea"> | string | null
   title?: Prisma.StringFilter<"Tarea"> | string
   description?: Prisma.StringNullableFilter<"Tarea"> | string | null
   priority?: Prisma.EnumPriorityFilter<"Tarea"> | $Enums.Priority
@@ -651,13 +651,13 @@ export type TareaUpdateWithoutIsNextActionForInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProyectoUpdateOneRequiredWithoutTasksNestedInput
+  project?: Prisma.ProyectoUpdateOneWithoutTasksNestedInput
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
 }
 
 export type TareaUncheckedUpdateWithoutIsNextActionForInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -679,13 +679,13 @@ export type TareaCreateWithoutNotesInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  project: Prisma.ProyectoCreateNestedOneWithoutTasksInput
+  project?: Prisma.ProyectoCreateNestedOneWithoutTasksInput
   isNextActionFor?: Prisma.ProyectoCreateNestedOneWithoutNextActionTaskInput
 }
 
 export type TareaUncheckedCreateWithoutNotesInput = {
   id?: string
-  projectId: string
+  projectId?: string | null
   title: string
   description?: string | null
   priority?: $Enums.Priority
@@ -723,13 +723,13 @@ export type TareaUpdateWithoutNotesInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProyectoUpdateOneRequiredWithoutTasksNestedInput
+  project?: Prisma.ProyectoUpdateOneWithoutTasksNestedInput
   isNextActionFor?: Prisma.ProyectoUpdateOneWithoutNextActionTaskNestedInput
 }
 
 export type TareaUncheckedUpdateWithoutNotesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
@@ -835,7 +835,7 @@ export type TareaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
   notes?: boolean | Prisma.Tarea$notesArgs<ExtArgs>
   isNextActionFor?: boolean | Prisma.Tarea$isNextActionForArgs<ExtArgs>
   _count?: boolean | Prisma.TareaCountOutputTypeDefaultArgs<ExtArgs>
@@ -852,7 +852,7 @@ export type TareaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
 }, ExtArgs["result"]["tarea"]>
 
 export type TareaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -866,7 +866,7 @@ export type TareaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
 }, ExtArgs["result"]["tarea"]>
 
 export type TareaSelectScalar = {
@@ -884,28 +884,28 @@ export type TareaSelectScalar = {
 
 export type TareaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "title" | "description" | "priority" | "status" | "dueDate" | "plannedFor" | "createdAt" | "updatedAt", ExtArgs["result"]["tarea"]>
 export type TareaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
   notes?: boolean | Prisma.Tarea$notesArgs<ExtArgs>
   isNextActionFor?: boolean | Prisma.Tarea$isNextActionForArgs<ExtArgs>
   _count?: boolean | Prisma.TareaCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TareaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
 }
 export type TareaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
+  project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
 }
 
 export type $TareaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Tarea"
   objects: {
-    project: Prisma.$ProyectoPayload<ExtArgs>
+    project: Prisma.$ProyectoPayload<ExtArgs> | null
     notes: Prisma.$NotaPayload<ExtArgs>[]
     isNextActionFor: Prisma.$ProyectoPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    projectId: string
+    projectId: string | null
     title: string
     description: string | null
     priority: $Enums.Priority
@@ -1308,7 +1308,7 @@ readonly fields: TareaFieldRefs;
  */
 export interface Prisma__TareaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  project<T extends Prisma.ProyectoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProyectoDefaultArgs<ExtArgs>>): Prisma.Prisma__ProyectoClient<runtime.Types.Result.GetResult<Prisma.$ProyectoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  project<T extends Prisma.Tarea$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tarea$projectArgs<ExtArgs>>): Prisma.Prisma__ProyectoClient<runtime.Types.Result.GetResult<Prisma.$ProyectoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   notes<T extends Prisma.Tarea$notesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tarea$notesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   isNextActionFor<T extends Prisma.Tarea$isNextActionForArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tarea$isNextActionForArgs<ExtArgs>>): Prisma.Prisma__ProyectoClient<runtime.Types.Result.GetResult<Prisma.$ProyectoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1746,6 +1746,25 @@ export type TareaDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Tareas to delete.
    */
   limit?: number
+}
+
+/**
+ * Tarea.project
+ */
+export type Tarea$projectArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Proyecto
+   */
+  select?: Prisma.ProyectoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Proyecto
+   */
+  omit?: Prisma.ProyectoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProyectoInclude<ExtArgs> | null
+  where?: Prisma.ProyectoWhereInput
 }
 
 /**

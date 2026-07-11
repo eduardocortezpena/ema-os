@@ -86,7 +86,38 @@ Start: 2026-07-11 (Fase 7). Fase 3 (Drive) completa, ver historial abajo.
       confuso sobre un id que no existe en DB todavía. Hallazgo cosmético
       (tarea CRITICAL optimista aparece al final en vez de su posición
       ordenada) anotado en BACKLOG.md, no bloqueante.
-      **Fase 7: 7.1, 7.2, 7.3 completos — falta 7.4 (siguiente).**
+- [x] **Sprint 7.4 — Quick Capture (Inbox).** Decisión de architect:
+      **Opción A** — `Tarea.projectId` pasa a nullable (`String?`,
+      `onDelete: SetNull`); un ítem de inbox es literalmente una Tarea sin
+      proyecto. Migración manual (rebuild de tabla SQLite, tabla vacía, sin
+      backfill) `20260711150000_tarea_project_id_optional`, sin drift
+      (`prisma migrate status` limpio). `createTask` ya no exige proyecto;
+      nueva acción `assignTaskToProject` (update simple de `projectId`) para
+      clasificar. Página nueva `/inbox`: captura rápida (solo título) +
+      lista de ítems sin clasificar con selector de proyecto inline.
+      Enlaces añadidos al sidebar y a la command palette (7.1).
+      Corregidos 3 sitios en `app/my-day/page.tsx` que asumían
+      `task.project.name` no-nulo (`availableTasksRaw` incluye ítems de
+      inbox) — architect lo predijo antes de escribir código, evitando el
+      crash. Decisión deliberada de NO extender la command palette (7.1)
+      para crear tareas de inbox directas — el DoD ya se cumple vía
+      `/inbox`, evita scope creep.
+      **Verificado contra la DB real**: capturar sin proyecto → `projectId:
+      null` confirmado; clasificar → `projectId` pasa al id real; `/my-day`
+      y `/tasks` renderizan sin crash con ítems mixtos (clasificados y sin
+      clasificar), confirmado en pestaña de navegador nueva sin logs de
+      consola acumulados de sesión. Reviewer encontró: (1) bug real — el
+      form de captura en `/inbox` no tenía el guard de doble-submit de 7.3,
+      **corregido** con el mismo patrón `useRef` (componente cliente nuevo
+      `InboxCaptureForm.tsx`), re-verificado con doble-submit agresivo (1
+      sola fila); (2) `onDelete: SetNull` cambia el comportamiento de
+      `deleteProject` (antes bloqueaba con tareas asociadas, ahora las
+      mueve a Inbox silenciosamente) — **comunicado explícitamente** en el
+      texto de `ConfirmButton` de borrar proyecto, verificado en runtime
+      que el `SetNull` funciona (proyecto borrado, tarea preservada con
+      `projectId: null`). `Nota`/`Archivo` siguen `RESTRICT` (no tocados,
+      fuera de alcance del sprint).
+      **Fase 7 completa: 7.1, 7.2, 7.3, 7.4.**
 
 #### Completed (Fase 3, sesiones previas)
 - [x] Fase 0 — MVP completo.

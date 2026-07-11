@@ -16,6 +16,7 @@ type Mode =
 const NAV_ITEMS = [
   { label: 'Ir a Dashboard', href: '/dashboard' },
   { label: 'Ir a My Day', href: '/my-day' },
+  { label: 'Ir a Inbox', href: '/inbox' },
   { label: 'Ir a Proyectos', href: '/projects' },
   { label: 'Ir a Tareas', href: '/tasks' },
   { label: 'Ir a Notas', href: '/notes' },

@@ -18,16 +18,15 @@ export async function createTask(formData: FormData) {
     if (!title || title.length === 0) {
       redirect(`/tasks?error=${encodeURIComponent('Título de tarea requerido')}`);
     }
-    if (!projectId) {
-      redirect(`/tasks?error=${encodeURIComponent('Proyecto requerido para la tarea')}`);
-    }
 
-    // Validar que el proyecto existe (mismo guard que createNote) — sin esto,
-    // un projectId de un proyecto borrado cae en un P2003 de FK sin mapear en
-    // toUserMessage y muestra un mensaje genérico en vez de uno específico.
-    const project = await prisma.proyecto.findUnique({ where: { id: projectId } });
-    if (!project) {
-      redirect(`/tasks?error=${encodeURIComponent('Proyecto no encontrado')}`);
+    // projectId vacío = ítem de inbox sin clasificar (Sprint 7.4, Quick
+    // Capture) — ya no es obligatorio. Si viene, sí debe existir de verdad
+    // (mismo guard que createNote, contra proyecto borrado/inválido).
+    if (projectId) {
+      const project = await prisma.proyecto.findUnique({ where: { id: projectId } });
+      if (!project) {
+        redirect(`/tasks?error=${encodeURIComponent('Proyecto no encontrado')}`);
+      }
     }
 
     const dueDate = dueDateStr ? new Date(dueDateStr) : null;
@@ -39,15 +38,53 @@ export async function createTask(formData: FormData) {
         priority: priority,
         status: status,
         dueDate: dueDate,
-        projectId: projectId,
+        projectId: projectId || null,
       },
     });
 
     revalidatePath('/tasks');
     revalidatePath('/dashboard');
+    revalidatePath('/inbox');
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
     redirect(`/tasks?error=${encodeURIComponent(toUserMessage(error, 'Error creando tarea. Intenta de nuevo.'))}`);
+  }
+}
+
+/**
+ * Clasifica un ítem de inbox: le asigna un proyecto (Sprint 7.4). Simple
+ * update de projectId — el ítem deja de ser inbox en cuanto projectId deja
+ * de ser null. Valida que el proyecto destino exista (mismo guard que
+ * createTask).
+ */
+export async function assignTaskToProject(formData: FormData) {
+  try {
+    const id = formData.get('id')?.toString() || '';
+    const projectId = formData.get('projectId')?.toString() || '';
+
+    if (!id) {
+      redirect(`/inbox?error=${encodeURIComponent('ID de tarea requerido')}`);
+    }
+    if (!projectId) {
+      redirect(`/inbox?error=${encodeURIComponent('Selecciona un proyecto')}`);
+    }
+
+    const project = await prisma.proyecto.findUnique({ where: { id: projectId } });
+    if (!project) {
+      redirect(`/inbox?error=${encodeURIComponent('Proyecto no encontrado')}`);
+    }
+
+    await prisma.tarea.update({
+      where: { id },
+      data: { projectId },
+    });
+
+    revalidatePath('/inbox');
+    revalidatePath('/tasks');
+    revalidatePath('/dashboard');
+  } catch (error: any) {
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/inbox?error=${encodeURIComponent(toUserMessage(error, 'Error clasificando la tarea. Intenta de nuevo.'))}`);
   }
 }
 

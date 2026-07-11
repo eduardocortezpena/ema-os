@@ -1,2 +1,2 @@
 export { createProject, updateProject, setNextAction, deleteProject } from './project-actions';
-export { createTask, updateTaskStatus, updateTaskPriority, planForToday, rolloverToTomorrow, unplanTask, deleteTask } from './task-actions';
+export { createTask, updateTaskStatus, updateTaskPriority, planForToday, rolloverToTomorrow, unplanTask, deleteTask, assignTaskToProject } from './task-actions';

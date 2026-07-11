@@ -33,12 +33,6 @@ export default async function TasksPage({
           </p>
         )}
 
-        {projects.length === 0 && (
-          <p className="text-amber-400 mb-4">
-            ⚠️ Necesitas crear un proyecto primero antes de crear tareas.
-          </p>
-        )}
-
         <TaskBoard tasks={tasks} projects={projects} />
       </div>
     </div>
