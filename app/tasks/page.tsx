@@ -1,7 +1,8 @@
 import { prisma } from '@/app/lib/db';
-import { createTask, updateTaskStatus, deleteTask } from '../actions';
+import { createTask, updateTaskStatus, updateTaskPriority, deleteTask } from '../actions';
 import { ConfirmButton } from '../components/ConfirmButton';
 import { AutoSubmitSelect } from '../components/AutoSubmitSelect';
+import { byPriorityAndDueDate } from '../lib/sort';
 
 export default async function TasksPage({
   searchParams,
@@ -9,17 +10,17 @@ export default async function TasksPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
-  const [tasks, projects] = await Promise.all([
+  const [tasksRaw, projects] = await Promise.all([
     prisma.tarea.findMany({
       include: {
         project: true,
       },
-      orderBy: { createdAt: 'desc' },
     }),
     prisma.proyecto.findMany({
       orderBy: { name: 'asc' },
     }),
   ]);
+  const tasks = [...tasksRaw].sort(byPriorityAndDueDate);
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
@@ -59,8 +60,21 @@ export default async function TasksPage({
                         {task.description && (
                           <p className="text-gray-400 text-sm mt-1">{task.description}</p>
                         )}
-                        <div className="flex gap-2 mt-2 flex-wrap">
-                          <span className={`badge badge-${task.priority.toLowerCase()}`}>{task.priority}</span>
+                        <div className="flex gap-2 mt-2 flex-wrap items-center">
+                          <form action={updateTaskPriority} className="inline-block">
+                            <input type="hidden" name="id" value={task.id} />
+                            <AutoSubmitSelect
+                              name="priority"
+                              defaultValue={task.priority}
+                              className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                              options={[
+                                { value: 'LOW', label: 'LOW' },
+                                { value: 'MEDIUM', label: 'MEDIUM' },
+                                { value: 'HIGH', label: 'HIGH' },
+                                { value: 'CRITICAL', label: 'CRITICAL' },
+                              ]}
+                            />
+                          </form>
                           <span className={`badge badge-${task.status.toLowerCase()}`}>{task.status}</span>
                           {task.dueDate && (
                             <span className="badge bg-gray-700">

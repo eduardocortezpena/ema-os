@@ -67,6 +67,31 @@ export async function updateTaskStatus(formData: FormData) {
   }
 }
 
+export async function updateTaskPriority(formData: FormData) {
+  try {
+    const id = formData.get('id')?.toString() || '';
+    const priority = formData.get('priority')?.toString() as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+
+    if (!id) {
+      redirect(`/tasks?error=${encodeURIComponent('ID de tarea requerido')}`);
+    }
+    if (!['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].includes(priority)) {
+      redirect(`/tasks?error=${encodeURIComponent('Prioridad inválida')}`);
+    }
+
+    await prisma.tarea.update({
+      where: { id },
+      data: { priority },
+    });
+
+    revalidatePath('/tasks');
+    revalidatePath('/dashboard');
+  } catch (error: any) {
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/tasks?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando la prioridad. Intenta de nuevo.'))}`);
+  }
+}
+
 export async function deleteTask(formData: FormData) {
   try {
     const id = formData.get('id')?.toString() || '';

@@ -1,4 +1,5 @@
 import { prisma } from '@/app/lib/db';
+import { byPriorityAndDueDate } from '../lib/sort';
 
 export default async function DashboardPage() {
   const projects = await prisma.proyecto.findMany({
@@ -11,7 +12,9 @@ export default async function DashboardPage() {
     orderBy: { createdAt: 'desc' },
   });
 
-  const nextActions = projects.filter((p) => p.nextActionTask);
+  const nextActions = projects
+    .filter((p) => p.nextActionTask)
+    .sort((a, b) => byPriorityAndDueDate(a.nextActionTask!, b.nextActionTask!));
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
