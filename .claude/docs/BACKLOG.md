@@ -7,7 +7,8 @@
 - [x] Connect Notes CRUD to Prisma Server Actions (Sprint 0.4)
 - [x] Add form validation (required fields, type checking) — hecho por CRUD conectado
 - [x] Implement delete confirmation dialogs — ConfirmButton en Proyectos/Tareas/Notas
-- [ ] Dashboard real statistics from database (Sprint 0.5, en curso)
+- [x] Dashboard real statistics from database (Sprint 0.5, completado)
+- [ ] Sprint 1.5 (ROADMAP Fase 1, OPCIONAL): orden sugerido automático en /tasks y /my-day — score simple combinando prioridad + cercanía de deadline + antigüedad (createdAt). Reusar/extender `app/lib/sort.ts` (ya tiene `byPriorityAndDueDate`, solo priority+dueDate, falta el componente de antigüedad). Pospuesto por presupuesto de tokens al cerrar Fase 1 (2026-07-11).
 
 ### Medium Priority
 - [ ] Search and filter functionality for each module
