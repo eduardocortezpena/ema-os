@@ -6,9 +6,12 @@ export default async function DashboardPage() {
       tasks: {
         where: { status: { not: 'DONE' } },
       },
+      nextActionTask: true,
     },
     orderBy: { createdAt: 'desc' },
   });
+
+  const nextActions = projects.filter((p) => p.nextActionTask);
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
@@ -41,6 +44,29 @@ export default async function DashboardPage() {
             <p className="text-sm text-gray-400">Completados</p>
           </div>
         </div>
+
+        {nextActions.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold mb-3">Siguientes acciones</h2>
+            <div className="space-y-2">
+              {nextActions.map((project) => (
+                <a
+                  key={project.id}
+                  href="/projects" // TODO: enlazar a /projects/[id] cuando exista ruta de detalle
+                  className="flex items-center justify-between bg-gray-800 hover:bg-gray-700 transition-colors p-3 rounded-lg"
+                >
+                  <div>
+                    <span className="text-primary-500">→ {project.nextActionTask!.title}</span>
+                    <span className="text-gray-500 text-sm ml-2">({project.name})</span>
+                  </div>
+                  <span className={`badge badge-${project.nextActionTask!.priority.toLowerCase()}`}>
+                    {project.nextActionTask!.priority}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {projects.length === 0 ? (
           <p className="text-gray-500">
