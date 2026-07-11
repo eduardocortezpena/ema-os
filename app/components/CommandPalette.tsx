@@ -51,6 +51,19 @@ export function CommandPalette({ projects }: { projects: Project[] }) {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  // Disparado por los atajos globales "C"/"N" (Sprint 7.2, KeyboardShortcuts.tsx)
+  // — abre la paleta directo en el paso de elegir proyecto, saltando el menú
+  // raíz, para no duplicar el flujo de creación que ya vive aquí.
+  useEffect(() => {
+    function onOpenCreate(e: Event) {
+      const detail = (e as CustomEvent<{ for: 'task' | 'note' }>).detail;
+      setMode({ kind: 'select-project', for: detail.for });
+      setOpen(true);
+    }
+    window.addEventListener('ema-open-create', onOpenCreate);
+    return () => window.removeEventListener('ema-open-create', onOpenCreate);
+  }, []);
+
   useEffect(() => {
     if (!open) reset();
   }, [open, reset]);

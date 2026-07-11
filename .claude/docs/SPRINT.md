@@ -33,6 +33,34 @@ Start: 2026-07-11 (Fase 7). Fase 3 (Drive) completa, ver historial abajo.
       `KeyboardEvent` vía JS que sí funciona) — limitación de la herramienta
       de automatización, no de la app; no afecta a un teclado real.
 
+- [x] **Sprint 7.2 — Atajos de teclado + panel de ayuda (?).** `C`/`N`
+      abren la command palette directo en el flujo de creación (evento
+      custom `ema-open-create`, sin duplicar lógica). `G` luego `D`/`P`/`M`
+      = chord de navegación (800ms timeout). `P` con el mouse sobre una
+      tarea en `/tasks` avanza su prioridad (delegación de eventos sobre
+      `data-task-id`, sin envolver cada fila en un client component). `?`
+      abre/cierra el panel de ayuda. Todos ignoran el atajo si hay
+      Ctrl/Cmd/Alt presionado o si el foco está en un campo de texto — sin
+      conflicto con atajos nativos de Windows/navegador (ninguno usa
+      modificador). Revisión de architect no necesaria (sin schema, sin
+      fricción de accesibilidad detectada de antemano).
+      **Verificado en navegador contra la DB real**: `?` abre/cierra
+      (incl. Escape), `C` crea tarea saltando el menú raíz, `P` avanza
+      LOW→MEDIUM→HIGH en dos pulsaciones consecutivas SIN mover el mouse
+      (caso específico que expuso el bug), `G`+`D` y `G`+`P` navegan
+      correctamente. Reviewer encontró: (1) bug real — `hoveredRef` solo se
+      actualizaba en `mouseover`, así que una segunda "P" con el mouse
+      quieto recalculaba el mismo salto en vez de avanzar — **corregido**
+      con actualización optimista local tras cada ciclo exitoso, **re-verificado
+      con el caso exacto reportado**; (2) `HelpPanel` no cerraba con Escape
+      a diferencia de `CommandPalette` (Radix Dialog) — **corregido y
+      verificado**; (3) `isTypingTarget` duplicada en dos componentes —
+      **extraída a `app/lib/keyboard.ts`**; (4) sin exclusión mutua entre
+      modales — **corregido**, con el panel de ayuda abierto solo "?"
+      hace algo. `PRIORITY_CYCLE` también se movió a `app/lib/priority.ts`
+      (un módulo `'use server'` no puede exportar constantes, solo
+      funciones async).
+
 #### Completed (Fase 3, sesiones previas)
 - [x] Fase 0 — MVP completo.
 - [x] Fase 1 — Priorización completa (Next Action, My Day, prioridad+orden).

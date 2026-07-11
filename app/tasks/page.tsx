@@ -2,6 +2,7 @@ import { prisma } from '@/app/lib/db';
 import { createTask, updateTaskStatus, updateTaskPriority, deleteTask } from '../actions';
 import { ConfirmButton } from '../components/ConfirmButton';
 import { AutoSubmitSelect } from '../components/AutoSubmitSelect';
+import { TaskPriorityShortcut } from '../components/TaskPriorityShortcut';
 import { byPriorityAndDueDate } from '../lib/sort';
 
 export default async function TasksPage({
@@ -24,6 +25,7 @@ export default async function TasksPage({
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
+      <TaskPriorityShortcut />
       <div className="container mx-auto p-4">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Tareas</h1>
@@ -48,7 +50,12 @@ export default async function TasksPage({
                 <p className="text-gray-500">No hay tareas todavía. ¡Crea una abajo!</p>
               ) : (
                 tasks.map((task) => (
-                  <div key={task.id} className="bg-gray-800 p-4 rounded-lg">
+                  <div
+                    key={task.id}
+                    data-task-id={task.id}
+                    data-task-priority={task.priority}
+                    className="bg-gray-800 p-4 rounded-lg"
+                  >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">

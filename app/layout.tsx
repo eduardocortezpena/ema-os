@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { prisma } from "@/app/lib/db";
 import { CommandPalette } from "@/app/components/CommandPalette";
+import { KeyboardShortcuts } from "@/app/components/KeyboardShortcuts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,7 @@ export default async function RootLayout({
         <aside className="w-64 bg-gray-900 border-r border-gray-800 p-4 hidden md:block">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-xl font-bold">EMA OS</h1>
-            <span className="text-gray-500 text-xs" title="Abrir paleta de comandos">Ctrl+K</span>
+            <span className="text-gray-500 text-xs" title="Ctrl+K paleta · ? ayuda">Ctrl+K · ?</span>
           </div>
           <nav className="space-y-2">
             <a href="/dashboard" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Dashboard</a>
@@ -54,6 +55,7 @@ export default async function RootLayout({
           {children}
         </main>
         <CommandPalette projects={projects} />
+        <KeyboardShortcuts />
       </body>
     </html>
   );
