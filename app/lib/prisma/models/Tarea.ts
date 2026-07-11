@@ -32,6 +32,7 @@ export type TareaMinAggregateOutputType = {
   priority: $Enums.Priority | null
   status: $Enums.TareaStatus | null
   dueDate: Date | null
+  plannedFor: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +45,7 @@ export type TareaMaxAggregateOutputType = {
   priority: $Enums.Priority | null
   status: $Enums.TareaStatus | null
   dueDate: Date | null
+  plannedFor: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +58,7 @@ export type TareaCountAggregateOutputType = {
   priority: number
   status: number
   dueDate: number
+  plannedFor: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -70,6 +73,7 @@ export type TareaMinAggregateInputType = {
   priority?: true
   status?: true
   dueDate?: true
+  plannedFor?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -82,6 +86,7 @@ export type TareaMaxAggregateInputType = {
   priority?: true
   status?: true
   dueDate?: true
+  plannedFor?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -94,6 +99,7 @@ export type TareaCountAggregateInputType = {
   priority?: true
   status?: true
   dueDate?: true
+  plannedFor?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -179,6 +185,7 @@ export type TareaGroupByOutputType = {
   priority: $Enums.Priority
   status: $Enums.TareaStatus
   dueDate: Date | null
+  plannedFor: Date | null
   createdAt: Date
   updatedAt: Date
   _count: TareaCountAggregateOutputType | null
@@ -212,6 +219,7 @@ export type TareaWhereInput = {
   priority?: Prisma.EnumPriorityFilter<"Tarea"> | $Enums.Priority
   status?: Prisma.EnumTareaStatusFilter<"Tarea"> | $Enums.TareaStatus
   dueDate?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
+  plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   project?: Prisma.XOR<Prisma.ProyectoScalarRelationFilter, Prisma.ProyectoWhereInput>
@@ -227,6 +235,7 @@ export type TareaOrderByWithRelationInput = {
   priority?: Prisma.SortOrder
   status?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  plannedFor?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   project?: Prisma.ProyectoOrderByWithRelationInput
@@ -245,6 +254,7 @@ export type TareaWhereUniqueInput = Prisma.AtLeast<{
   priority?: Prisma.EnumPriorityFilter<"Tarea"> | $Enums.Priority
   status?: Prisma.EnumTareaStatusFilter<"Tarea"> | $Enums.TareaStatus
   dueDate?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
+  plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   project?: Prisma.XOR<Prisma.ProyectoScalarRelationFilter, Prisma.ProyectoWhereInput>
@@ -260,6 +270,7 @@ export type TareaOrderByWithAggregationInput = {
   priority?: Prisma.SortOrder
   status?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  plannedFor?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.TareaCountOrderByAggregateInput
@@ -278,6 +289,7 @@ export type TareaScalarWhereWithAggregatesInput = {
   priority?: Prisma.EnumPriorityWithAggregatesFilter<"Tarea"> | $Enums.Priority
   status?: Prisma.EnumTareaStatusWithAggregatesFilter<"Tarea"> | $Enums.TareaStatus
   dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Tarea"> | Date | string | null
+  plannedFor?: Prisma.DateTimeNullableWithAggregatesFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Tarea"> | Date | string
 }
@@ -289,6 +301,7 @@ export type TareaCreateInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProyectoCreateNestedOneWithoutTasksInput
@@ -304,6 +317,7 @@ export type TareaUncheckedCreateInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
@@ -317,6 +331,7 @@ export type TareaUpdateInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProyectoUpdateOneRequiredWithoutTasksNestedInput
@@ -332,6 +347,7 @@ export type TareaUncheckedUpdateInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
@@ -346,6 +362,7 @@ export type TareaCreateManyInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -357,6 +374,7 @@ export type TareaUpdateManyMutationInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -369,6 +387,7 @@ export type TareaUncheckedUpdateManyInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -396,6 +415,7 @@ export type TareaCountOrderByAggregateInput = {
   priority?: Prisma.SortOrder
   status?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
+  plannedFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -408,6 +428,7 @@ export type TareaMaxOrderByAggregateInput = {
   priority?: Prisma.SortOrder
   status?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
+  plannedFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -420,6 +441,7 @@ export type TareaMinOrderByAggregateInput = {
   priority?: Prisma.SortOrder
   status?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
+  plannedFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -513,6 +535,7 @@ export type TareaCreateWithoutProjectInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
@@ -526,6 +549,7 @@ export type TareaUncheckedCreateWithoutProjectInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
@@ -548,6 +572,7 @@ export type TareaCreateWithoutIsNextActionForInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProyectoCreateNestedOneWithoutTasksInput
@@ -562,6 +587,7 @@ export type TareaUncheckedCreateWithoutIsNextActionForInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
@@ -599,6 +625,7 @@ export type TareaScalarWhereInput = {
   priority?: Prisma.EnumPriorityFilter<"Tarea"> | $Enums.Priority
   status?: Prisma.EnumTareaStatusFilter<"Tarea"> | $Enums.TareaStatus
   dueDate?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
+  plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
 }
@@ -621,6 +648,7 @@ export type TareaUpdateWithoutIsNextActionForInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProyectoUpdateOneRequiredWithoutTasksNestedInput
@@ -635,6 +663,7 @@ export type TareaUncheckedUpdateWithoutIsNextActionForInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
@@ -647,6 +676,7 @@ export type TareaCreateWithoutNotesInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProyectoCreateNestedOneWithoutTasksInput
@@ -661,6 +691,7 @@ export type TareaUncheckedCreateWithoutNotesInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   isNextActionFor?: Prisma.ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput
@@ -689,6 +720,7 @@ export type TareaUpdateWithoutNotesInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProyectoUpdateOneRequiredWithoutTasksNestedInput
@@ -703,6 +735,7 @@ export type TareaUncheckedUpdateWithoutNotesInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isNextActionFor?: Prisma.ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput
@@ -715,6 +748,7 @@ export type TareaCreateManyProjectInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -726,6 +760,7 @@ export type TareaUpdateWithoutProjectInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
@@ -739,6 +774,7 @@ export type TareaUncheckedUpdateWithoutProjectInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
@@ -752,6 +788,7 @@ export type TareaUncheckedUpdateManyWithoutProjectInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -795,6 +832,7 @@ export type TareaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   priority?: boolean
   status?: boolean
   dueDate?: boolean
+  plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
@@ -811,6 +849,7 @@ export type TareaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   priority?: boolean
   status?: boolean
   dueDate?: boolean
+  plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
@@ -824,6 +863,7 @@ export type TareaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   priority?: boolean
   status?: boolean
   dueDate?: boolean
+  plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
@@ -837,11 +877,12 @@ export type TareaSelectScalar = {
   priority?: boolean
   status?: boolean
   dueDate?: boolean
+  plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TareaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "title" | "description" | "priority" | "status" | "dueDate" | "createdAt" | "updatedAt", ExtArgs["result"]["tarea"]>
+export type TareaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "title" | "description" | "priority" | "status" | "dueDate" | "plannedFor" | "createdAt" | "updatedAt", ExtArgs["result"]["tarea"]>
 export type TareaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProyectoDefaultArgs<ExtArgs>
   notes?: boolean | Prisma.Tarea$notesArgs<ExtArgs>
@@ -870,6 +911,7 @@ export type $TareaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     priority: $Enums.Priority
     status: $Enums.TareaStatus
     dueDate: Date | null
+    plannedFor: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["tarea"]>
@@ -1305,6 +1347,7 @@ export interface TareaFieldRefs {
   readonly priority: Prisma.FieldRef<"Tarea", 'Priority'>
   readonly status: Prisma.FieldRef<"Tarea", 'TareaStatus'>
   readonly dueDate: Prisma.FieldRef<"Tarea", 'DateTime'>
+  readonly plannedFor: Prisma.FieldRef<"Tarea", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Tarea", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Tarea", 'DateTime'>
 }

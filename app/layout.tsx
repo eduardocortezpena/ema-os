@@ -32,6 +32,7 @@ export default function RootLayout({
           <h1 className="text-xl font-bold mb-6">EMA OS</h1>
           <nav className="space-y-2">
             <a href="/dashboard" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Dashboard</a>
+            <a href="/my-day" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">My Day</a>
             <a href="/projects" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Projects</a>
             <a href="/tasks" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Tasks</a>
             <a href="/notes" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Notes</a>

@@ -31,6 +31,7 @@ model Tarea {
   priority    Priority @default(LOW)
   status      TareaStatus @default(TODO)
   dueDate     DateTime?
+  plannedFor  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   project     Proyecto @relation("ProjectTasks", fields: [projectId], references: [id])

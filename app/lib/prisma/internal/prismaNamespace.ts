@@ -688,6 +688,7 @@ export const TareaScalarFieldEnum = {
   priority: 'priority',
   status: 'status',
   dueDate: 'dueDate',
+  plannedFor: 'plannedFor',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

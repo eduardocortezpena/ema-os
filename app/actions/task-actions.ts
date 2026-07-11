@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
 import { toUserMessage } from '@/app/lib/errors';
+import { startOfDay } from '@/app/lib/date';
 
 export async function createTask(formData: FormData) {
   try {
@@ -89,6 +90,72 @@ export async function updateTaskPriority(formData: FormData) {
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
     redirect(`/tasks?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando la prioridad. Intenta de nuevo.'))}`);
+  }
+}
+
+export async function planForToday(formData: FormData) {
+  try {
+    const id = formData.get('id')?.toString() || '';
+
+    if (!id) {
+      redirect(`/my-day?error=${encodeURIComponent('ID de tarea requerido')}`);
+    }
+
+    await prisma.tarea.update({
+      where: { id },
+      data: { plannedFor: startOfDay(new Date()) },
+    });
+
+    revalidatePath('/my-day');
+    revalidatePath('/tasks');
+  } catch (error: any) {
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/my-day?error=${encodeURIComponent(toUserMessage(error, 'Error planificando la tarea. Intenta de nuevo.'))}`);
+  }
+}
+
+export async function rolloverToTomorrow(formData: FormData) {
+  try {
+    const id = formData.get('id')?.toString() || '';
+
+    if (!id) {
+      redirect(`/my-day?error=${encodeURIComponent('ID de tarea requerido')}`);
+    }
+
+    const tomorrow = startOfDay(new Date());
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    await prisma.tarea.update({
+      where: { id },
+      data: { plannedFor: tomorrow },
+    });
+
+    revalidatePath('/my-day');
+    revalidatePath('/tasks');
+  } catch (error: any) {
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/my-day?error=${encodeURIComponent(toUserMessage(error, 'Error moviendo la tarea a mañana. Intenta de nuevo.'))}`);
+  }
+}
+
+export async function unplanTask(formData: FormData) {
+  try {
+    const id = formData.get('id')?.toString() || '';
+
+    if (!id) {
+      redirect(`/my-day?error=${encodeURIComponent('ID de tarea requerido')}`);
+    }
+
+    await prisma.tarea.update({
+      where: { id },
+      data: { plannedFor: null },
+    });
+
+    revalidatePath('/my-day');
+    revalidatePath('/tasks');
+  } catch (error: any) {
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`/my-day?error=${encodeURIComponent(toUserMessage(error, 'Error quitando la tarea de hoy. Intenta de nuevo.'))}`);
   }
 }
 
