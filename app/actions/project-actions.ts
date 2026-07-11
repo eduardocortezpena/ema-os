@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
 import { toUserMessage } from '@/app/lib/errors';
+import { ensureProjectFilesDir } from '@/app/lib/files';
 
 export async function createProject(formData: FormData) {
   try {
@@ -17,7 +18,7 @@ export async function createProject(formData: FormData) {
       redirect(`/projects?error=${encodeURIComponent('Nombre de proyecto requerido')}`);
     }
 
-    await prisma.proyecto.create({
+    const project = await prisma.proyecto.create({
       data: {
         name: name,
         description: description,
@@ -26,6 +27,8 @@ export async function createProject(formData: FormData) {
         nextAction: nextAction
       },
     });
+
+    ensureProjectFilesDir(project.id);
 
     revalidatePath('/projects');
     revalidatePath('/dashboard');

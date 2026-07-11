@@ -33,6 +33,8 @@
 - [ ] Performance monitoring setup
 - [ ] `app/projects/page.tsx` y `app/notes/page.tsx` reimplementan su propio wrapper (`min-h-screen bg-gray-950` + `container mx-auto p-4`) en vez de usar solo el `<main>` de `app/layout.tsx` — viola ui-guidelines ("las páginas hijas no deben reimplementar su propio wrapper de layout"). Hallazgo del reviewer en Sprint 0.4, no bloqueante, pendiente de limpieza (candidato: Sprint 1.5 o 7.2).
 - [x] `app/dashboard/page.tsx` tema claro — corregido en Sprint 0.5.
+- [ ] `app/lib/files.ts` (`projectFilesDir`/`ensureProjectFilesDir`) no valida el formato de `projectId` antes de `path.join` — seguro hoy porque el único caller pasa un `cuid()` de Prisma, pero si un sprint futuro lo invoca con un id de formulario/URL falta un guard (regex de cuid) contra path traversal. Detectado en Sprint 3.1.
+- [ ] Proyectos creados ANTES de Sprint 3.1 no tienen carpeta en `files/{id}/` (solo se crea en `createProject`, sin backfill ni creación perezosa). No rompe nada hoy (Sprint 3.1 no escribe a disco), pero fallará en cuanto Sprint 3.2+ intente escribir ahí para un proyecto viejo — resolver antes de Sprint 3.4 (subir archivos).
 - [ ] Borrar un Proyecto con Tareas/Notas asociadas falla por restricción de FK (mensaje genérico, hay que borrar hijos primero manualmente). Considerar `onDelete: Cascade` en el schema o un mensaje explícito guiando al usuario. Detectado en Sprint 1.1, preexistente desde Sprint 0.2.
 - [ ] `startOfDay` (`app/lib/date.ts`, usado por "My Day") usa la zona horaria del servidor (Node), no la del usuario — asunción no documentada, aceptable para un solo usuario/zona en el MVP pero riesgo si se despliega en un servidor con TZ distinta. Detectado en Sprint 1.4.
 

@@ -209,6 +209,23 @@ export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
 }
 
+export type EnumArchivoKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.ArchivoKind | Prisma.EnumArchivoKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ArchivoKind[]
+  notIn?: $Enums.ArchivoKind[]
+  not?: Prisma.NestedEnumArchivoKindFilter<$PrismaModel> | $Enums.ArchivoKind
+}
+
+export type EnumArchivoKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ArchivoKind | Prisma.EnumArchivoKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ArchivoKind[]
+  notIn?: $Enums.ArchivoKind[]
+  not?: Prisma.NestedEnumArchivoKindWithAggregatesFilter<$PrismaModel> | $Enums.ArchivoKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumArchivoKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumArchivoKindFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[]
@@ -419,6 +436,23 @@ export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumArchivoKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.ArchivoKind | Prisma.EnumArchivoKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ArchivoKind[]
+  notIn?: $Enums.ArchivoKind[]
+  not?: Prisma.NestedEnumArchivoKindFilter<$PrismaModel> | $Enums.ArchivoKind
+}
+
+export type NestedEnumArchivoKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ArchivoKind | Prisma.EnumArchivoKindFieldRefInput<$PrismaModel>
+  in?: $Enums.ArchivoKind[]
+  notIn?: $Enums.ArchivoKind[]
+  not?: Prisma.NestedEnumArchivoKindWithAggregatesFilter<$PrismaModel> | $Enums.ArchivoKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumArchivoKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumArchivoKindFilter<$PrismaModel>
 }
 
 

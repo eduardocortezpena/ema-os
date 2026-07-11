@@ -9,6 +9,14 @@
 * 🟢 You can import this file directly.
 */
 
+export const ArchivoKind = {
+  NOTE: 'NOTE',
+  FILE: 'FILE'
+} as const
+
+export type ArchivoKind = (typeof ArchivoKind)[keyof typeof ArchivoKind]
+
+
 export const Priority = {
   LOW: 'LOW',
   MEDIUM: 'MEDIUM',

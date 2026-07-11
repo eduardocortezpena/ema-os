@@ -36,6 +36,7 @@ export default function RootLayout({
             <a href="/projects" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Projects</a>
             <a href="/tasks" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Tasks</a>
             <a href="/notes" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Notes</a>
+            <a href="/files" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Files</a>
             <a href="/settings" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Settings</a>
           </nav>
         </aside>

@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Proyecto: 'Proyecto',
   Tarea: 'Tarea',
-  Nota: 'Nota'
+  Nota: 'Nota',
+  Archivo: 'Archivo'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -112,6 +113,21 @@ export const NotaScalarFieldEnum = {
 } as const
 
 export type NotaScalarFieldEnum = (typeof NotaScalarFieldEnum)[keyof typeof NotaScalarFieldEnum]
+
+
+export const ArchivoScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  kind: 'kind',
+  title: 'title',
+  path: 'path',
+  mimeType: 'mimeType',
+  driveFileId: 'driveFileId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArchivoScalarFieldEnum = (typeof ArchivoScalarFieldEnum)[keyof typeof ArchivoScalarFieldEnum]
 
 
 export const SortOrder = {

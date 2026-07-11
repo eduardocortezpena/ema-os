@@ -21,6 +21,7 @@ model Proyecto {
   notes       Nota[]
   nextActionTaskId String? @unique
   nextActionTask   Tarea?  @relation("ProjectNextAction", fields: [nextActionTaskId], references: [id])
+  archivos         Archivo[]
 }
 
 model Tarea {
@@ -49,6 +50,24 @@ model Nota {
   project   Proyecto @relation(fields: [projectId], references: [id])
   taskId    String?
   task      Tarea?   @relation(fields: [taskId], references: [id])
+}
+
+model Archivo {
+  id          String      @id @default(cuid())
+  projectId   String
+  project     Proyecto    @relation(fields: [projectId], references: [id])
+  kind        ArchivoKind
+  title       String
+  path        String
+  mimeType    String?
+  driveFileId String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum ArchivoKind {
+  NOTE
+  FILE
 }
 
 enum Priority {

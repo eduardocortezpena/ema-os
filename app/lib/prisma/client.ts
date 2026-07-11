@@ -56,3 +56,8 @@ export type Tarea = Prisma.TareaModel
  * 
  */
 export type Nota = Prisma.NotaModel
+/**
+ * Model Archivo
+ * 
+ */
+export type Archivo = Prisma.ArchivoModel

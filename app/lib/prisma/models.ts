@@ -11,4 +11,5 @@
 export type * from './models/Proyecto'
 export type * from './models/Tarea'
 export type * from './models/Nota'
+export type * from './models/Archivo'
 export type * from './commonInputTypes'
