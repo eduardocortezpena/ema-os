@@ -1,11 +1,66 @@
 # SPRINT.md
-## Current Sprint: Fase 7 — UX de velocidad
+## Current Sprint: Fase 4 — Google Calendar (bloqueada en 4.1)
 
 ### Sprint Goal
-Command palette, atajos de teclado, optimistic UI, quick capture/inbox.
+Fase 7 (UX de velocidad) completa. Fase 4 (Calendar): Sprint 4.1 bloqueado
+esperando pasos manuales del dueño en Google Cloud Console + re-consentimiento
+OAuth. Ver sección "⚠️ BLOQUEADO" más abajo con instrucciones exactas.
 
 ### Sprint Duration
-Start: 2026-07-11 (Fase 7). Fase 3 (Drive) completa, ver historial abajo.
+Start: 2026-07-11 (Fase 7, completa). Fase 4 iniciada 2026-07-11, bloqueada
+en 4.1 en la misma sesión.
+
+### ⚠️ BLOQUEADO — Sprint 4.1, esperando acción manual del dueño
+
+**No se escribió código de Calendar todavía** (a propósito, mismo criterio
+que Sprint 3.2: "no se empieza a programar hasta que el dueño confirme que
+los pasos manuales están hechos"). Razón técnica: el scope de Calendar es
+"sensible" y el refresh token actual (Sprint 3.2) solo tiene el scope
+`drive.file` — pedir un scope nuevo requiere una re-autorización real con
+clic humano en el navegador de Eduardo, que no puede simularse ni
+completarse en una sesión sin supervisión.
+
+**Pasos exactos que debe hacer el dueño antes de que se pueda seguir:**
+
+1. Ir a [Google Cloud Console](https://console.cloud.google.com) → el
+   mismo proyecto usado para Drive (Sprint 3.2).
+2. **APIs & Services → Library** → buscar "Google Calendar API" → **Enable**.
+3. **APIs & Services → OAuth consent screen** → Edit → sección Scopes →
+   "Add or Remove Scopes" → buscar "Calendar" → seleccionar
+   `.../auth/calendar.events` (scope acotado a eventos, no el `calendar`
+   completo — coincide con el alcance real que necesita EMA OS: crear/leer/
+   actualizar eventos, no gestionar calendarios enteros) → Save.
+4. Confirmar que la pantalla de consentimiento sigue en modo **"In
+   Production"** (ya se hizo en 3.2 para evitar que el refresh token expire
+   a 7 días en modo Testing) — si al agregar el scope Google la regresa a
+   "Testing" o pide nueva verificación, confirmarlo explícitamente antes de
+   seguir.
+
+**Qué hará la próxima sesión en cuanto el dueño confirme los 3 pasos:**
+
+1. `app/lib/google-drive-auth.ts`: actualizar `SCOPE` para incluir
+   `https://www.googleapis.com/auth/calendar.events` junto al `drive.file`
+   existente (un solo string separado por espacio, es como Google acepta
+   múltiples scopes en una sola autorización).
+2. El dueño debe volver a hacer clic en "Conectar con Google Drive" en
+   `/settings` (con sesión real de Google, navegador real) — esto genera un
+   refresh token NUEVO que reemplaza al actual y cubre ambos scopes (Drive
+   + Calendar) en una sola credencial. **Esto es una acción del dueño, no
+   se puede automatizar.**
+3. Verificar con una llamada real a la API de Calendar (ej. listar
+   calendarios del usuario) que el nuevo token funciona, igual que se hizo
+   con Drive en 3.2.
+4. Recién ahí seguir con Sprint 4.2 (Tarea con fecha/hora → evento de
+   Calendar) — requiere decisión de architect sobre dónde guardar el
+   `eventId` en el modelo `Tarea` (probablemente `String?` nullable, mismo
+   patrón que `driveFileId` en `Archivo`).
+
+**No se toca Fase 5 en esta sesión**: la regla explícita era "solo si sobra
+presupuesto tras cerrar Fase 7 Y Fase 4 hasta donde llegue" — Fase 4 llegó
+hasta el bloqueo de 4.1 en la misma sesión larga que cerró Fase 7 completa
+(4 sprints, cada uno con reviewer y verificación real), así que no queda
+margen seguro de presupuesto para abrir una fase nueva. Se cierra la sesión
+en verde aquí.
 
 ### Sprint Backlog — Fase 7
 
@@ -289,3 +344,26 @@ lugar dentro del alcance permitido de esta sesión. **Primero que hay que
 mirar al despertar: la sección "⚠️ BLOQUEADO — esperando decisión del
 usuario" arriba, para decidir si esos 3 sprints van a Fase 2 o Fase 7 (y
 actualizar ROADMAP.md en consecuencia) antes de que se puedan ejecutar.**
+2026-07-11 (sesión larga sin supervisión, continuación): decisión de Fase 2
+resuelta por el dueño (oficialmente "Clasificador de archivos", en otro
+chat). **Fase 7 completada entera esta sesión: 7.1 (command palette Ctrl+K
+con `cmdk`), 7.2 (atajos de teclado + panel de ayuda), 7.3 (optimistic UI
+en crear tarea/nota con `useOptimistic`), 7.4 (Quick Capture/Inbox,
+`Tarea.projectId` nullable)** — los 4 sprints con consulta a `architect`
+antes de cada decisión de schema/arquitectura, reviewer al cerrar cada uno
+(encontró bugs reales en 3 de los 4: promesa rechazada por `redirect()` en
+7.1, bug de prioridad stale en 7.2, doble-submit duplicando filas en 7.3 y
+7.4 — todos corregidos y re-verificados con el caso exacto que los
+expuso), y verificación real en navegador + DB en cada sprint. **Fase 4
+(Calendar) se empezó y se bloqueó de inmediato en el Sprint 4.1**: requiere
+habilitar Calendar API + agregar scope en Google Cloud Console (pasos
+manuales del dueño) y una re-autorización OAuth real con clic humano en el
+navegador — ninguno de los dos es posible sin supervisión. Documentado con
+instrucciones exactas en la sección "⚠️ BLOQUEADO — Sprint 4.1" arriba. No
+se escribió código de Calendar todavía (mismo criterio que 3.2: no
+programar hasta que los pasos manuales estén confirmados). Fase 5 NO se
+tocó — con Fase 7 completa (4 sprints con reviewer cada uno) y Fase 4
+bloqueada en la misma sesión, no queda margen seguro de presupuesto para
+abrir una fase nueva. **Primero que hay que mirar al despertar: la sección
+"⚠️ BLOQUEADO — Sprint 4.1" arriba, con los 3 pasos exactos en Google
+Cloud Console antes de poder seguir con Calendar.**
