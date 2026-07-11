@@ -116,3 +116,14 @@ Fase 3 renumerada a pedido del usuario. Sprint 3.1 y 3.2 completados y
 verificados con evidencia real de extremo a extremo, incluyendo el login
 real de Google del propio usuario. Parado aquí en verde tras el sprint
 más delicado del proyecto — Sprints 3.3-3.5 quedan para la próxima sesión.
+2026-07-11 (sesión siguiente): **Sprint 3.3 completado y verificado
+end-to-end contra el Drive real del usuario** (crear+editar nota → .md en
+Drive confirmado vía API; PATCH sin duplicados; XSS del render corregido y
+verificado). Reviewer corrió build limpio; 4 findings arreglados, resto en
+BACKLOG. Artefactos de prueba limpiados. **Sprint 3.4 NO se empezó**:
+decisión de presupuesto — no cabía entero y la regla es no dejar sprints a
+medias (3.4 necesita migración `driveFolderId` + carpetas en Drive + subida
+de archivos + verificación propia). **Sprint 3.5 documentado en BACKLOG.md**
+con las advertencias de rclone bisync (beta/pérdida de datos, --resync
+obligatorio + respaldo, flags robustos). Próxima sesión: empezar por Sprint
+3.4 con presupuesto holgado.

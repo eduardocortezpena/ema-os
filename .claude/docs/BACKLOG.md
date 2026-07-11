@@ -19,6 +19,39 @@
 - [ ] **Clasificador de archivos**: analizar ~5 carpetas ACOTADAS del disco del usuario y PROPONER a qué proyecto pertenece cada archivo (PDFs, Word, hojas de cálculo, imágenes). Aprobación manual antes de mover — nunca borrar, solo copiar/enlazar. La carpeta resultante ordenada sería la carpeta madre que se sincroniza con Drive en la Fase 3 (`./files/{proyecto}/`). Candidata a Fase 2 (reservada, sin sprints todavía) del ROADMAP.md. Anotado 2026-07-11, sin implementar.
 - [ ] **Importar chat de WhatsApp exportado**: ingerir un `.txt` exportado manualmente desde WhatsApp (Chat > Exportar chat > Sin multimedia/Con multimedia) y asociarlo a un proyecto como nota o archivo indexado. NO usar APIs no oficiales ni scraping de WhatsApp — viola sus términos de servicio y arriesga el baneo del número del usuario (ya reflejado en ROADMAP.md, sección "Qué NO hacer"). Solo archivos exportados manualmente por el usuario. Sin fase asignada todavía. Anotado 2026-07-11, sin implementar.
 
+### Fase 3 — pendiente
+- [ ] **Sprint 3.5 (OPCIONAL) — rclone bisync: espejo bidireccional local ↔ Drive.**
+  Sincronización bidireccional real entre `./files/{projectId}/` y la carpeta
+  del proyecto en Drive usando `rclone bisync`, de modo que un cambio hecho en
+  el disco o en Drive se refleje en el otro lado.
+
+  **⚠️ ADVERTENCIA OFICIAL DE RCLONE — LEER ANTES DE EMPEZAR:** `rclone bisync`
+  está marcado como **beta** en su propia documentación, que dice textualmente
+  que **puede resultar en pérdida de datos** ("this command can potentially
+  result in data loss"). No es una funcionalidad estable. Tratarla como
+  experimental y de alto riesgo: es la razón por la que este sprint es OPCIONAL
+  y va al final de la Fase 3.
+
+  **Reglas duras de ejecución (no negociables):**
+  - **Primera corrida OBLIGATORIA con `--resync`** para establecer la línea base
+    (sin esto, bisync no sabe el estado previo y puede borrar en masa). La
+    corrida inicial `--resync` debe ir precedida de un **respaldo completo** de
+    `./files/` y, si es viable, de la carpeta de Drive (exportar/copia), para
+    poder revertir si algo sale mal.
+  - **Flags robustos recomendados** (mitigan fallos parciales y conflictos):
+    `--resilient --recover --conflict-resolve newer --drive-skip-gdocs`.
+    (`--resilient`/`--recover`: recuperación tras interrupción; `--conflict-resolve
+    newer`: ante conflicto gana el más reciente; `--drive-skip-gdocs`: ignora
+    Google Docs nativos que no tienen contenido descargable real.)
+  - **No arrancar sin sesión fresca y presupuesto de tokens holgado.** Es un
+    sprint delicado; empezarlo con presupuesto ajustado y dejarlo a medias
+    puede corromper la sincronización. Igual que el criterio con el que se
+    pospuso aquí: un sprint terminado vale más que dos a medias.
+
+  Precondición: depende del Sprint 3.4 (carpeta del proyecto en Drive +
+  `driveFolderId`), que a su vez no estaba implementado al anotar esto
+  (2026-07-11).
+
 ### Low Priority
 - [ ] Keyboard shortcuts
 - [ ] Mobile-optimized sidebar (drawer)
