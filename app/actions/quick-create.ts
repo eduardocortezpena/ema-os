@@ -6,9 +6,10 @@
 // existentes construyendo el FormData que ya esperan, para no duplicar la
 // lógica de validación/creación.
 import { createProject } from './project-actions';
-import { createTask, updateTaskPriority } from './task-actions';
+import { createTask, updateTaskPriority, updateTaskStatus } from './task-actions';
 import { createNote } from './notes';
 import { nextPriority } from '@/app/lib/priority';
+import { nextStatus } from '@/app/lib/status';
 
 export async function quickCreateProject(name: string): Promise<void> {
   const fd = new FormData();
@@ -42,4 +43,17 @@ export async function quickCyclePriority(taskId: string, currentPriority: string
   fd.set('id', taskId);
   fd.set('priority', nextPriority(currentPriority));
   await updateTaskPriority(fd);
+}
+
+// Usado por el badge de estado cíclico en TaskCard.tsx (Sesión de mejoras de
+// UX, Parte 5b): avanza el estado al siguiente valor del ciclo completo
+// (TODO→IN_PROGRESS→WAITING→DONE→TODO). Delega en updateTaskStatus existente
+// — conserva el efecto secundario de borrar el evento de Calendar al llegar
+// a DONE (Sprint 4.2), sin duplicar esa lógica aquí.
+export async function quickCycleStatus(taskId: string, currentStatus: string, returnTo?: string): Promise<void> {
+  const fd = new FormData();
+  fd.set('id', taskId);
+  fd.set('status', nextStatus(currentStatus));
+  if (returnTo) fd.set('returnTo', returnTo);
+  await updateTaskStatus(fd);
 }
