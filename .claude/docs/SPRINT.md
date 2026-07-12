@@ -676,3 +676,53 @@ bloqueada en la misma sesión, no queda margen seguro de presupuesto para
 abrir una fase nueva. **Primero que hay que mirar al despertar: la sección
 "⚠️ BLOQUEADO — Sprint 4.1" arriba, con los 3 pasos exactos en Google
 Cloud Console antes de poder seguir con Calendar.**
+
+### 🛑 Cierre de sesión (2026-07-12, sesión larga sin supervisión — continuación)
+
+El usuario entregó al abrir esta sesión las 2 decisiones de producto que
+tenían bloqueado el Sprint 4.2 (P1: solo tareas con proyecto sincronizan a
+Calendar; P2: eventos de todo el día). **Fase 4 completada entera en esta
+sesión: 4.2 (sync tarea↔evento), 4.3 (recordatorios configurables), 4.4
+(agenda en el dashboard)**, sumada al 4.1 ya cerrado en la sesión anterior
+— la Fase 4 queda 100% completa. Cada sprint con consulta a `architect`
+antes de tocar el schema, `reviewer` al cerrar (encontró 2 bugs
+bloqueantes reales en 4.2 — doble-submit duplicando eventos, eventos
+huérfanos al borrar un proyecto — corregidos y re-verificados contra la
+API real antes de cerrar), y verificación end-to-end contra la API real de
+Calendar (cuenta `eduardocortezpena@gmail.com`) en cada paso: crear,
+editar fecha, completar tarea, borrar tarea, cambiar preset de
+recordatorios, y borrar un proyecto con tarea sincronizada — todos los
+artefactos de prueba limpiados de DB y Calendar.
+
+Además: `BACKLOG.md` actualizado con el estado real de Hermes Agent/
+Workspace (ya instalados por el dueño, integración pendiente para sesión
+supervisada) — el cambio pedido en `ROADMAP.md` ("Fase 6.5", encabezado al
+100% open source) NO se aplicó porque ese texto/sección no existe en el
+archivo (verificado con grep); documentado como discrepancia en
+`BACKLOG.md` para aclarar en la próxima sesión.
+
+**Fase 9.5 (micro-interactividad inline, opcional) NO se tocó**: con la
+Fase 4 completa (3 sprints, cada uno con reviewer + verificación real
+contra Calendar) ya cubierto un volumen grande de trabajo verificado en
+esta sesión, y el alcance de 9.5 es deliberadamente vago ("si sobra
+presupuesto"), se prefirió cerrar aquí en verde en vez de abrir un sprint
+nuevo de alcance impreciso al final de una sesión larga — mismo criterio
+que ya se aplicó en sesiones anteriores (preferible verde con menos hecho
+que roto a medias).
+
+**Estado final verificado**: `git status` limpio, `npm run build` limpio,
+commit único `Fase 4 completa: Sprint 4.2 (sync Calendar), 4.3
+(recordatorios), 4.4 (agenda dashboard)` con los 3 sprints + fixes de
+reviewer. DB sin artefactos de prueba (verificado uno por uno contra
+Calendar y SQLite antes de cerrar cada sprint).
+
+**Acciones manuales pendientes para el dueño (ninguna urgente)**:
+1. Nada bloqueante de Fase 4 — completa y verificada.
+2. Fase 9.5 (opcional) o cualquier fase nueva: a elección del dueño en la
+   próxima sesión.
+3. Integración Hermes↔EMA OS: requiere sesión CON supervisión (ver
+   `BACKLOG.md`, sección Hermes).
+4. Aclarar la discrepancia de `ROADMAP.md`/"Fase 6.5" anotada en
+   `BACKLOG.md` — no se encontró esa sección en el archivo actual.
+5. Sprint 3.5 (rclone bisync): sigue pendiente, requiere sesión supervisada
+   por el riesgo de pérdida de datos ya documentado.
