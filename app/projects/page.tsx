@@ -6,10 +6,16 @@ import { AutoSubmitSelect } from '../components/AutoSubmitSelect';
 export default async function ProjectsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; estado?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, estado } = await searchParams;
+  // Sesión de mejoras de UX, Parte 3: tarjeta "Activos" del dashboard
+  // enlaza aquí con ?estado=activo. Valor legible en la URL (no el enum
+  // crudo ACTIVE), mapeado server-side — mismo patrón de filtro por query
+  // param que app/dashboard/page.tsx (Sprint 9.4), sin nuevo client
+  // component (architect: es navegación, no un control interactivo).
   const projects = await prisma.proyecto.findMany({
+    where: estado === 'activo' ? { status: 'ACTIVE' } : undefined,
     include: {
       tasks: { orderBy: { title: 'asc' } },
       nextActionTask: true,
@@ -21,7 +27,7 @@ export default async function ProjectsPage({
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <div className="container mx-auto p-4">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Proyectos</h1>
+          <h1 className="text-2xl font-bold">Proyectos{estado === 'activo' ? ' — Activos' : ''}</h1>
         </div>
 
         {error && (

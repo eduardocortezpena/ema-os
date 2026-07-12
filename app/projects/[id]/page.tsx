@@ -1,11 +1,8 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
 import { updateProject, setNextAction } from '@/app/actions';
-import { getNoteContent, createNote, updateNote, deleteNote } from '@/app/actions/notes';
-import { renderMarkdown } from '@/app/lib/markdown';
 import { AutoSubmitSelect } from '@/app/components/AutoSubmitSelect';
 import { ConfirmButton } from '@/app/components/ConfirmButton';
-import { MarkdownEditor } from '@/app/components/MarkdownEditor';
 import { ProjectTaskList } from '@/app/components/ProjectTaskList';
 
 export default async function ProjectDetailPage({
@@ -28,10 +25,11 @@ export default async function ProjectDetailPage({
   });
   if (!project) notFound();
 
-  const notasDeContexto = project.archivos.filter((a) => a.kind === 'NOTE');
+  // Sesión de mejoras de UX, Parte 4: la nota de contexto (kind='NOTE') ya
+  // no se renderiza aquí — se conserva íntegra en Drive + Archivo (índice),
+  // será el contexto de futuros agentes organizadores. app/actions/notes.ts
+  // sigue intacto como superficie programática para leerla/escribirla.
   const archivosDeProyecto = project.archivos.filter((a) => a.kind === 'FILE');
-  const noteContents = await Promise.all(notasDeContexto.map((n) => getNoteContent(n.id)));
-  const notas = notasDeContexto.map((n, i) => ({ ...n, content: noteContents[i] }));
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
@@ -140,65 +138,6 @@ export default async function ProjectDetailPage({
             </button>
           </form>
         </details>
-
-        {/* Notas de contexto */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-3">Nota de contexto</h2>
-          {notas.length === 0 ? (
-            <div className="bg-gray-800 p-4 rounded-lg">
-              <p className="text-gray-500 text-sm mb-3">Sin nota de contexto todavía.</p>
-              <form action={createNote} className="space-y-3">
-                <input type="hidden" name="projectId" value={project.id} />
-                <input type="hidden" name="title" value="Contexto del proyecto" />
-                <input type="hidden" name="returnTo" value={`/projects/${project.id}`} />
-                <MarkdownEditor name="content" />
-                <button type="submit" className="bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors text-sm">
-                  Crear nota
-                </button>
-              </form>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {notas.map((nota) => (
-                <div key={nota.id} className="bg-gray-800 p-4 rounded-lg">
-                  <div className="flex items-start justify-between">
-                    <h3 className="font-semibold">{nota.title}</h3>
-                    <div className="flex gap-2 items-center">
-                      {nota.driveFileId && <span className="badge bg-gray-700">en Drive</span>}
-                      <form action={deleteNote}>
-                        <input type="hidden" name="id" value={nota.id} />
-                        <input type="hidden" name="returnTo" value={`/projects/${project.id}`} />
-                        <ConfirmButton className="text-danger-500 hover:text-white text-sm" confirmMessage="¿Eliminar esta nota?">
-                          Eliminar
-                        </ConfirmButton>
-                      </form>
-                    </div>
-                  </div>
-                  <div
-                    className="text-gray-300 text-sm mt-2"
-                    dangerouslySetInnerHTML={{ __html: renderMarkdown(nota.content) }}
-                  />
-                  <details className="mt-3">
-                    <summary className="text-sm text-gray-400 cursor-pointer hover:text-white">Editar</summary>
-                    <form action={updateNote} className="space-y-3 mt-3">
-                      <input type="hidden" name="id" value={nota.id} />
-                      <input type="hidden" name="returnTo" value={`/projects/${project.id}`} />
-                      <div>
-                        <label className="block text-sm mb-1">Título *</label>
-                        <input type="text" name="title" required defaultValue={nota.title}
-                          className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" />
-                      </div>
-                      <MarkdownEditor name="content" defaultValue={nota.content} />
-                      <button type="submit" className="bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors text-sm">
-                        Guardar cambios
-                      </button>
-                    </form>
-                  </details>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
 
         {/* Tareas */}
         <div className="mb-6">

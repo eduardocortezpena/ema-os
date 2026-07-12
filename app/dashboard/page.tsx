@@ -66,20 +66,29 @@ export default async function DashboardPage({
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-          <div className="bg-gray-800 p-4 rounded-lg flex flex-col items-center">
+          <a
+            href="/projects"
+            className="bg-gray-800 hover:bg-gray-700 transition-colors p-4 rounded-lg flex flex-col items-center"
+          >
             <div className="text-3xl font-bold text-primary-500">{projects.length}</div>
             <p className="text-sm text-gray-400">Proyectos totales</p>
-          </div>
-          <div className="bg-gray-800 p-4 rounded-lg flex flex-col items-center">
+          </a>
+          <a
+            href="/projects?estado=activo"
+            className="bg-gray-800 hover:bg-gray-700 transition-colors p-4 rounded-lg flex flex-col items-center"
+          >
             <div className="text-3xl font-bold text-success-500">
               {projects.filter((p) => p.status === 'ACTIVE').length}
             </div>
             <p className="text-sm text-gray-400">Activos</p>
-          </div>
-          <div className="bg-gray-800 p-4 rounded-lg flex flex-col items-center">
+          </a>
+          <a
+            href="/tasks?estado=abiertas"
+            className="bg-gray-800 hover:bg-gray-700 transition-colors p-4 rounded-lg flex flex-col items-center"
+          >
             <div className="text-3xl font-bold text-warning-500">{allOpenTasks.length}</div>
             <p className="text-sm text-gray-400">Tareas abiertas</p>
-          </div>
+          </a>
           <div className="bg-gray-800 p-4 rounded-lg flex flex-col items-center">
             <div className="text-3xl font-bold text-primary-500">{tasksToday.length}</div>
             <p className="text-sm text-gray-400">Tareas de hoy</p>
