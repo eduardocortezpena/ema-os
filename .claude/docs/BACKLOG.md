@@ -118,6 +118,29 @@
   NO implementar hasta que la Fase 6 esté construida. Anotado 2026-07-11,
   sin implementar.
 
+  **Actualización 2026-07-12**: el dueño ya instaló Hermes Agent (oficial
+  de Nous Research) + Hermes Workspace (comunitario, outsourc-e),
+  configurados entre sí y listos para usarse. La integración con EMA OS
+  queda pendiente para una sesión CON supervisión (toca la base de datos
+  real y decisiones de arquitectura) — no se toca en sesiones sin
+  supervisión. Decisión ya tomada: **EMA OS es el cerebro, Hermes es el
+  canal** — la lógica de negocio vive en EMA OS, Hermes solo invoca las
+  tools que expone la Fase 6. Agentes a definir con el dueño más adelante
+  (no ahora, requiere su decisión): un "organizador" (alimenta/clasifica
+  el Inbox), un "comunicador" (responde mensajes por Telegram/WhatsApp), y
+  un agente de "seguridad informática / configuración" (pedido explícito
+  del dueño: revisar la postura de seguridad de la integración antes de
+  exponer nada).
+
+  **Nota de discrepancia (2026-07-12)**: se pidió reflejar este cambio
+  también en `ROADMAP.md`, cambiando un encabezado de "Análisis
+  comparativo de proyectos open source (≈65% del peso)" a "(100% open
+  source)" bajo una supuesta "Fase 6.5". Ese texto y esa fase no existen
+  en `ROADMAP.md` actual (verificado con grep, sin coincidencias) — no se
+  aplicó el cambio para no editar contenido inexistente. Si la intención
+  era otra sección o archivo, aclarar en la próxima sesión con
+  supervisión.
+
 ### Known Issues
 - Ninguno bloqueante actualmente. Ver Technical Debt para deuda no bloqueante conocida.
 
