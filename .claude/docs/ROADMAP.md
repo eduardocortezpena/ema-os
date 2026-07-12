@@ -127,7 +127,7 @@ dueño — de momento es solo contexto anotado en el backlog.
 
 ## Fase 4 — Google Calendar como pilar
 
-### Sprint 4.1 — OAuth y verificación del scope sensible de Calendar (~5h)
+### Sprint 4.1 — OAuth y verificación del scope sensible de Calendar (~5h) ✅ COMPLETA
 - Alcance: configurar credenciales OAuth de Google Cloud para el scope de
   Calendar (marcado "sensible", requiere pantalla de consentimiento con
   verificación). Resolver el proceso de verificación/re-autorización
@@ -137,6 +137,11 @@ dueño — de momento es solo contexto anotado en el backlog.
   "app no verificada" para la cuenta del dueño (verificado con el flujo de
   login real); el estado de verificación queda documentado (aprobado,
   pendiente, o en modo de prueba con usuarios de prueba explícitos).
+  Cumplido — lectura y escritura reales verificadas contra
+  `calendars/primary/events` de la cuenta del dueño (ver SPRINT.md para el
+  diagnóstico completo, incluye una lección clave: `calendarList.list`
+  requiere un scope distinto a `calendar.events`, no usar ese endpoint
+  para verificar).
 
 ### Sprint 4.2 — Tarea con fecha/hora crea evento de Calendar (~4h)
 - Alcance: al asignar fecha/hora a una tarea en EMA OS, se crea (o

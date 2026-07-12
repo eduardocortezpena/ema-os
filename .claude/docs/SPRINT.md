@@ -1,10 +1,11 @@
 # SPRINT.md
-## Current Sprint: Fase 9 — Interactividad y navegación conectada
+## Current Sprint: Fase 4 — Google Calendar
 
 ### Sprint Goal
-Fase 9 en curso (9.1, 9.2, 9.3, 9.4 completos; 9.5 pendiente/opcional). Fase 4
-(Calendar) sigue bloqueada en 4.1 esperando pasos manuales del dueño en
-Google Cloud Console — ver sección "⚠️ BLOQUEADO" más abajo.
+Fase 9 en pausa (9.1-9.4 completos; 9.5 pendiente/opcional). Fase 4
+desbloqueada: Sprint 4.1 completo y verificado con la cuenta real del
+usuario. Continúa con Sprint 4.2 (Tarea con fecha/hora → evento de
+Calendar).
 
 ### Sprint Duration
 Start: 2026-07-11 (Fase 7, completa). Fase 4 bloqueada en 4.1 el mismo
@@ -188,45 +189,48 @@ Resultado verificado contra la DB y en el dashboard real:
 - Sin incidentes: ningún Server Action rechazó, no hizo falta revertir
   ningún proyecto a medias.
 
-### ⚠️ BLOQUEADO — Sprint 4.1, esperando reconsentimiento real del dueño
+### ✅ Sprint 4.1 — OAuth y verificación del scope sensible de Calendar (2026-07-12)
 
-**Actualización 2026-07-12**: el dueño confirmó que ya completó los 3
-pasos en Google Cloud Console (Calendar API habilitada, scope
-`calendar.events` agregado a la pantalla de consentimiento, modo In
-Production confirmado). Con eso:
+**Desbloqueado y completo.** Historial de la sesión (para no perder el
+diagnóstico si algo similar vuelve a pasar):
 
-1. ✅ `app/lib/google-drive-auth.ts`: `SCOPE` actualizado para incluir
-   `https://www.googleapis.com/auth/calendar.events` junto al `drive.file`
-   existente.
-2. ✅ Botón "Desconectar y reconectar" añadido en `/settings`
-   (`app/actions/settings.ts::disconnectAndReconnectDrive`) — revoca el
-   token viejo (solo `drive.file`) y redirige en el mismo clic a la
-   pantalla de consentimiento de Google. **Verificado en navegador**: el
-   token se borró de la DB, y el redirect real a `accounts.google.com`
-   confirmó `scope=drive.file+calendar.events` y `prompt=consent` en la
-   URL decodificada.
-3. ⏳ **Falta que el dueño complete el login + consentimiento real** (no
-   se puede automatizar — requiere su credencial de Google). El botón lo
-   deja en la pantalla de login de Google; desde ahí él debe iniciar
-   sesión, confirmar que la pantalla de consentimiento lista "Ver y
-   administrar eventos de Google Calendar", y aceptar.
+1. `SCOPE` en `app/lib/google-drive-auth.ts` ampliado a `drive.file` +
+   `calendar.events`. Botón "Desconectar y reconectar" en `/settings`
+   (`app/actions/settings.ts::disconnectAndReconnectDrive`) para forzar
+   reconsentimiento en un clic.
+2. Primer intento del dueño: el token nuevo NO tenía Calendar activo. Causa:
+   el navegador sirvió una versión cacheada de `/settings` con un link OAuth
+   viejo — solucionado con recarga forzada (Ctrl+Shift+R) antes de reintentar.
+3. Segundo intento: pantalla de consentimiento de Google confirmó ambos
+   permisos ("Ver y editar eventos en tus calendarios" + Drive), aceptado.
+   Pero la verificación con `calendarList.list` seguía dando 403
+   `ACCESS_TOKEN_SCOPE_INSUFFICIENT`.
+4. **Diagnóstico correcto — dos falsas pistas descartadas antes de encontrar
+   la causa real**: (a) se sospechó que la Calendar API no estaba habilitada
+   en el proyecto de Google Cloud — el dueño confirmó que sí ("API
+   habilitada" con check verde); (b) se sospechó que la API se había
+   habilitado en el proyecto de Cloud equivocado — el dueño confirmó que el
+   número de proyecto (`247476142976`) coincide exactamente con el prefijo
+   del `client_id` configurado. **La causa real era un error en la propia
+   verificación**: `calendarList.list` (listar calendarios) requiere el
+   scope `calendar`/`calendar.calendarlist`, NO `calendar.events` — el scope
+   que se pidió a propósito (acotado a eventos, no gestión de calendarios,
+   decisión ya documentada). El endpoint correcto para verificar es
+   `events.list`/`events.insert` sobre `calendars/primary`.
+5. **Verificado con el endpoint correcto, contra la cuenta real del
+   usuario** (`eduardocortezpena@gmail.com`): lectura confirmada (3 eventos
+   reales listados de `calendars/primary/events`); escritura confirmada
+   (evento de prueba creado con id real, `htmlLink` real de
+   calendar.google.com, y borrado después para no dejar basura en el
+   calendario real del dueño).
 
-**En cuanto el dueño confirme que completó el consentimiento:**
+**DoD cumplido**: "la app puede leer y escribir el calendario del usuario
+tras el consentimiento" — confirmado con llamadas reales a la API, no
+asumido.
 
-1. Verificar con una llamada real a la API de Calendar (ej. listar
-   calendarios del usuario) que el nuevo token funciona, igual que se hizo
-   con Drive en 3.2.
-2. Seguir con Sprint 4.2 (Tarea con fecha/hora → evento de Calendar) —
-   requiere decisión de architect sobre dónde guardar el `eventId` en el
-   modelo `Tarea` (probablemente `String?` nullable, mismo patrón que
-   `driveFileId` en `Archivo`).
-
-**No se toca Fase 5 en esta sesión**: la regla explícita era "solo si sobra
-presupuesto tras cerrar Fase 7 Y Fase 4 hasta donde llegue" — Fase 4 llegó
-hasta el bloqueo de 4.1 en la misma sesión larga que cerró Fase 7 completa
-(4 sprints, cada uno con reviewer y verificación real), así que no queda
-margen seguro de presupuesto para abrir una fase nueva. Se cierra la sesión
-en verde aquí.
+**Lección para sprints futuros que llamen a la Calendar API**: usar
+`calendars/primary/events` (no `calendarList`) como patrón de verificación
+por defecto, dado el scope acotado a `calendar.events`.
 
 ### Sprint Backlog — Fase 7
 
