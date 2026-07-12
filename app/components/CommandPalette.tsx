@@ -19,7 +19,6 @@ const NAV_ITEMS = [
   { label: 'Ir a Inbox', href: '/inbox' },
   { label: 'Ir a Proyectos', href: '/projects' },
   { label: 'Ir a Tareas', href: '/tasks' },
-  { label: 'Ir a Notas', href: '/notes' },
   { label: 'Ir a Archivos', href: '/files' },
   { label: 'Ir a Configuración', href: '/settings' },
 ];

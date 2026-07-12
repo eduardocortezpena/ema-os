@@ -14,15 +14,15 @@ import {
 const MARKDOWN_MIME = 'text/markdown';
 
 // Ruta a la que redirigir en error y a revalidar además de las fijas
-// (Sprint 9.1): las acciones de nota ahora se invocan tanto desde /notes
-// como desde /projects/[id]. Sin `returnTo` explícito en el form, cae a
-// /notes (comportamiento previo, retrocompatible).
+// (Sprint 9.1). Sin `returnTo` explícito en el form, cae a /projects — la
+// ruta /notes se eliminó en Sprint 9.3 (contenido migrado a
+// /projects/[id]), así que ya no es un destino de fallback válido.
 function noteReturnTo(formData: FormData): string {
   const value = formData.get('returnTo')?.toString() || '';
   // Solo rutas internas — un `returnTo` con URL absoluta (o protocol-relative
   // "//host") permitiría un open redirect si alguien hace POST directo al
   // Server Action sin pasar por la UI.
-  return value.startsWith('/') && !value.startsWith('//') ? value : '/notes';
+  return value.startsWith('/') && !value.startsWith('//') ? value : '/projects';
 }
 
 // Intenta espejar el .md a Drive sin nunca hacer fallar el guardado: el .md
@@ -47,7 +47,7 @@ async function mirrorToDrive(
 
 /**
  * Devuelve el contenido de una nota por id: .md local si existe; si no, lo baja
- * de Drive; si tampoco, cadena vacía. Usado por la página /notes (server).
+ * de Drive; si tampoco, cadena vacía. Usado por /projects/[id] (server).
  * Busca el Archivo en la DB por id — no confía en projectId/driveFileId del
  * cliente (esto es un server action expuesto). Ver reviewer M2.
  */
@@ -101,7 +101,6 @@ export async function createNote(formData: FormData) {
       data: { path: noteRelPath(projectId, archivo.id), driveFileId },
     });
 
-    revalidatePath('/notes');
     revalidatePath('/files');
     revalidatePath('/dashboard');
     revalidatePath(returnTo);
@@ -138,7 +137,6 @@ export async function updateNote(formData: FormData) {
       data: { title, path: noteRelPath(archivo.projectId, archivo.id), driveFileId },
     });
 
-    revalidatePath('/notes');
     revalidatePath('/files');
     revalidatePath(returnTo);
   } catch (error: any) {
@@ -181,7 +179,6 @@ export async function migrateLegacyNotes() {
       migrated++;
     }
 
-    revalidatePath('/notes');
     revalidatePath('/files');
     redirect(`/settings?drive=migrated&count=${migrated}`);
   } catch (error: any) {
@@ -205,7 +202,6 @@ export async function deleteNote(formData: FormData) {
       await prisma.archivo.delete({ where: { id } });
     }
 
-    revalidatePath('/notes');
     revalidatePath('/files');
     revalidatePath('/dashboard');
     revalidatePath(returnTo);

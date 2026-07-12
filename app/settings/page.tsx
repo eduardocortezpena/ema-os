@@ -73,7 +73,7 @@ export default async function Settings({
 
           {/* Migración disponible SIEMPRE (no gateada por Drive): si Drive no
               está conectado, el espejo degrada y las notas quedan al menos
-              locales + visibles en /notes. Ver reviewer H2. */}
+              locales + visibles en /projects/[id] (Sprint 9.3). Ver reviewer H2. */}
           <div className="border-t border-gray-700 pt-4">
             <form action={migrateLegacyNotes}>
               <button

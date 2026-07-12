@@ -27,8 +27,10 @@ rota respecto al resto de la app (esto ya pasó en `dashboard/page.tsx` y
 
 ## Layout
 
-- Sidebar fijo (`aside`, 16rem / `w-64`) con nav a Dashboard, Projects,
-  Tasks, Notes, Settings — definido una sola vez en `app/layout.tsx`. Las
+- Sidebar fijo (`aside`, 16rem / `w-64`) con nav a Dashboard, My Day,
+  Inbox, Projects, Tasks, Files, Settings — definido una sola vez en
+  `app/layout.tsx`. Notas ya no es una sección propia (Sprint 9.3): su
+  contenido vive en el detalle de cada proyecto (`/projects/[id]`). Las
   páginas hijas **no** deben reimplementar su propio wrapper de layout.
 - Contenido principal en `<main className="flex-1 p-6 overflow-auto">`.
 - Vistas tipo lista+formulario usan grid `lg:grid-cols-3`: contenido a la

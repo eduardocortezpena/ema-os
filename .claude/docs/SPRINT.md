@@ -2,9 +2,9 @@
 ## Current Sprint: Fase 9 — Interactividad y navegación conectada
 
 ### Sprint Goal
-Fase 9 en curso (9.1 completo, 9.2-9.5 pendientes). Fase 4 (Calendar)
-sigue bloqueada en 4.1 esperando pasos manuales del dueño en Google Cloud
-Console — ver sección "⚠️ BLOQUEADO" más abajo.
+Fase 9 en curso (9.1, 9.2, 9.3 completos; 9.4-9.5 pendientes). Fase 4
+(Calendar) sigue bloqueada en 4.1 esperando pasos manuales del dueño en
+Google Cloud Console — ver sección "⚠️ BLOQUEADO" más abajo.
 
 ### Sprint Duration
 Start: 2026-07-11 (Fase 7, completa). Fase 4 bloqueada en 4.1 el mismo
@@ -49,8 +49,61 @@ confirmar.
 numeración quede reconciliada, per regla del proyecto de nunca dejar una
 fase sin documentar.
 
-**Siguiente: Sprint 9.2 — navegación conectada (tarjetas de dashboard,
-Siguientes acciones, menciones de proyecto en My Day/Inbox/Tasks).**
+### ✅ Sprint 9.2 — Navegación conectada en todo el dashboard (2026-07-12)
+
+Sin decisión de architect (sprint puramente de navegación/UI, sin schema).
+Tarjetas de "Siguientes acciones" y de la lista del dashboard ahora
+enlazan a `/projects/${project.id}` exacto (antes iba a `/projects`
+genérico, con un TODO explícito dejado en el código desde 9.1). Título y
+mención de Next Action en `/projects` (lista) enlazan al detalle.
+Menciones de proyecto en My Day (3 lugares) y el badge de proyecto en
+`TaskCard.tsx` (usado en `/tasks` y `/projects/[id]`) también enlazan
+cuando la tarea tiene proyecto — tipo `Task.project` ampliado de
+`{name}` a `{id, name}`.
+
+**Verificado con datos reales**: 7 links de "Siguientes acciones" en el
+dashboard apuntan a ids de proyecto reales; clic real navegó
+correctamente a `/projects/{id de Xalma Residencial}`; 33 links en
+`/tasks` y en `/my-day` (uno por cada tarea real); 17 links en
+`/projects` (9 títulos + 8 Next Actions, Organización personal sin Next
+Action correctamente excluida). Reviewer confirmó build limpio, sin HTML
+inválido, sin regresión visual. Hallazgo fuera de alcance (badge de
+proyecto en `NoteBoard.tsx` sin link) quedó obsoleto de inmediato porque
+9.3 elimina esa página entera.
+
+### ✅ Sprint 9.3 — Eliminar /notes, migrar a detalle de proyecto (2026-07-12)
+
+**Regla dura cumplida antes de tocar nada**: verifiqué que el 100% de
+notas fueran accesibles desde `/projects/[id]` ANTES de borrar la ruta.
+`Archivo.projectId` es `String` no-nulo en el schema (garantía
+estructural), y confirmé con query directa: 9 notas, **0 huérfanas**,
+todas con `projectId` apuntando a un `Proyecto` real existente. El
+modelo legado `Nota` (respaldo de Sprint 3.3) sigue en 0 filas. No hizo
+falta ninguna migración de datos — las notas ya eran accesibles desde
+9.1 tal cual.
+
+Borrados `app/notes/page.tsx` y `app/components/NoteBoard.tsx` (sin
+otros importadores, verificado con grep antes de borrar). Quitado el
+link "Notes" del sidebar y "Ir a Notas" de la command palette (el flujo
+de crear nota vía paleta se mantiene — sigue creando notas asociadas a
+un proyecto). En `app/actions/notes.ts`: el `returnTo` por defecto pasó
+de `/notes` (ruta muerta) a `/projects`; quitadas las llamadas
+`revalidatePath('/notes')` ya inútiles en las 4 funciones.
+
+**Verificado en navegador + DB tras el cambio**: `/notes` da 404 real;
+sidebar con 7 links (sin Notes); `/projects/{id}` sigue renderizando la
+nota de contexto completa; **las 9 notas reales verificadas una por una
+a nivel de disco y Drive** (`.md` local presente con contenido no vacío
++ `driveFileId`) — cero notas inaccesibles. Reviewer confirmó build
+limpio, sin referencias colgantes en todo el repo, sin pérdida
+funcional por quitar el `revalidatePath` muerto. Corregido además un
+hallazgo menor: `.claude/skills/ui-guidelines/SKILL.md` mencionaba
+"Notes" en la lista de sidebar, desalineado con `app/layout.tsx` real —
+actualizado.
+
+**Siguiente: Sprint 9.4 — dashboard con resúmenes y filtros (tarjetas de
+resumen, filtro de Siguientes acciones por proyecto/prioridad/fecha,
+orden seleccionable).**
 
 ### 🌱 Sesión de seed inicial completada (2026-07-11)
 

@@ -288,15 +288,15 @@ dueño — de momento es solo contexto anotado en el backlog.
 - DoD: clic en un proyecto desde el dashboard → toda la info de ese
   proyecto en una sola página, verificado en navegador. Cumplido.
 
-### Sprint 9.2 — Navegación conectada en todo el dashboard (~3h)
+### Sprint 9.2 — Navegación conectada en todo el dashboard (~3h) ✅ COMPLETA
 - Alcance: tarjetas de proyecto → `/projects/[id]`; cada "Siguiente
   acción" → `/projects/[id]` exacto (no `/projects` genérico); menciones
   de proyecto en My Day/Inbox/Tasks enlazan a su detalle.
 - Dependencias: Sprint 9.1.
 - DoD: desde el dashboard se llega a cualquier proyecto o tarea en un
-  clic, verificado en navegador.
+  clic, verificado en navegador. Cumplido.
 
-### Sprint 9.3 — Eliminar pestaña /notes, migrar a detalle de proyecto (~3h)
+### Sprint 9.3 — Eliminar pestaña /notes, migrar a detalle de proyecto (~3h) ✅ COMPLETA
 - Alcance: quitar la ruta `/notes` y su entrada de sidebar; el contenido
   de contexto se muestra/edita desde `/projects/[id]` (ya construido en
   9.1). Las notas NO se borran (siguen en Drive + índice SQLite).
@@ -305,7 +305,9 @@ dueño — de momento es solo contexto anotado en el backlog.
   detalle de proyecto ANTES de borrar la ruta. Si hay una nota huérfana,
   parar y documentar en SPRINT.md en vez de continuar.
 - DoD: no existe `/notes`; todo su contenido accesible desde proyectos;
-  cero notas perdidas (verificado contra BD e índice de Drive).
+  cero notas perdidas (verificado contra BD e índice de Drive). Cumplido
+  — 9 notas reales, 0 huérfanas (garantía estructural: `Archivo.projectId`
+  no-nulo), no hizo falta migración de datos.
 
 ### Sprint 9.4 — Dashboard con resúmenes y filtros (~4h)
 - Alcance: tarjetas de resumen (activos, tareas abiertas, tareas de hoy,
