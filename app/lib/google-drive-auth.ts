@@ -3,7 +3,12 @@ import { encrypt, decrypt } from '@/app/lib/crypto';
 
 const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
-const SCOPE = 'https://www.googleapis.com/auth/drive.file';
+// Fase 4: se añade el scope de Calendar (acotado a eventos, no gestión
+// completa de calendarios) junto al de Drive ya existente — Google acepta
+// múltiples scopes en un solo string separado por espacios. Un token ya
+// emitido con solo drive.file NO gana este scope automáticamente: hace
+// falta un nuevo consentimiento (ver disconnectAndReconnect más abajo).
+const SCOPE = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/calendar.events';
 const TOKEN_ROW_ID = 'default';
 
 function getClientCredentials(): { clientId: string; clientSecret: string } {

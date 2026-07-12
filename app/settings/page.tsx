@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
 import { buildAuthUrl, isDriveConnected } from '@/app/lib/google-drive-auth';
 import { migrateLegacyNotes } from '@/app/actions/notes';
+import { disconnectAndReconnectDrive } from '@/app/actions/settings';
 
 export default async function Settings({
   searchParams,
@@ -46,11 +47,27 @@ export default async function Settings({
           <div>
             <h2 className="text-xl font-semibold mb-2">Google Drive</h2>
             {connected ? (
-              <div className="flex items-center gap-2">
-                <span className="badge badge-completed">Conectado</span>
-                <span className="text-gray-400 text-sm">
-                  EMA OS tiene acceso a Drive (scope drive.file) y conserva la sesión tras reiniciar.
-                </span>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="badge badge-completed">Conectado</span>
+                  <span className="text-gray-400 text-sm">
+                    EMA OS tiene una sesión activa con Google y conserva el acceso tras reiniciar.
+                    Solo se otorgan los permisos que aceptaste en tu última conexión — si cambiaron
+                    los permisos solicitados (ej. se agregó Calendar) y no has reconectado desde
+                    entonces, usa &quot;Desconectar y reconectar&quot; para asegurarte de tenerlos activos.
+                  </span>
+                </div>
+                <form action={disconnectAndReconnectDrive}>
+                  <button
+                    type="submit"
+                    className="inline-block bg-gray-700 px-3 py-2 rounded hover:bg-gray-600 transition-colors text-sm"
+                  >
+                    Desconectar y reconectar
+                  </button>
+                  <span className="text-gray-500 text-xs ml-2">
+                    Revoca la sesión actual y te lleva de nuevo a la pantalla de consentimiento de Google — úsalo tras cambiar los permisos solicitados (ej. añadir Calendar).
+                  </span>
+                </form>
               </div>
             ) : configError ? (
               <p className="text-amber-400 text-sm">
