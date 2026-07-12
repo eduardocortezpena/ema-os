@@ -839,9 +839,11 @@ export const TareaScalarFieldEnum = {
   priority: 'priority',
   status: 'status',
   dueDate: 'dueDate',
+  reminderPreset: 'reminderPreset',
   plannedFor: 'plannedFor',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  eventId: 'eventId'
 } as const
 
 export type TareaScalarFieldEnum = (typeof TareaScalarFieldEnum)[keyof typeof TareaScalarFieldEnum]
@@ -950,6 +952,13 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'TareaStatus'
  */
 export type EnumTareaStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TareaStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ReminderPreset'
+ */
+export type EnumReminderPresetFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReminderPreset'>
     
 
 

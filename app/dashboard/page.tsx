@@ -31,6 +31,12 @@ export default async function DashboardPage({
   const upcomingDueTasks = allOpenTasks.filter(
     (t) => t.dueDate && t.dueDate >= today && t.dueDate < in7Days
   );
+  // Sprint 4.4: vista de agenda — mismas tareas que ya cuenta la tarjeta
+  // "Próx. fechas límite (7d)" (Sprint 9.4), pero como lista con fecha y
+  // proyecto. Necesita el nombre del proyecto de cada tarea, que `tasks`
+  // (incluido en `projects.tasks`) no trae — se busca en `projects` por id.
+  const agendaTasks = [...upcomingDueTasks].sort((a, b) => a.dueDate!.getTime() - b.dueDate!.getTime());
+  const projectNameById = new Map(projects.map((p) => [p.id, p.name]));
 
   let nextActions = projects.filter((p) => p.nextActionTask);
 
@@ -115,6 +121,29 @@ export default async function DashboardPage({
             </div>
           )}
         </div>
+
+        {agendaTasks.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold mb-3">Agenda — Próximos 7 días</h2>
+            <div className="space-y-2">
+              {agendaTasks.map((task) => (
+                <a
+                  key={task.id}
+                  href={task.projectId ? `/projects/${task.projectId}` : '/tasks'}
+                  className="flex items-center justify-between bg-gray-800 hover:bg-gray-700 transition-colors p-3 rounded-lg"
+                >
+                  <div>
+                    <span>{task.title}</span>
+                    {task.projectId && (
+                      <span className="text-gray-500 text-sm ml-2">({projectNameById.get(task.projectId)})</span>
+                    )}
+                  </div>
+                  <span className="badge bg-gray-700">{task.dueDate!.toLocaleDateString()}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {projects.length === 0 ? (
           <p className="text-gray-500">

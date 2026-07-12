@@ -45,3 +45,14 @@ export const TareaStatus = {
 } as const
 
 export type TareaStatus = (typeof TareaStatus)[keyof typeof TareaStatus]
+
+
+export const ReminderPreset = {
+  DEFAULT: 'DEFAULT',
+  THREE_DAYS: 'THREE_DAYS',
+  FIVE_DAYS: 'FIVE_DAYS',
+  ONE_DAY: 'ONE_DAY',
+  NONE: 'NONE'
+} as const
+
+export type ReminderPreset = (typeof ReminderPreset)[keyof typeof ReminderPreset]

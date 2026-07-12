@@ -32,9 +32,11 @@ export type TareaMinAggregateOutputType = {
   priority: $Enums.Priority | null
   status: $Enums.TareaStatus | null
   dueDate: Date | null
+  reminderPreset: $Enums.ReminderPreset | null
   plannedFor: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  eventId: string | null
 }
 
 export type TareaMaxAggregateOutputType = {
@@ -45,9 +47,11 @@ export type TareaMaxAggregateOutputType = {
   priority: $Enums.Priority | null
   status: $Enums.TareaStatus | null
   dueDate: Date | null
+  reminderPreset: $Enums.ReminderPreset | null
   plannedFor: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  eventId: string | null
 }
 
 export type TareaCountAggregateOutputType = {
@@ -58,9 +62,11 @@ export type TareaCountAggregateOutputType = {
   priority: number
   status: number
   dueDate: number
+  reminderPreset: number
   plannedFor: number
   createdAt: number
   updatedAt: number
+  eventId: number
   _all: number
 }
 
@@ -73,9 +79,11 @@ export type TareaMinAggregateInputType = {
   priority?: true
   status?: true
   dueDate?: true
+  reminderPreset?: true
   plannedFor?: true
   createdAt?: true
   updatedAt?: true
+  eventId?: true
 }
 
 export type TareaMaxAggregateInputType = {
@@ -86,9 +94,11 @@ export type TareaMaxAggregateInputType = {
   priority?: true
   status?: true
   dueDate?: true
+  reminderPreset?: true
   plannedFor?: true
   createdAt?: true
   updatedAt?: true
+  eventId?: true
 }
 
 export type TareaCountAggregateInputType = {
@@ -99,9 +109,11 @@ export type TareaCountAggregateInputType = {
   priority?: true
   status?: true
   dueDate?: true
+  reminderPreset?: true
   plannedFor?: true
   createdAt?: true
   updatedAt?: true
+  eventId?: true
   _all?: true
 }
 
@@ -185,9 +197,11 @@ export type TareaGroupByOutputType = {
   priority: $Enums.Priority
   status: $Enums.TareaStatus
   dueDate: Date | null
+  reminderPreset: $Enums.ReminderPreset
   plannedFor: Date | null
   createdAt: Date
   updatedAt: Date
+  eventId: string | null
   _count: TareaCountAggregateOutputType | null
   _min: TareaMinAggregateOutputType | null
   _max: TareaMaxAggregateOutputType | null
@@ -219,9 +233,11 @@ export type TareaWhereInput = {
   priority?: Prisma.EnumPriorityFilter<"Tarea"> | $Enums.Priority
   status?: Prisma.EnumTareaStatusFilter<"Tarea"> | $Enums.TareaStatus
   dueDate?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFilter<"Tarea"> | $Enums.ReminderPreset
   plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
+  eventId?: Prisma.StringNullableFilter<"Tarea"> | string | null
   project?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
   notes?: Prisma.NotaListRelationFilter
   isNextActionFor?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
@@ -235,9 +251,11 @@ export type TareaOrderByWithRelationInput = {
   priority?: Prisma.SortOrder
   status?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  reminderPreset?: Prisma.SortOrder
   plannedFor?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  eventId?: Prisma.SortOrderInput | Prisma.SortOrder
   project?: Prisma.ProyectoOrderByWithRelationInput
   notes?: Prisma.NotaOrderByRelationAggregateInput
   isNextActionFor?: Prisma.ProyectoOrderByWithRelationInput
@@ -254,9 +272,11 @@ export type TareaWhereUniqueInput = Prisma.AtLeast<{
   priority?: Prisma.EnumPriorityFilter<"Tarea"> | $Enums.Priority
   status?: Prisma.EnumTareaStatusFilter<"Tarea"> | $Enums.TareaStatus
   dueDate?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFilter<"Tarea"> | $Enums.ReminderPreset
   plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
+  eventId?: Prisma.StringNullableFilter<"Tarea"> | string | null
   project?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
   notes?: Prisma.NotaListRelationFilter
   isNextActionFor?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
@@ -270,9 +290,11 @@ export type TareaOrderByWithAggregationInput = {
   priority?: Prisma.SortOrder
   status?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  reminderPreset?: Prisma.SortOrder
   plannedFor?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  eventId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TareaCountOrderByAggregateInput
   _max?: Prisma.TareaMaxOrderByAggregateInput
   _min?: Prisma.TareaMinOrderByAggregateInput
@@ -289,9 +311,11 @@ export type TareaScalarWhereWithAggregatesInput = {
   priority?: Prisma.EnumPriorityWithAggregatesFilter<"Tarea"> | $Enums.Priority
   status?: Prisma.EnumTareaStatusWithAggregatesFilter<"Tarea"> | $Enums.TareaStatus
   dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Tarea"> | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetWithAggregatesFilter<"Tarea"> | $Enums.ReminderPreset
   plannedFor?: Prisma.DateTimeNullableWithAggregatesFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Tarea"> | Date | string
+  eventId?: Prisma.StringNullableWithAggregatesFilter<"Tarea"> | string | null
 }
 
 export type TareaCreateInput = {
@@ -301,9 +325,11 @@ export type TareaCreateInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  reminderPreset?: $Enums.ReminderPreset
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventId?: string | null
   project?: Prisma.ProyectoCreateNestedOneWithoutTasksInput
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
   isNextActionFor?: Prisma.ProyectoCreateNestedOneWithoutNextActionTaskInput
@@ -317,9 +343,11 @@ export type TareaUncheckedCreateInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  reminderPreset?: $Enums.ReminderPreset
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventId?: string | null
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
   isNextActionFor?: Prisma.ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput
 }
@@ -331,9 +359,11 @@ export type TareaUpdateInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project?: Prisma.ProyectoUpdateOneWithoutTasksNestedInput
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
   isNextActionFor?: Prisma.ProyectoUpdateOneWithoutNextActionTaskNestedInput
@@ -347,9 +377,11 @@ export type TareaUncheckedUpdateInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
   isNextActionFor?: Prisma.ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput
 }
@@ -362,9 +394,11 @@ export type TareaCreateManyInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  reminderPreset?: $Enums.ReminderPreset
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventId?: string | null
 }
 
 export type TareaUpdateManyMutationInput = {
@@ -374,9 +408,11 @@ export type TareaUpdateManyMutationInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TareaUncheckedUpdateManyInput = {
@@ -387,9 +423,11 @@ export type TareaUncheckedUpdateManyInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TareaListRelationFilter = {
@@ -415,9 +453,11 @@ export type TareaCountOrderByAggregateInput = {
   priority?: Prisma.SortOrder
   status?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
+  reminderPreset?: Prisma.SortOrder
   plannedFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
 }
 
 export type TareaMaxOrderByAggregateInput = {
@@ -428,9 +468,11 @@ export type TareaMaxOrderByAggregateInput = {
   priority?: Prisma.SortOrder
   status?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
+  reminderPreset?: Prisma.SortOrder
   plannedFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
 }
 
 export type TareaMinOrderByAggregateInput = {
@@ -441,9 +483,11 @@ export type TareaMinOrderByAggregateInput = {
   priority?: Prisma.SortOrder
   status?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
+  reminderPreset?: Prisma.SortOrder
   plannedFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  eventId?: Prisma.SortOrder
 }
 
 export type TareaCreateNestedManyWithoutProjectInput = {
@@ -512,6 +556,10 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type EnumReminderPresetFieldUpdateOperationsInput = {
+  set?: $Enums.ReminderPreset
+}
+
 export type TareaCreateNestedOneWithoutNotesInput = {
   create?: Prisma.XOR<Prisma.TareaCreateWithoutNotesInput, Prisma.TareaUncheckedCreateWithoutNotesInput>
   connectOrCreate?: Prisma.TareaCreateOrConnectWithoutNotesInput
@@ -535,9 +583,11 @@ export type TareaCreateWithoutProjectInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  reminderPreset?: $Enums.ReminderPreset
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventId?: string | null
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
   isNextActionFor?: Prisma.ProyectoCreateNestedOneWithoutNextActionTaskInput
 }
@@ -549,9 +599,11 @@ export type TareaUncheckedCreateWithoutProjectInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  reminderPreset?: $Enums.ReminderPreset
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventId?: string | null
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
   isNextActionFor?: Prisma.ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput
 }
@@ -572,9 +624,11 @@ export type TareaCreateWithoutIsNextActionForInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  reminderPreset?: $Enums.ReminderPreset
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventId?: string | null
   project?: Prisma.ProyectoCreateNestedOneWithoutTasksInput
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
 }
@@ -587,9 +641,11 @@ export type TareaUncheckedCreateWithoutIsNextActionForInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  reminderPreset?: $Enums.ReminderPreset
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventId?: string | null
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
 }
 
@@ -625,9 +681,11 @@ export type TareaScalarWhereInput = {
   priority?: Prisma.EnumPriorityFilter<"Tarea"> | $Enums.Priority
   status?: Prisma.EnumTareaStatusFilter<"Tarea"> | $Enums.TareaStatus
   dueDate?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFilter<"Tarea"> | $Enums.ReminderPreset
   plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
+  eventId?: Prisma.StringNullableFilter<"Tarea"> | string | null
 }
 
 export type TareaUpsertWithoutIsNextActionForInput = {
@@ -648,9 +706,11 @@ export type TareaUpdateWithoutIsNextActionForInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project?: Prisma.ProyectoUpdateOneWithoutTasksNestedInput
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
 }
@@ -663,9 +723,11 @@ export type TareaUncheckedUpdateWithoutIsNextActionForInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
 }
 
@@ -676,9 +738,11 @@ export type TareaCreateWithoutNotesInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  reminderPreset?: $Enums.ReminderPreset
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventId?: string | null
   project?: Prisma.ProyectoCreateNestedOneWithoutTasksInput
   isNextActionFor?: Prisma.ProyectoCreateNestedOneWithoutNextActionTaskInput
 }
@@ -691,9 +755,11 @@ export type TareaUncheckedCreateWithoutNotesInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  reminderPreset?: $Enums.ReminderPreset
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventId?: string | null
   isNextActionFor?: Prisma.ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput
 }
 
@@ -720,9 +786,11 @@ export type TareaUpdateWithoutNotesInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project?: Prisma.ProyectoUpdateOneWithoutTasksNestedInput
   isNextActionFor?: Prisma.ProyectoUpdateOneWithoutNextActionTaskNestedInput
 }
@@ -735,9 +803,11 @@ export type TareaUncheckedUpdateWithoutNotesInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isNextActionFor?: Prisma.ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput
 }
 
@@ -748,9 +818,11 @@ export type TareaCreateManyProjectInput = {
   priority?: $Enums.Priority
   status?: $Enums.TareaStatus
   dueDate?: Date | string | null
+  reminderPreset?: $Enums.ReminderPreset
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventId?: string | null
 }
 
 export type TareaUpdateWithoutProjectInput = {
@@ -760,9 +832,11 @@ export type TareaUpdateWithoutProjectInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
   isNextActionFor?: Prisma.ProyectoUpdateOneWithoutNextActionTaskNestedInput
 }
@@ -774,9 +848,11 @@ export type TareaUncheckedUpdateWithoutProjectInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
   isNextActionFor?: Prisma.ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput
 }
@@ -788,9 +864,11 @@ export type TareaUncheckedUpdateManyWithoutProjectInput = {
   priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
   status?: Prisma.EnumTareaStatusFieldUpdateOperationsInput | $Enums.TareaStatus
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  reminderPreset?: Prisma.EnumReminderPresetFieldUpdateOperationsInput | $Enums.ReminderPreset
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -832,9 +910,11 @@ export type TareaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   priority?: boolean
   status?: boolean
   dueDate?: boolean
+  reminderPreset?: boolean
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  eventId?: boolean
   project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
   notes?: boolean | Prisma.Tarea$notesArgs<ExtArgs>
   isNextActionFor?: boolean | Prisma.Tarea$isNextActionForArgs<ExtArgs>
@@ -849,9 +929,11 @@ export type TareaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   priority?: boolean
   status?: boolean
   dueDate?: boolean
+  reminderPreset?: boolean
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  eventId?: boolean
   project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
 }, ExtArgs["result"]["tarea"]>
 
@@ -863,9 +945,11 @@ export type TareaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   priority?: boolean
   status?: boolean
   dueDate?: boolean
+  reminderPreset?: boolean
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  eventId?: boolean
   project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
 }, ExtArgs["result"]["tarea"]>
 
@@ -877,12 +961,14 @@ export type TareaSelectScalar = {
   priority?: boolean
   status?: boolean
   dueDate?: boolean
+  reminderPreset?: boolean
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  eventId?: boolean
 }
 
-export type TareaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "title" | "description" | "priority" | "status" | "dueDate" | "plannedFor" | "createdAt" | "updatedAt", ExtArgs["result"]["tarea"]>
+export type TareaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "title" | "description" | "priority" | "status" | "dueDate" | "reminderPreset" | "plannedFor" | "createdAt" | "updatedAt" | "eventId", ExtArgs["result"]["tarea"]>
 export type TareaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
   notes?: boolean | Prisma.Tarea$notesArgs<ExtArgs>
@@ -911,9 +997,11 @@ export type $TareaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     priority: $Enums.Priority
     status: $Enums.TareaStatus
     dueDate: Date | null
+    reminderPreset: $Enums.ReminderPreset
     plannedFor: Date | null
     createdAt: Date
     updatedAt: Date
+    eventId: string | null
   }, ExtArgs["result"]["tarea"]>
   composites: {}
 }
@@ -1347,9 +1435,11 @@ export interface TareaFieldRefs {
   readonly priority: Prisma.FieldRef<"Tarea", 'Priority'>
   readonly status: Prisma.FieldRef<"Tarea", 'TareaStatus'>
   readonly dueDate: Prisma.FieldRef<"Tarea", 'DateTime'>
+  readonly reminderPreset: Prisma.FieldRef<"Tarea", 'ReminderPreset'>
   readonly plannedFor: Prisma.FieldRef<"Tarea", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Tarea", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Tarea", 'DateTime'>
+  readonly eventId: Prisma.FieldRef<"Tarea", 'String'>
 }
     
 

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
 import { toUserMessage } from '@/app/lib/errors';
 import { startOfDay } from '@/app/lib/date';
+import { createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '@/app/lib/google-calendar';
 
 // Ruta a la que redirigir en error y a revalidar además de las fijas
 // (Sprint 9.1): createTask/updateTaskStatus/updateTaskPriority/deleteTask
@@ -14,6 +15,47 @@ import { startOfDay } from '@/app/lib/date';
 function taskReturnTo(formData: FormData): string {
   const value = formData.get('returnTo')?.toString() || '';
   return value.startsWith('/') && !value.startsWith('//') ? value : '/tasks';
+}
+
+type ReminderPreset = 'DEFAULT' | 'THREE_DAYS' | 'FIVE_DAYS' | 'ONE_DAY' | 'NONE';
+
+// Minutos antes del evento por preset (Sprint 4.3). DEFAULT = 3 y 5 días
+// (4320 y 7200 min) sin que el usuario tenga que elegir nada.
+const REMINDER_MINUTES: Record<ReminderPreset, number[]> = {
+  DEFAULT: [4320, 7200],
+  THREE_DAYS: [4320],
+  FIVE_DAYS: [7200],
+  ONE_DAY: [1440],
+  NONE: [],
+};
+
+// Sincroniza el evento de Calendar de una tarea con su estado actual
+// (Sprint 4.2/4.3). Decisión de producto: P1 — solo tareas CON proyecto
+// sincronizan; P2 — eventos de todo el día. Nunca lanza: mismo patrón
+// graceful de mirrorToDrive (app/actions/notes.ts) — si Calendar falla, la
+// tarea se guarda igual y el eventId conserva el valor previo.
+async function syncCalendarEvent(
+  title: string,
+  projectId: string | null,
+  dueDate: Date | null,
+  existingEventId: string | null,
+  reminderPreset: ReminderPreset
+): Promise<string | null> {
+  try {
+    if (!projectId || !dueDate) {
+      if (existingEventId) await deleteCalendarEvent(existingEventId);
+      return null;
+    }
+    const reminderMinutes = REMINDER_MINUTES[reminderPreset];
+    if (existingEventId) {
+      await updateCalendarEvent(existingEventId, title, dueDate, reminderMinutes);
+      return existingEventId;
+    }
+    return await createCalendarEvent(title, dueDate, reminderMinutes);
+  } catch (error) {
+    console.error('[task-actions] No se pudo sincronizar el evento de Calendar (tarea guardada igual):', error);
+    return existingEventId;
+  }
 }
 
 export async function createTask(formData: FormData) {
@@ -42,7 +84,11 @@ export async function createTask(formData: FormData) {
 
     const dueDate = dueDateStr ? new Date(dueDateStr) : null;
 
-    await prisma.tarea.create({
+    // Crear la fila primero (eventId null) y sincronizar Calendar después,
+    // mismo orden que mirrorToDrive en app/actions/notes.ts: si la llamada a
+    // Calendar falla o el proceso muere entre medias, no queda un evento
+    // huérfano en Calendar sin ninguna fila en la DB que lo referencie.
+    const created = await prisma.tarea.create({
       data: {
         title: title,
         description: description,
@@ -52,6 +98,11 @@ export async function createTask(formData: FormData) {
         projectId: projectId || null,
       },
     });
+
+    const eventId = await syncCalendarEvent(title, projectId || null, dueDate, null, 'DEFAULT');
+    if (eventId) {
+      await prisma.tarea.update({ where: { id: created.id }, data: { eventId } });
+    }
 
     revalidatePath('/tasks');
     revalidatePath('/dashboard');
@@ -113,9 +164,26 @@ export async function updateTaskStatus(formData: FormData) {
       redirect(`${returnTo}?error=${encodeURIComponent('Status inválido')}`);
     }
 
+    const data: { status: typeof status; eventId?: null } = { status };
+
+    // Al completar una tarea con evento sincronizado, borrarlo (Sprint 4.2:
+    // "completar/borrar la tarea, borrar el evento según corresponda"). Si
+    // el borrado falla, se deja el eventId intacto en vez de asumir éxito.
+    if (status === 'DONE') {
+      const existing = await prisma.tarea.findUnique({ where: { id } });
+      if (existing?.eventId) {
+        try {
+          await deleteCalendarEvent(existing.eventId);
+          data.eventId = null;
+        } catch (error) {
+          console.error('[task-actions] No se pudo borrar el evento de Calendar al completar (tarea se completa igual):', error);
+        }
+      }
+    }
+
     await prisma.tarea.update({
       where: { id },
-      data: { status },
+      data,
     });
 
     revalidatePath('/tasks');
@@ -124,6 +192,97 @@ export async function updateTaskStatus(formData: FormData) {
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
     redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando la tarea. Intenta de nuevo.'))}`);
+  }
+}
+
+/**
+ * Cambia la fecha límite de una tarea después de creada (Sprint 4.2 — hoy
+ * no existía forma de editar dueDate post-creación). Sincroniza el evento
+ * de Calendar con el nuevo estado (crea/actualiza/borra según corresponda).
+ */
+export async function updateTaskDueDate(formData: FormData) {
+  const returnTo = taskReturnTo(formData);
+  try {
+    const id = formData.get('id')?.toString() || '';
+    const dueDateStr = formData.get('dueDate')?.toString().trim() || '';
+
+    if (!id) {
+      redirect(`${returnTo}?error=${encodeURIComponent('ID de tarea requerido')}`);
+    }
+
+    const existing = await prisma.tarea.findUnique({ where: { id } });
+    if (!existing) {
+      redirect(`${returnTo}?error=${encodeURIComponent('Tarea no encontrada')}`);
+    }
+
+    const dueDate = dueDateStr ? new Date(dueDateStr) : null;
+    const eventId = await syncCalendarEvent(
+      existing!.title,
+      existing!.projectId,
+      dueDate,
+      existing!.eventId,
+      existing!.reminderPreset as ReminderPreset
+    );
+
+    await prisma.tarea.update({
+      where: { id },
+      data: { dueDate, eventId },
+    });
+
+    revalidatePath('/tasks');
+    revalidatePath('/dashboard');
+    revalidatePath(returnTo);
+  } catch (error: any) {
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando la fecha. Intenta de nuevo.'))}`);
+  }
+}
+
+/**
+ * Cambia el preset de recordatorios de una tarea (Sprint 4.3). Si ya tiene
+ * evento sincronizado (proyecto + dueDate), re-sincroniza de inmediato con
+ * los nuevos minutos; si no, solo guarda el preset para cuando se cree el
+ * evento (mismo criterio ya validado por architect: no hay caso borde donde
+ * re-sincronizar sea innecesario o riesgoso, `syncCalendarEvent` ya cubre
+ * "sin evento todavía" devolviendo null sin llamar a la API).
+ */
+export async function updateTaskReminderPreset(formData: FormData) {
+  const returnTo = taskReturnTo(formData);
+  try {
+    const id = formData.get('id')?.toString() || '';
+    const reminderPreset = formData.get('reminderPreset')?.toString() as ReminderPreset;
+
+    if (!id) {
+      redirect(`${returnTo}?error=${encodeURIComponent('ID de tarea requerido')}`);
+    }
+    if (!Object.keys(REMINDER_MINUTES).includes(reminderPreset)) {
+      redirect(`${returnTo}?error=${encodeURIComponent('Preset de recordatorio inválido')}`);
+    }
+
+    const existing = await prisma.tarea.findUnique({ where: { id } });
+    if (!existing) {
+      redirect(`${returnTo}?error=${encodeURIComponent('Tarea no encontrada')}`);
+    }
+
+    const eventId = await syncCalendarEvent(
+      existing!.title,
+      existing!.projectId,
+      existing!.dueDate,
+      existing!.eventId,
+      reminderPreset
+    );
+
+    await prisma.tarea.update({
+      where: { id },
+      data: { reminderPreset, eventId },
+    });
+
+    revalidatePath('/tasks');
+    revalidatePath('/dashboard');
+    revalidatePath(returnTo);
+  } catch (error: any) {
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando el recordatorio. Intenta de nuevo.'))}`);
   }
 }
 
@@ -227,6 +386,15 @@ export async function deleteTask(formData: FormData) {
 
     if (!id) {
       redirect(`${returnTo}?error=${encodeURIComponent('ID de tarea requerido')}`);
+    }
+
+    const existing = await prisma.tarea.findUnique({ where: { id } });
+    if (existing?.eventId) {
+      try {
+        await deleteCalendarEvent(existing.eventId);
+      } catch (error) {
+        console.error('[task-actions] No se pudo borrar el evento de Calendar (tarea se borra igual):', error);
+      }
     }
 
     await prisma.tarea.delete({

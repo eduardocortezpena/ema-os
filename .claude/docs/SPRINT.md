@@ -1,13 +1,108 @@
 # SPRINT.md
-## Current Sprint: Fase 4 — Google Calendar (4.1 completo, 4.2 bloqueado esperando decisión)
+## Current Sprint: Fase 4 — Google Calendar (4.1, 4.2, 4.3, 4.4 completos)
 
 ### Sprint Goal
 Fase 9 en pausa (9.1-9.4 completos; 9.5 pendiente/opcional). Fase 4
-desbloqueada: Sprint 4.1 completo y verificado con la cuenta real del
-usuario. **Sprint 4.2 detenido esperando 2 decisiones de producto del
-dueño — ver sección "⚠️ BLOQUEADO — Sprint 4.2" más abajo.**
+completa: Sprint 4.1 completo y verificado con la cuenta real del usuario;
+4.2/4.3/4.4 desbloqueados y completados en esta sesión (sin supervisión)
+tras recibir las 2 decisiones de producto pendientes directamente del
+dueño al abrir la sesión (ver sección "✅ Sprint 4.2" más abajo para el
+detalle y la evidencia).
 
-### ⚠️ BLOQUEADO — Sprint 4.2, esperando decisión del dueño (2026-07-12)
+### ✅ Sprint 4.2 — Tarea con proyecto+fecha → evento Calendar (2026-07-12)
+
+**Decisiones de producto recibidas al abrir esta sesión** (resuelven el
+bloqueo de la sesión anterior): P1 — solo tareas CON proyecto sincronizan
+a Calendar (Inbox sin proyecto, no). P2 — eventos de todo el día (campo
+`date`, no `dateTime`; sin tocar el `<input type="date">` existente).
+
+Architect confirmó el plan ya documentado en sesión previa sigue vigente
+contra el código real, sin ajustes de fondo. Implementado: `Tarea.eventId
+String?` (migración aditiva `20260712000000_tarea_event_id`, mismo patrón
+que `Archivo.driveFileId`); `app/lib/google-calendar.ts` nuevo
+(`createCalendarEvent`/`updateCalendarEvent`/`deleteCalendarEvent`, 404/410
+tratados como éxito idempotente); `syncCalendarEvent` en `task-actions.ts`
+decide crear/actualizar/borrar según proyecto+fecha, degrada graceful igual
+que `mirrorToDrive` (Calendar caído nunca bloquea guardar la tarea); nueva
+Server Action `updateTaskDueDate` (no existía forma de editar `dueDate`
+post-creación); `updateTaskStatus` borra el evento al completar (DONE);
+`deleteTask` borra el evento antes de borrar la tarea; input de fecha
+inline editable en `TaskCard.tsx`.
+
+**Verificado contra la API real de Calendar** (cuenta
+`eduardocortezpena@gmail.com`, artefactos de prueba limpiados): crear tarea
+con proyecto+fecha → evento real confirmado (todo el día, título exacto);
+editar fecha → mismo `eventId` (PATCH, sin duplicar), fecha movida
+confirmada en la API; completar tarea (DONE) → evento cancelado
+confirmado, `eventId` limpiado en DB; borrar tarea → evento cancelado
+confirmado, fila borrada de DB.
+
+Reviewer encontró **2 bugs bloqueantes reales** en la primera pasada: (1)
+el input de fecha inline no tenía guard anti doble-submit — riesgo real de
+crear eventos duplicados en Calendar con dos cambios casi simultáneos
+(mismo tipo de bug ya resuelto en Sprint 7.3 para `TaskBoard.tsx`, no
+aplicado aquí); (2) `deleteProject` no limpiaba `Tarea.eventId` de las
+tareas afectadas por `onDelete: SetNull` (Sprint 7.4) — dejaba eventos
+huérfanos vivos en el Calendar real del usuario al borrar un proyecto.
+Encontró además un hallazgo menor: `createTask` sincronizaba Calendar
+*antes* de crear la fila en DB (riesgo de evento huérfano sin fila que lo
+referencie si el `create` fallaba después) — inconsistente con el orden ya
+establecido por `mirrorToDrive` en `notes.ts`.
+
+**Los 3 corregidos y re-verificados**: guard `useRef` por instancia añadido
+al form de fecha en `TaskCard.tsx` (mismo patrón que `TaskBoard.tsx`,
+confirmado por reviewer que no se comparte entre tarjetas porque cada
+`TaskCard` es una instancia por tarea); `deleteProject` ahora borra los
+eventos de Calendar de las tareas afectadas (best-effort, no bloquea el
+borrado del proyecto) y limpia `eventId: null` — **verificado con un
+proyecto+tarea desechables creados y borrados en esta sesión**: evento
+confirmado `status: cancelled` en la API real tras borrar el proyecto,
+`eventId: null` en la tarea sobreviviente; `createTask` reordenado a
+crear-luego-sincronizar (mismo patrón `mirrorToDrive`). Reviewer re-revisó
+el código corregido: sin hallazgos bloqueantes nuevos, build limpio.
+
+### ✅ Sprint 4.3 — Recordatorios configurables (2026-07-12)
+
+Decisión de producto ya dada: recordatorios por defecto de 3 y 5 días
+antes, con preset editable ("3 y 5 días"/"5 días"/"3 días"/"1
+día"/"Sin recordatorio"). Architect validó el plan con un ajuste: usar
+`enum ReminderPreset` de Prisma (no `String` suelto) por consistencia con
+el resto del schema, y pasar los minutos de recordatorio como parámetro
+con nombre en `google-calendar.ts` en vez de posicional.
+
+Implementado: `Tarea.reminderPreset ReminderPreset @default(DEFAULT)`
+(migración aditiva `20260712010000_tarea_reminder_preset`); `google-calendar.ts`
+arma `reminders.overrides` (`useDefault: false` explícito, nunca hereda el
+default de la cuenta); `REMINDER_MINUTES` en `task-actions.ts` traduce
+preset→minutos (DEFAULT=[4320,7200], THREE_DAYS=[4320], FIVE_DAYS=[7200],
+ONE_DAY=[1440], NONE=[]); nueva Server Action `updateTaskReminderPreset`
+con re-sincronización obligatoria (architect: no hay caso borde donde
+re-sincronizar sea innecesario o riesgoso, `PATCH` es idempotente); select
+inline en `TaskCard.tsx` con el mismo guard anti doble-submit que el input
+de fecha.
+
+**Verificado contra la API real**: tarea creada con preset DEFAULT →
+`reminders.overrides` con minutos 7200 y 4320 confirmados en la API;
+cambio a preset "1 día" → mismo `eventId` (PATCH, sin duplicar), overrides
+actualizado a 1440 confirmado en la API. Reviewer: sin hallazgos
+bloqueantes, build limpio, enums Prisma/TS alineados.
+
+### ✅ Sprint 4.4 — Vista de agenda en el dashboard (2026-07-12)
+
+Sin decisión de architect (sprint de UI, sin schema nuevo — reusa
+`upcomingDueTasks`, ya calculado desde Sprint 9.4 para la tarjeta "Próx.
+fechas límite (7d)"). Nueva sección "Agenda — Próximos 7 días" en
+`app/dashboard/page.tsx`: mismas tareas que ya cuenta esa tarjeta,
+renderizadas como lista ordenada por fecha ascendente, con proyecto y
+enlace a `/projects/{id}`.
+
+**Verificado en navegador con datos reales**: 4 tareas reales de "Xalma
+Residencial" (calendario de publicaciones 12/14/16/18 jul 2026),
+coincide exactamente con el conteo de la tarjeta ("4"), orden ascendente
+confirmado, links a `/projects/{id real}` confirmados.
+
+### ⚠️ BLOQUEADO — Sprint 4.2 (histórico, ya resuelto — dejado como
+referencia del diagnóstico original)
 
 `architect` ya dio la recomendación técnica completa para 4.2 (ver detalle
 más abajo), pero señaló explícitamente una pregunta de alcance/producto que

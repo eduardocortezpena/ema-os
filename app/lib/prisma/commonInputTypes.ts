@@ -185,6 +185,13 @@ export type DateTimeNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
 }
 
+export type EnumReminderPresetFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReminderPreset | Prisma.EnumReminderPresetFieldRefInput<$PrismaModel>
+  in?: $Enums.ReminderPreset[]
+  notIn?: $Enums.ReminderPreset[]
+  not?: Prisma.NestedEnumReminderPresetFilter<$PrismaModel> | $Enums.ReminderPreset
+}
+
 export type EnumTareaStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.TareaStatus | Prisma.EnumTareaStatusFieldRefInput<$PrismaModel>
   in?: $Enums.TareaStatus[]
@@ -207,6 +214,16 @@ export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type EnumReminderPresetWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReminderPreset | Prisma.EnumReminderPresetFieldRefInput<$PrismaModel>
+  in?: $Enums.ReminderPreset[]
+  notIn?: $Enums.ReminderPreset[]
+  not?: Prisma.NestedEnumReminderPresetWithAggregatesFilter<$PrismaModel> | $Enums.ReminderPreset
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumReminderPresetFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumReminderPresetFilter<$PrismaModel>
 }
 
 export type EnumArchivoKindFilter<$PrismaModel = never> = {
@@ -414,6 +431,13 @@ export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
 }
 
+export type NestedEnumReminderPresetFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReminderPreset | Prisma.EnumReminderPresetFieldRefInput<$PrismaModel>
+  in?: $Enums.ReminderPreset[]
+  notIn?: $Enums.ReminderPreset[]
+  not?: Prisma.NestedEnumReminderPresetFilter<$PrismaModel> | $Enums.ReminderPreset
+}
+
 export type NestedEnumTareaStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.TareaStatus | Prisma.EnumTareaStatusFieldRefInput<$PrismaModel>
   in?: $Enums.TareaStatus[]
@@ -436,6 +460,16 @@ export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumReminderPresetWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ReminderPreset | Prisma.EnumReminderPresetFieldRefInput<$PrismaModel>
+  in?: $Enums.ReminderPreset[]
+  notIn?: $Enums.ReminderPreset[]
+  not?: Prisma.NestedEnumReminderPresetWithAggregatesFilter<$PrismaModel> | $Enums.ReminderPreset
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumReminderPresetFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumReminderPresetFilter<$PrismaModel>
 }
 
 export type NestedEnumArchivoKindFilter<$PrismaModel = never> = {

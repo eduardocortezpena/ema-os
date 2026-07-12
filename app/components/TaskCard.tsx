@@ -1,6 +1,7 @@
 'use client';
 
-import { updateTaskStatus, updateTaskPriority, deleteTask } from '@/app/actions';
+import { useRef, useState } from 'react';
+import { updateTaskStatus, updateTaskPriority, updateTaskDueDate, updateTaskReminderPreset, deleteTask } from '@/app/actions';
 import { ConfirmButton } from './ConfirmButton';
 import { AutoSubmitSelect } from './AutoSubmitSelect';
 
@@ -11,9 +12,18 @@ export type Task = {
   priority: string;
   status: string;
   dueDate: Date | null;
+  reminderPreset?: string;
   project: { id: string; name: string } | null;
   pending?: boolean;
 };
+
+const REMINDER_OPTIONS = [
+  { value: 'DEFAULT', label: '3 y 5 días' },
+  { value: 'FIVE_DAYS', label: '5 días' },
+  { value: 'THREE_DAYS', label: '3 días' },
+  { value: 'ONE_DAY', label: '1 día' },
+  { value: 'NONE', label: 'Sin recordatorio' },
+];
 
 // Tarjeta de tarea individual (Sprint 9.1): extraída de TaskBoard.tsx para
 // reusarla tal cual en la lista general (/tasks) y en el detalle de
@@ -32,6 +42,46 @@ export function TaskCard({
   showProject?: boolean;
   returnTo?: string;
 }) {
+  // Guard anti doble-submit (mismo patrón useRef que TaskBoard.tsx, Sprint
+  // 7.3): updateTaskDueDate/updateTaskReminderPreset hacen un findUnique +
+  // llamada de red a Calendar antes de escribir el eventId resultante — dos
+  // invocaciones casi simultáneas del mismo form pueden leer el mismo
+  // eventId viejo en paralelo y crear un evento duplicado en Calendar
+  // (hallazgo del reviewer, Sprint 4.2). Cada TaskCard es una instancia por
+  // tarea, así que el ref no se comparte entre tarjetas distintas.
+  const dueDateSubmittingRef = useRef(false);
+  const [dueDateSubmitting, setDueDateSubmitting] = useState(false);
+  const reminderSubmittingRef = useRef(false);
+  const [reminderSubmitting, setReminderSubmitting] = useState(false);
+
+  async function handleDueDateChange(formData: FormData) {
+    if (dueDateSubmittingRef.current) return;
+    dueDateSubmittingRef.current = true;
+    setDueDateSubmitting(true);
+    try {
+      await updateTaskDueDate(formData);
+    } catch (e: any) {
+      if (e?.digest?.startsWith('NEXT_REDIRECT')) return;
+    } finally {
+      dueDateSubmittingRef.current = false;
+      setDueDateSubmitting(false);
+    }
+  }
+
+  async function handleReminderChange(formData: FormData) {
+    if (reminderSubmittingRef.current) return;
+    reminderSubmittingRef.current = true;
+    setReminderSubmitting(true);
+    try {
+      await updateTaskReminderPreset(formData);
+    } catch (e: any) {
+      if (e?.digest?.startsWith('NEXT_REDIRECT')) return;
+    } finally {
+      reminderSubmittingRef.current = false;
+      setReminderSubmitting(false);
+    }
+  }
+
   return (
     <div
       data-task-id={task.id}
@@ -63,8 +113,36 @@ export function TaskCard({
               />
             </form>
             <span className={`badge badge-${task.status.toLowerCase()}`}>{task.status}</span>
-            {task.dueDate && (
-              <span className="badge bg-gray-700">{task.dueDate.toLocaleDateString()}</span>
+            {!task.pending && (
+              <form action={handleDueDateChange} className="inline-block">
+                <input type="hidden" name="id" value={task.id} />
+                {returnTo && <input type="hidden" name="returnTo" value={returnTo} />}
+                <input
+                  type="date"
+                  name="dueDate"
+                  disabled={dueDateSubmitting}
+                  defaultValue={task.dueDate ? task.dueDate.toISOString().slice(0, 10) : ''}
+                  onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                  className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+                />
+              </form>
+            )}
+            {!task.pending && (
+              <form action={handleReminderChange} className="inline-block">
+                <input type="hidden" name="id" value={task.id} />
+                {returnTo && <input type="hidden" name="returnTo" value={returnTo} />}
+                <select
+                  name="reminderPreset"
+                  disabled={reminderSubmitting}
+                  defaultValue={task.reminderPreset ?? 'DEFAULT'}
+                  onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                  className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+                >
+                  {REMINDER_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </form>
             )}
             {showProject && (
               task.project ? (

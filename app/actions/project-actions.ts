@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
 import { toUserMessage } from '@/app/lib/errors';
 import { ensureProjectFilesDir } from '@/app/lib/files';
+import { deleteCalendarEvent } from '@/app/lib/google-calendar';
 
 // Ver taskReturnTo/noteReturnTo (Sprint 9.1): updateProject/setNextAction
 // ahora también se invocan desde /projects/[id], no solo desde /projects.
@@ -119,6 +120,25 @@ export async function deleteProject(formData: FormData) {
 
     if (!id) {
       redirect(`/projects?error=${encodeURIComponent('ID de proyecto requerido')}`);
+    }
+
+    // Tarea.project usa onDelete: SetNull (Sprint 7.4) — al borrar el
+    // proyecto, Prisma pone projectId=null en sus tareas SIN pasar por
+    // task-actions.ts. Sin este paso, un evento de Calendar sincronizado
+    // (Sprint 4.2, P1: solo tareas con proyecto) quedaría huérfano en el
+    // Calendar real del usuario. Borrado best-effort: un fallo de red no
+    // debe bloquear el borrado del proyecto en sí.
+    const tasksWithEvents = await prisma.tarea.findMany({
+      where: { projectId: id, eventId: { not: null } },
+      select: { id: true, eventId: true },
+    });
+    for (const task of tasksWithEvents) {
+      try {
+        await deleteCalendarEvent(task.eventId!);
+        await prisma.tarea.update({ where: { id: task.id }, data: { eventId: null } });
+      } catch (error) {
+        console.error('[project-actions] No se pudo borrar el evento de Calendar de una tarea (proyecto se borra igual):', error);
+      }
     }
 
     await prisma.proyecto.delete({

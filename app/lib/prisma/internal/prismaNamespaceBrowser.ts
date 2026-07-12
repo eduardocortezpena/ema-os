@@ -96,9 +96,11 @@ export const TareaScalarFieldEnum = {
   priority: 'priority',
   status: 'status',
   dueDate: 'dueDate',
+  reminderPreset: 'reminderPreset',
   plannedFor: 'plannedFor',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  eventId: 'eventId'
 } as const
 
 export type TareaScalarFieldEnum = (typeof TareaScalarFieldEnum)[keyof typeof TareaScalarFieldEnum]

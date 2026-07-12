@@ -42,12 +42,20 @@ model Tarea {
   priority    Priority @default(LOW)
   status      TareaStatus @default(TODO)
   dueDate     DateTime?
+  // Preset de recordatorios del evento de Calendar (Sprint 4.3). DEFAULT =
+  // 3 y 5 días antes (sin que el usuario tenga que elegir nada). Solo tiene
+  // efecto si la tarea llega a tener un evento (proyecto + dueDate).
+  reminderPreset ReminderPreset @default(DEFAULT)
   plannedFor  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   project     Proyecto? @relation("ProjectTasks", fields: [projectId], references: [id], onDelete: SetNull)
   notes       Nota[]
   isNextActionFor Proyecto? @relation("ProjectNextAction")
+  // Evento espejo en Google Calendar (Sprint 4.2). Mismo patrón que
+  // Archivo.driveFileId: nullable, solo tareas CON proyecto y dueDate lo
+  // tienen. Migración aditiva, sin backfill (tareas existentes quedan null).
+  eventId     String?
 }
 
 model Nota {
@@ -113,4 +121,12 @@ enum TareaStatus {
   IN_PROGRESS
   WAITING
   DONE
+}
+
+enum ReminderPreset {
+  DEFAULT
+  THREE_DAYS
+  FIVE_DAYS
+  ONE_DAY
+  NONE
 }
