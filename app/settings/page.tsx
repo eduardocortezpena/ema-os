@@ -120,8 +120,11 @@ export default async function Settings({
 
             <div className="flex items-center justify-between p-2 rounded bg-gray-700">
               <span className="text-gray-300 mr-2">Moneda</span>
-              <button className="px-3 py-1 text-sm bg-gray-600 rounded hover:bg-gray-700">
-                USD
+              <button
+                className="px-3 py-1 text-sm bg-gray-600 rounded hover:bg-gray-700"
+                title="USD queda como opción de conversión futura, sin implementar todavía"
+              >
+                MXN
               </button>
             </div>
 

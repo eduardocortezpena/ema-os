@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EMA OS",
+  title: "Organizador de archivos",
   description: "Personal project manager",
 };
 
@@ -38,7 +38,7 @@ export default async function RootLayout({
       <body className="min-h-full flex">
         <aside className="w-64 bg-gray-900 border-r border-gray-800 p-4 hidden md:block">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-xl font-bold">EMA OS</h1>
+            <h1 className="text-xl font-bold">Organizador de archivos</h1>
             <span className="text-gray-500 text-xs" title="Ctrl+K paleta · ? ayuda">Ctrl+K · ?</span>
           </div>
           <nav className="space-y-2">
