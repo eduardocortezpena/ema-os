@@ -188,50 +188,38 @@ Resultado verificado contra la DB y en el dashboard real:
 - Sin incidentes: ningún Server Action rechazó, no hizo falta revertir
   ningún proyecto a medias.
 
-### ⚠️ BLOQUEADO — Sprint 4.1, esperando acción manual del dueño
+### ⚠️ BLOQUEADO — Sprint 4.1, esperando reconsentimiento real del dueño
 
-**No se escribió código de Calendar todavía** (a propósito, mismo criterio
-que Sprint 3.2: "no se empieza a programar hasta que el dueño confirme que
-los pasos manuales están hechos"). Razón técnica: el scope de Calendar es
-"sensible" y el refresh token actual (Sprint 3.2) solo tiene el scope
-`drive.file` — pedir un scope nuevo requiere una re-autorización real con
-clic humano en el navegador de Eduardo, que no puede simularse ni
-completarse en una sesión sin supervisión.
+**Actualización 2026-07-12**: el dueño confirmó que ya completó los 3
+pasos en Google Cloud Console (Calendar API habilitada, scope
+`calendar.events` agregado a la pantalla de consentimiento, modo In
+Production confirmado). Con eso:
 
-**Pasos exactos que debe hacer el dueño antes de que se pueda seguir:**
-
-1. Ir a [Google Cloud Console](https://console.cloud.google.com) → el
-   mismo proyecto usado para Drive (Sprint 3.2).
-2. **APIs & Services → Library** → buscar "Google Calendar API" → **Enable**.
-3. **APIs & Services → OAuth consent screen** → Edit → sección Scopes →
-   "Add or Remove Scopes" → buscar "Calendar" → seleccionar
-   `.../auth/calendar.events` (scope acotado a eventos, no el `calendar`
-   completo — coincide con el alcance real que necesita EMA OS: crear/leer/
-   actualizar eventos, no gestionar calendarios enteros) → Save.
-4. Confirmar que la pantalla de consentimiento sigue en modo **"In
-   Production"** (ya se hizo en 3.2 para evitar que el refresh token expire
-   a 7 días en modo Testing) — si al agregar el scope Google la regresa a
-   "Testing" o pide nueva verificación, confirmarlo explícitamente antes de
-   seguir.
-
-**Qué hará la próxima sesión en cuanto el dueño confirme los 3 pasos:**
-
-1. `app/lib/google-drive-auth.ts`: actualizar `SCOPE` para incluir
+1. ✅ `app/lib/google-drive-auth.ts`: `SCOPE` actualizado para incluir
    `https://www.googleapis.com/auth/calendar.events` junto al `drive.file`
-   existente (un solo string separado por espacio, es como Google acepta
-   múltiples scopes en una sola autorización).
-2. El dueño debe volver a hacer clic en "Conectar con Google Drive" en
-   `/settings` (con sesión real de Google, navegador real) — esto genera un
-   refresh token NUEVO que reemplaza al actual y cubre ambos scopes (Drive
-   + Calendar) en una sola credencial. **Esto es una acción del dueño, no
-   se puede automatizar.**
-3. Verificar con una llamada real a la API de Calendar (ej. listar
+   existente.
+2. ✅ Botón "Desconectar y reconectar" añadido en `/settings`
+   (`app/actions/settings.ts::disconnectAndReconnectDrive`) — revoca el
+   token viejo (solo `drive.file`) y redirige en el mismo clic a la
+   pantalla de consentimiento de Google. **Verificado en navegador**: el
+   token se borró de la DB, y el redirect real a `accounts.google.com`
+   confirmó `scope=drive.file+calendar.events` y `prompt=consent` en la
+   URL decodificada.
+3. ⏳ **Falta que el dueño complete el login + consentimiento real** (no
+   se puede automatizar — requiere su credencial de Google). El botón lo
+   deja en la pantalla de login de Google; desde ahí él debe iniciar
+   sesión, confirmar que la pantalla de consentimiento lista "Ver y
+   administrar eventos de Google Calendar", y aceptar.
+
+**En cuanto el dueño confirme que completó el consentimiento:**
+
+1. Verificar con una llamada real a la API de Calendar (ej. listar
    calendarios del usuario) que el nuevo token funciona, igual que se hizo
    con Drive en 3.2.
-4. Recién ahí seguir con Sprint 4.2 (Tarea con fecha/hora → evento de
-   Calendar) — requiere decisión de architect sobre dónde guardar el
-   `eventId` en el modelo `Tarea` (probablemente `String?` nullable, mismo
-   patrón que `driveFileId` en `Archivo`).
+2. Seguir con Sprint 4.2 (Tarea con fecha/hora → evento de Calendar) —
+   requiere decisión de architect sobre dónde guardar el `eventId` en el
+   modelo `Tarea` (probablemente `String?` nullable, mismo patrón que
+   `driveFileId` en `Archivo`).
 
 **No se toca Fase 5 en esta sesión**: la regla explícita era "solo si sobra
 presupuesto tras cerrar Fase 7 Y Fase 4 hasta donde llegue" — Fase 4 llegó
