@@ -55,7 +55,7 @@ export default async function DashboardPage() {
               {nextActions.map((project) => (
                 <a
                   key={project.id}
-                  href="/projects" // TODO: enlazar a /projects/[id] cuando exista ruta de detalle
+                  href={`/projects/${project.id}`}
                   className="flex items-center justify-between bg-gray-800 hover:bg-gray-700 transition-colors p-3 rounded-lg"
                 >
                   <div>
@@ -82,7 +82,11 @@ export default async function DashboardPage() {
         ) : (
           <div className="space-y-4">
             {projects.map((project) => (
-              <div key={project.id} className="bg-gray-800 p-4 rounded-lg">
+              <a
+                key={project.id}
+                href={`/projects/${project.id}`}
+                className="block bg-gray-800 hover:bg-gray-700 transition-colors p-4 rounded-lg"
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold">{project.name}</h3>
@@ -99,7 +103,7 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         )}

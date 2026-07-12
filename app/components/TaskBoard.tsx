@@ -49,7 +49,7 @@ export function TaskBoard({ tasks, projects }: { tasks: Task[]; projects: Projec
         priority: formData.get('priority')?.toString() || 'LOW',
         status: formData.get('status')?.toString() || 'TODO',
         dueDate: null,
-        project: project ? { name: project.name } : null,
+        project: project ? { id: project.id, name: project.name } : null,
         pending: true,
       });
     }

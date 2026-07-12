@@ -54,7 +54,17 @@ export default async function MyDayPage({
                 <div key={task.id} className="bg-gray-800 p-3 rounded-lg flex items-center justify-between">
                   <div>
                     <span>{task.title}</span>
-                    <span className="text-gray-500 text-sm ml-2">({task.project?.name ?? 'Inbox'})</span>
+                    <span className="text-gray-500 text-sm ml-2">
+                      (
+                      {task.project ? (
+                        <a href={`/projects/${task.project.id}`} className="hover:text-primary-500 hover:underline">
+                          {task.project.name}
+                        </a>
+                      ) : (
+                        'Inbox'
+                      )}
+                      )
+                    </span>
                   </div>
                   <form action={rolloverToTomorrow}>
                     <input type="hidden" name="id" value={task.id} />
@@ -81,7 +91,13 @@ export default async function MyDayPage({
                       <h3 className="font-semibold">{task.title}</h3>
                       <div className="flex gap-2 mt-1 flex-wrap">
                         <span className={`badge badge-${task.priority.toLowerCase()}`}>{task.priority}</span>
-                        <span className="badge bg-gray-700">{task.project?.name ?? 'Inbox'}</span>
+                        {task.project ? (
+                          <a href={`/projects/${task.project.id}`} className="badge bg-gray-700 hover:bg-gray-600">
+                            {task.project.name}
+                          </a>
+                        ) : (
+                          <span className="badge bg-gray-700">Inbox</span>
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-col gap-2 items-end">
@@ -123,7 +139,17 @@ export default async function MyDayPage({
                 <div key={task.id} className="bg-gray-800 p-3 rounded-lg flex items-center justify-between">
                   <div>
                     <span>{task.title}</span>
-                    <span className="text-gray-500 text-sm ml-2">({task.project?.name ?? 'Inbox'})</span>
+                    <span className="text-gray-500 text-sm ml-2">
+                      (
+                      {task.project ? (
+                        <a href={`/projects/${task.project.id}`} className="hover:text-primary-500 hover:underline">
+                          {task.project.name}
+                        </a>
+                      ) : (
+                        'Inbox'
+                      )}
+                      )
+                    </span>
                     <span className={`badge badge-${task.priority.toLowerCase()} ml-2`}>{task.priority}</span>
                   </div>
                   <form action={planForToday}>

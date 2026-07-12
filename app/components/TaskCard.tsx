@@ -11,7 +11,7 @@ export type Task = {
   priority: string;
   status: string;
   dueDate: Date | null;
-  project: { name: string } | null;
+  project: { id: string; name: string } | null;
   pending?: boolean;
 };
 
@@ -67,7 +67,13 @@ export function TaskCard({
               <span className="badge bg-gray-700">{task.dueDate.toLocaleDateString()}</span>
             )}
             {showProject && (
-              <span className="badge bg-gray-700">{task.project?.name ?? 'Sin proyecto'}</span>
+              task.project ? (
+                <a href={`/projects/${task.project.id}`} className="badge bg-gray-700 hover:bg-gray-600">
+                  {task.project.name}
+                </a>
+              ) : (
+                <span className="badge bg-gray-700">Sin proyecto</span>
+              )
             )}
           </div>
         </div>

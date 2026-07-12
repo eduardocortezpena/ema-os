@@ -40,7 +40,9 @@ export default async function ProjectsPage({
                   <div key={project.id} className="bg-gray-800 p-4 rounded-lg">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold">{project.name}</h3>
+                        <a href={`/projects/${project.id}`} className="text-lg font-semibold hover:text-primary-500 hover:underline">
+                          {project.name}
+                        </a>
                         {project.description && (
                           <p className="text-gray-400 text-sm mt-1">{project.description}</p>
                         )}
@@ -48,7 +50,9 @@ export default async function ProjectsPage({
                           <p className="text-gray-400 text-sm mt-1">Nota: {project.nextAction}</p>
                         )}
                         {project.nextActionTask && (
-                          <p className="text-primary-500 text-sm mt-1">→ Next Action: {project.nextActionTask.title}</p>
+                          <a href={`/projects/${project.id}`} className="block text-primary-500 text-sm mt-1 hover:underline">
+                            → Next Action: {project.nextActionTask.title}
+                          </a>
                         )}
                         <div className="flex gap-2 mt-2 flex-wrap">
                           <span className={`badge badge-${project.priority.toLowerCase()}`}>{project.priority}</span>
