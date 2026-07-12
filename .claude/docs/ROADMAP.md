@@ -331,6 +331,41 @@ dueño — de momento es solo contexto anotado en el backlog.
 
 ---
 
+## Fase 10 — Estilización y pulido visual
+
+> Añadida 2026-07-12 a pedido del dueño. Fase abierta a propósito: el
+> dueño va a conseguir skills/herramientas de animaciones y diseño
+> adicionales, y esta fase se poblará con sprints concretos después de esa
+> decisión. Mientras tanto, algunos ajustes de UX puntuales (Sesión de
+> mejoras de UX, 2026-07-12: prioridad/estado cíclicos con animación,
+> tarjetas de dashboard clicables, moneda MXN, etc.) se hacen directamente
+> sobre las páginas existentes sin esperar a que esta fase tenga sprints
+> formales — ver `SPRINT.md` para el detalle de esos cambios puntuales.
+
+Pendiente de definir con el dueño: paleta/tipografía más allá de lo ya
+fijado en la skill `ui-guidelines`, motion system consistente (hoy cada
+componente decide sus transiciones por separado), y cualquier herramienta
+de diseño/animación nueva que el dueño decida incorporar — sujeta siempre
+al principio rector de gasto adicional = $0 (open source o self-hosted).
+
+---
+
+## Pendientes explícitos de sesión supervisada (no tocar sin el dueño presente)
+
+- **Integración Hermes Agent/Workspace ↔ EMA OS** (ver `BACKLOG.md`,
+  sección Hermes): el dueño ya instaló y configuró Hermes; conectar sus
+  tools a la base de datos real de EMA OS toca datos reales y decisiones
+  de arquitectura (routing agente→tool, permisos) — requiere sesión con
+  supervisión, no se hace en sesiones sin supervisión.
+- **Organización real de la carpeta de archivos / árbol de directorio de
+  `/files`**: el "Clasificador de archivos" (Fase 2, reservada) y la
+  construcción del árbol de directorio real de `/files` (ver Parte 6 de la
+  Sesión de mejoras de UX en `SPRINT.md`) requieren un plan conjunto con
+  el dueño sobre cómo se organiza la carpeta local antes de subirla a
+  Drive — no se construye unilateralmente en una sesión sin supervisión.
+
+---
+
 ## Qué NO hacer
 
 - No convertir EMA OS en un ERP.
