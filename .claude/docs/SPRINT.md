@@ -1,11 +1,55 @@
 # SPRINT.md
-## Current Sprint: Fase 4 — Google Calendar
+## Current Sprint: Fase 4 — Google Calendar (4.1 completo, 4.2 bloqueado esperando decisión)
 
 ### Sprint Goal
 Fase 9 en pausa (9.1-9.4 completos; 9.5 pendiente/opcional). Fase 4
 desbloqueada: Sprint 4.1 completo y verificado con la cuenta real del
-usuario. Continúa con Sprint 4.2 (Tarea con fecha/hora → evento de
-Calendar).
+usuario. **Sprint 4.2 detenido esperando 2 decisiones de producto del
+dueño — ver sección "⚠️ BLOQUEADO — Sprint 4.2" más abajo.**
+
+### ⚠️ BLOQUEADO — Sprint 4.2, esperando decisión del dueño (2026-07-12)
+
+`architect` ya dio la recomendación técnica completa para 4.2 (ver detalle
+más abajo), pero señaló explícitamente una pregunta de alcance/producto que
+no le corresponde decidir a él ni a mí. Se le preguntó al dueño con
+`AskUserQuestion` y cerró las preguntas sin responder ("cierra hasta aquí,
+no hay más tokens por 2 horas") — quedan pendientes, no se asumió nada.
+
+**Las 2 preguntas exactas para retomar la sesión:**
+
+1. **¿Las tareas del Inbox (sin proyecto asignado) con fecha límite
+   también deben sincronizarse a Google Calendar, o solo las tareas que ya
+   pertenecen a un proyecto?**
+2. **¿Los eventos de Calendar deben tener hora específica (requiere
+   cambiar el input de fecha actual `type="date"` a `type="datetime-local"`
+   en `TaskBoard.tsx`/`ProjectTaskList.tsx`) o basta con eventos de "todo
+   el día" por ahora (más simple, sin tocar la UI de fecha existente)?**
+
+**Recomendación de architect para ambas** (no vinculante, el dueño decide):
+opción 1 = "solo tareas con proyecto"; opción 2 = "todo el día por ahora,
+mejora a hora específica en un sprint futuro si hace falta".
+
+**Resto de la decisión técnica de architect, ya lista para implementar en
+cuanto se resuelvan las 2 preguntas:**
+
+- Schema: un solo campo nuevo, `Tarea.eventId String?` — mismo patrón que
+  `Archivo.driveFileId`. Migración aditiva, sin backfill (33 tareas reales
+  hoy, todas quedan con `eventId = null`).
+- `dueDate` (`DateTime?` en Prisma) ya alcanza para fecha+hora si se elige
+  la opción 2 de la pregunta 2 — el cambio sería solo en el `<input>` HTML,
+  no en el schema.
+- Nuevo módulo `app/lib/google-calendar.ts` (paralelo a
+  `google-drive-files.ts`): `createCalendarEvent`, `updateCalendarEvent`,
+  usando `getValidAccessToken()` ya probado en Sprint 4.1.
+- Nueva Server Action `updateTaskDueDate` en `app/actions/task-actions.ts`
+  (hoy no existe forma de cambiar `dueDate` después de crear la tarea) —
+  debe seguir el patrón `taskReturnTo` ya establecido (Sprint 9.1).
+  `createTask` también debe invocar el sync si viene `dueDate` al crear.
+- Fallo de red hacia Calendar: degradar graceful, mismo patrón que
+  `mirrorToDrive`/`mirrorFileToDrive` — la tarea se guarda igual, `eventId`
+  queda `null`, nunca bloquea ni hace `redirect` a error por esto.
+- Verificar con `calendars/primary/events` (no `calendarList`, ver
+  lección de Sprint 4.1 arriba).
 
 ### Sprint Duration
 Start: 2026-07-11 (Fase 7, completa). Fase 4 bloqueada en 4.1 el mismo
