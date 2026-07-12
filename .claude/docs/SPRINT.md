@@ -1,5 +1,85 @@
 # SPRINT.md
-## Current Sprint: Fase 4 — Google Calendar (4.1, 4.2, 4.3, 4.4 completos)
+## Current Sprint: Sesión de mejoras de UX (Partes 0-6 completas) — Fase 4 completa (4.1-4.4)
+
+### ✅ Sesión de mejoras de UX (2026-07-12) — Partes 0-6, todas completas
+
+Pedido del dueño tras usar la app en serio. Documentar primero (Parte 1),
+luego ejecutar de a una parte, con `architect` antes de decisiones
+estructurales y `reviewer` al cerrar cada bloque grande — verificación en
+navegador para todo (feedback de UX, el build limpio no basta).
+
+**Parte 0 — Skill `frontend-design`**: instalada y habilitada
+(`frontend-design@claude-plugins-official`, marketplace oficial ya
+configurado). No aparece en la lista de skills invocables de esta misma
+sesión — los plugins instalados a mitad de sesión requieren reiniciar
+Claude Code para cargarse como skill formal. Se leyó su `SKILL.md`
+directo y se usó como guía (moderación, motion deliberado) combinada con
+`ui-guidelines` (que sigue siendo la autoridad de la paleta dark).
+**Pendiente para el dueño**: reiniciar Claude Code para que la skill
+quede disponible como `/frontend-design` en próximas sesiones.
+
+**Parte 1 — ROADMAP.md/BACKLOG.md**: Fase 10 "Estilización y pulido
+visual" agregada, deliberadamente abierta (sin sprints) a la espera de
+que el dueño consiga herramientas de animación/diseño adicionales.
+Documentados los pendientes de sesión supervisada (Hermes, árbol de
+directorio de `/files`). El texto "(~65% del peso)" pedido para corregir
+NO existe en ningún archivo del repo (confirmado con grep, segunda vez
+que se verifica — ya documentado como discrepancia en sesión anterior).
+
+**Parte 2 — Renombre + moneda**: `<title>` y header del sidebar ahora
+"Organizador de archivos" (nombre técnico en `package.json` sin tocar).
+`/settings` muestra MXN por defecto (botón estático sin lógica de
+conversión, USD documentado en tooltip como opción futura).
+
+**Parte 3 — Tarjetas de dashboard clicables**: "Proyectos totales" →
+`/projects`, "Activos" → `/projects?estado=activo`, "Tareas abiertas" →
+`/tasks?estado=abiertas`. Filtrado server-side (mismo patrón que Sprint
+9.4), sin nuevo client component (architect: es navegación, no un
+control interactivo). Verificado: 7 activos, tareas TODO/IN_PROGRESS
+coinciden con los conteos reales.
+
+**Parte 4 — Nota de contexto fuera de la vista** (cambio de rumbo vs.
+Sprint 9.1/9.3): `/projects/[id]` ya no renderiza la nota de contexto,
+pero se conserva íntegra en Drive + índice SQLite (será el contexto de
+futuros agentes organizadores). `app/actions/notes.ts` intacto — sigue
+en uso real vía command palette (`quickCreateNote`). Verificado: nota de
+Xalma Residencial con 1495 bytes reales en disco y `driveFileId` intacto
+tras el cambio.
+
+**Parte 5 — Rediseño interactivo de tareas** (la más grande, prioridad
+del dueño): badges de prioridad y estado ahora son botones cíclicos
+(clic rota el valor con su color, `transition-colors` nativo sin
+librería), más un botón compacto "✓" que salta directo a DONE (reusa
+`updateTaskStatus`, conserva el borrado del evento de Calendar de Sprint
+4.2). Reviewer encontró un **bug bloqueante real**: 3 refs de guard
+independientes permitían que un clic casi simultáneo entre "✓ Completar"
+y el badge de estado sobrescribiera DONE con un estado viejo después de
+borrado el evento de Calendar. **Corregido** con un mutex compartido
+(`taskMutatingRef`) entre los 3 controles + fix del rebote visual del
+optimistic UI (limpieza vía `useEffect` en vez de en el `finally`
+inmediato). Re-verificado forzando la carrera exacta en ambos órdenes de
+clic contra la DB real — confirmado que solo el primer click gana en
+ambos casos. Deuda menor documentada en BACKLOG.md (mutex no unificado
+con el atajo de teclado "P" existente, Sprint 7.2).
+
+**Parte 6 — `/files` simplificado**: quitado el widget de subida por
+proyecto; la sección ahora es un placeholder honesto ("el directorio se
+está rediseñando"). `app/actions/files.ts` y los helpers de Drive
+intactos (mismo criterio que Parte 4). Confirmado 0 archivos tipo FILE
+existentes hoy — no se perdió ninguna vista de datos reales.
+
+**Estado final verificado**: `git status` limpio, `npm run build`
+limpio, 8 commits de esta sesión (uno por parte o sub-bloque grande,
+como se pidió). Ningún artefacto de prueba quedó en la DB (verificado
+uno por uno tras cada test).
+
+**Nada bloqueante pendiente para el dueño.** Único paso manual sugerido:
+reiniciar Claude Code para que la skill `frontend-design` quede
+disponible como slash command en la próxima sesión.
+
+---
+
+## Current Sprint (histórico): Fase 4 — Google Calendar (4.1, 4.2, 4.3, 4.4 completos)
 
 ### Sprint Goal
 Fase 9 en pausa (9.1-9.4 completos; 9.5 pendiente/opcional). Fase 4
