@@ -270,6 +270,60 @@ dueño — de momento es solo contexto anotado en el backlog.
 
 ---
 
+## Fase 9 — Interactividad y navegación conectada
+
+> Añadida 2026-07-12 a pedido directo del dueño, tras usar la app en serio
+> y encontrar fricciones reales de navegación (tarjetas no clicables,
+> "Siguientes acciones" sin destino exacto, /projects sin detalle). No
+> reemplaza ni reordena las Fases 0-8 existentes — se ejecuta en paralelo/
+> después según el dueño decida sesión a sesión.
+
+### Sprint 9.1 — Página de detalle de proyecto `/projects/[id]` (~5h) ✅ COMPLETA
+- Alcance: ruta dinámica con nombre, descripción/estado, nota(s) de
+  contexto Markdown renderizada(s) (0..N, Sprint 3.3), todas las tareas del
+  proyecto con prioridad/estado editables inline, Next Action destacada,
+  archivos de Drive del proyecto.
+- Dependencias: Fase 1, Fase 3, Fase 7 (Sprint 7.3, patrón optimistic UI)
+  completas.
+- DoD: clic en un proyecto desde el dashboard → toda la info de ese
+  proyecto en una sola página, verificado en navegador. Cumplido.
+
+### Sprint 9.2 — Navegación conectada en todo el dashboard (~3h)
+- Alcance: tarjetas de proyecto → `/projects/[id]`; cada "Siguiente
+  acción" → `/projects/[id]` exacto (no `/projects` genérico); menciones
+  de proyecto en My Day/Inbox/Tasks enlazan a su detalle.
+- Dependencias: Sprint 9.1.
+- DoD: desde el dashboard se llega a cualquier proyecto o tarea en un
+  clic, verificado en navegador.
+
+### Sprint 9.3 — Eliminar pestaña /notes, migrar a detalle de proyecto (~3h)
+- Alcance: quitar la ruta `/notes` y su entrada de sidebar; el contenido
+  de contexto se muestra/edita desde `/projects/[id]` (ya construido en
+  9.1). Las notas NO se borran (siguen en Drive + índice SQLite).
+- Dependencias: Sprint 9.1.
+- Regla dura: verificar que el 100% de notas son accesibles desde el
+  detalle de proyecto ANTES de borrar la ruta. Si hay una nota huérfana,
+  parar y documentar en SPRINT.md en vez de continuar.
+- DoD: no existe `/notes`; todo su contenido accesible desde proyectos;
+  cero notas perdidas (verificado contra BD e índice de Drive).
+
+### Sprint 9.4 — Dashboard con resúmenes y filtros (~4h)
+- Alcance: tarjetas de resumen (activos, tareas abiertas, tareas de hoy,
+  próximas fechas límite); filtro de "Siguientes acciones" por proyecto/
+  prioridad/fecha; orden seleccionable. Sin librerías nuevas de UI.
+- Dependencias: Sprint 9.2.
+- DoD: filtrar y reordenar las siguientes acciones, verificado en
+  navegador con datos reales.
+
+### Sprint 9.5 — Micro-interactividad (~3h, opcional/si sobra presupuesto)
+- Alcance: editar estado y prioridad de una tarea desde el dashboard y
+  desde `/projects/[id]` con optimistic UI (patrón de Fase 7), sin salir
+  de la vista actual.
+- Dependencias: Sprint 9.1 (ya cumple esto dentro del detalle), 9.2.
+- DoD: cambiar el estado de una tarea sin salir de la vista actual.
+
+---
+
 ## Qué NO hacer
 
 - No convertir EMA OS en un ERP.

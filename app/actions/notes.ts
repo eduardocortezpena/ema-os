@@ -13,6 +13,18 @@ import {
 
 const MARKDOWN_MIME = 'text/markdown';
 
+// Ruta a la que redirigir en error y a revalidar además de las fijas
+// (Sprint 9.1): las acciones de nota ahora se invocan tanto desde /notes
+// como desde /projects/[id]. Sin `returnTo` explícito en el form, cae a
+// /notes (comportamiento previo, retrocompatible).
+function noteReturnTo(formData: FormData): string {
+  const value = formData.get('returnTo')?.toString() || '';
+  // Solo rutas internas — un `returnTo` con URL absoluta (o protocol-relative
+  // "//host") permitiría un open redirect si alguien hace POST directo al
+  // Server Action sin pasar por la UI.
+  return value.startsWith('/') && !value.startsWith('//') ? value : '/notes';
+}
+
 // Intenta espejar el .md a Drive sin nunca hacer fallar el guardado: el .md
 // local ya es la fuente de verdad. Devuelve el driveFileId resultante (nuevo,
 // actualizado, o el previo si el espejo falló).
@@ -55,16 +67,17 @@ export async function getNoteContent(id: string): Promise<string> {
 }
 
 export async function createNote(formData: FormData) {
+  const returnTo = noteReturnTo(formData);
   try {
     const title = formData.get('title')?.toString().trim();
     const content = formData.get('content')?.toString() ?? '';
     const projectId = formData.get('projectId')?.toString() || '';
 
     if (!title || title.length === 0) {
-      redirect(`/notes?error=${encodeURIComponent('Título de nota requerido')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('Título de nota requerido')}`);
     }
     if (!projectId) {
-      redirect(`/notes?error=${encodeURIComponent('Proyecto requerido para la nota')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('Proyecto requerido para la nota')}`);
     }
 
     // Validar que el proyecto existe ANTES de usar projectId en una ruta de
@@ -72,7 +85,7 @@ export async function createNote(formData: FormData) {
     // por FK inválida). Ver reviewer M3.
     const project = await prisma.proyecto.findUnique({ where: { id: projectId } });
     if (!project) {
-      redirect(`/notes?error=${encodeURIComponent('Proyecto no encontrado')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('Proyecto no encontrado')}`);
     }
 
     // Crear la fila primero para tener el id estable que nombra el .md.
@@ -91,28 +104,30 @@ export async function createNote(formData: FormData) {
     revalidatePath('/notes');
     revalidatePath('/files');
     revalidatePath('/dashboard');
+    revalidatePath(returnTo);
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/notes?error=${encodeURIComponent(toUserMessage(error, 'Error creando nota. Intenta de nuevo.'))}`);
+    redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error creando nota. Intenta de nuevo.'))}`);
   }
 }
 
 export async function updateNote(formData: FormData) {
+  const returnTo = noteReturnTo(formData);
   try {
     const id = formData.get('id')?.toString() || '';
     const title = formData.get('title')?.toString().trim();
     const content = formData.get('content')?.toString() ?? '';
 
     if (!id) {
-      redirect(`/notes?error=${encodeURIComponent('ID de nota requerido')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('ID de nota requerido')}`);
     }
     if (!title || title.length === 0) {
-      redirect(`/notes?error=${encodeURIComponent('Título de nota requerido')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('Título de nota requerido')}`);
     }
 
     const archivo = await prisma.archivo.findUnique({ where: { id } });
     if (!archivo || archivo.kind !== 'NOTE') {
-      redirect(`/notes?error=${encodeURIComponent('Nota no encontrada')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('Nota no encontrada')}`);
     }
 
     writeNoteMd(archivo.projectId, archivo.id, content);
@@ -125,9 +140,10 @@ export async function updateNote(formData: FormData) {
 
     revalidatePath('/notes');
     revalidatePath('/files');
+    revalidatePath(returnTo);
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/notes?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando nota. Intenta de nuevo.'))}`);
+    redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando nota. Intenta de nuevo.'))}`);
   }
 }
 
@@ -175,11 +191,12 @@ export async function migrateLegacyNotes() {
 }
 
 export async function deleteNote(formData: FormData) {
+  const returnTo = noteReturnTo(formData);
   try {
     const id = formData.get('id')?.toString() || '';
 
     if (!id) {
-      redirect(`/notes?error=${encodeURIComponent('ID de nota requerido')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('ID de nota requerido')}`);
     }
 
     const archivo = await prisma.archivo.findUnique({ where: { id } });
@@ -191,8 +208,9 @@ export async function deleteNote(formData: FormData) {
     revalidatePath('/notes');
     revalidatePath('/files');
     revalidatePath('/dashboard');
+    revalidatePath(returnTo);
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/notes?error=${encodeURIComponent(toUserMessage(error, 'Error eliminando nota. Intenta de nuevo.'))}`);
+    redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error eliminando nota. Intenta de nuevo.'))}`);
   }
 }

@@ -1,14 +1,56 @@
 # SPRINT.md
-## Current Sprint: Fase 4 — Google Calendar (bloqueada en 4.1)
+## Current Sprint: Fase 9 — Interactividad y navegación conectada
 
 ### Sprint Goal
-Fase 7 (UX de velocidad) completa. Fase 4 (Calendar): Sprint 4.1 bloqueado
-esperando pasos manuales del dueño en Google Cloud Console + re-consentimiento
-OAuth. Ver sección "⚠️ BLOQUEADO" más abajo con instrucciones exactas.
+Fase 9 en curso (9.1 completo, 9.2-9.5 pendientes). Fase 4 (Calendar)
+sigue bloqueada en 4.1 esperando pasos manuales del dueño en Google Cloud
+Console — ver sección "⚠️ BLOQUEADO" más abajo.
 
 ### Sprint Duration
-Start: 2026-07-11 (Fase 7, completa). Fase 4 iniciada 2026-07-11, bloqueada
-en 4.1 en la misma sesión.
+Start: 2026-07-11 (Fase 7, completa). Fase 4 bloqueada en 4.1 el mismo
+día. Fase 9 iniciada 2026-07-12 a pedido directo del dueño tras usar la
+app en serio.
+
+### ✅ Sprint 9.1 — Página de detalle de proyecto /projects/[id] (2026-07-12)
+
+Decisión de architect: un solo `prisma.proyecto.findUnique` con includes
+anidados (tasks, nextActionTask, archivos) + `getNoteContent` en
+`Promise.all` separado (mismo patrón que `/notes`). Notas de contexto
+tratadas como lista 0..N (`archivos.filter(kind==='NOTE')`), no singular.
+404 real vía `notFound()` si el proyecto no existe. `TaskCard.tsx`
+extraído de `TaskBoard.tsx` (Sprint 7.3) y reusado en `ProjectTaskList.tsx`
+(nuevo, mismo patrón useOptimistic + guard `useRef` anti doble-submit,
+sin selector de proyecto — projectId fijo por la ruta).
+
+**Verificado en navegador con datos reales** (proyecto "Xalma Residencial",
+13 tareas, 1 nota, Next Action): la página renderiza todo en una sola
+vista; creé una tarea real vía `ProjectTaskList` (confirmada en DB con
+`projectId` correcto, luego borrada); confirmé 404 real para un id
+inexistente; confirmé `/tasks` sin regresión tras el refactor de
+`TaskBoard.tsx` (33 tareas, sin errores de consola en pestaña nueva).
+
+Reviewer encontró un **bug bloqueante real**: las acciones reutilizadas
+(`createNote`/`updateNote`/`deleteNote`, `createTask`/`updateTaskStatus`/
+`updateTaskPriority`/`deleteTask`, `updateProject`/`setNextAction`)
+siempre redirigían a `/notes`/`/tasks`/`/projects` en error y nunca
+revalidaban `/projects/[id]`, aunque ahora también se invocan desde ahí.
+**Corregido** con un patrón `returnTo` opcional retrocompatible (hidden
+input en cada form de la página nueva; sin él, cada acción cae a su
+comportamiento previo — /notes, /tasks, /projects sin cambios). Reviewer
+re-verificó el fix: 44/44 forms de la página con `returnTo` correcto,
+comportamiento default intacto en /notes, /tasks, /projects, /my-day,
+/inbox. Añadido además un guard contra open redirect (`returnTo` debe
+empezar con `/` y no con `//`) en los tres helpers.
+**Cambio real verificado**: prioridad de una tarea editada inline desde
+el detalle del proyecto (LOW→MEDIUM en DB), confirmado que la página se
+queda en `/projects/[id]` (no navega a `/tasks`); revertido tras
+confirmar.
+`ROADMAP.md` actualizado con la Fase 9 completa (9.1-9.5) para que la
+numeración quede reconciliada, per regla del proyecto de nunca dejar una
+fase sin documentar.
+
+**Siguiente: Sprint 9.2 — navegación conectada (tarjetas de dashboard,
+Siguientes acciones, menciones de proyecto en My Day/Inbox/Tasks).**
 
 ### 🌱 Sesión de seed inicial completada (2026-07-11)
 

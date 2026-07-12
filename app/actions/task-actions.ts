@@ -6,7 +6,18 @@ import { prisma } from '@/app/lib/db';
 import { toUserMessage } from '@/app/lib/errors';
 import { startOfDay } from '@/app/lib/date';
 
+// Ruta a la que redirigir en error y a revalidar además de las fijas
+// (Sprint 9.1): createTask/updateTaskStatus/updateTaskPriority/deleteTask
+// ahora se invocan tanto desde /tasks (TaskBoard) como desde
+// /projects/[id] (ProjectTaskList, vía TaskCard). Sin `returnTo` explícito
+// en el form, cae a /tasks (comportamiento previo, retrocompatible).
+function taskReturnTo(formData: FormData): string {
+  const value = formData.get('returnTo')?.toString() || '';
+  return value.startsWith('/') && !value.startsWith('//') ? value : '/tasks';
+}
+
 export async function createTask(formData: FormData) {
+  const returnTo = taskReturnTo(formData);
   try {
     const title = formData.get('title')?.toString().trim();
     const description = formData.get('description')?.toString().trim() || null;
@@ -16,7 +27,7 @@ export async function createTask(formData: FormData) {
     const projectId = formData.get('projectId')?.toString() || '';
 
     if (!title || title.length === 0) {
-      redirect(`/tasks?error=${encodeURIComponent('Título de tarea requerido')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('Título de tarea requerido')}`);
     }
 
     // projectId vacío = ítem de inbox sin clasificar (Sprint 7.4, Quick
@@ -25,7 +36,7 @@ export async function createTask(formData: FormData) {
     if (projectId) {
       const project = await prisma.proyecto.findUnique({ where: { id: projectId } });
       if (!project) {
-        redirect(`/tasks?error=${encodeURIComponent('Proyecto no encontrado')}`);
+        redirect(`${returnTo}?error=${encodeURIComponent('Proyecto no encontrado')}`);
       }
     }
 
@@ -45,9 +56,10 @@ export async function createTask(formData: FormData) {
     revalidatePath('/tasks');
     revalidatePath('/dashboard');
     revalidatePath('/inbox');
+    revalidatePath(returnTo);
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/tasks?error=${encodeURIComponent(toUserMessage(error, 'Error creando tarea. Intenta de nuevo.'))}`);
+    redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error creando tarea. Intenta de nuevo.'))}`);
   }
 }
 
@@ -89,15 +101,16 @@ export async function assignTaskToProject(formData: FormData) {
 }
 
 export async function updateTaskStatus(formData: FormData) {
+  const returnTo = taskReturnTo(formData);
   try {
     const id = formData.get('id')?.toString() || '';
     const status = formData.get('status')?.toString() as 'TODO' | 'IN_PROGRESS' | 'WAITING' | 'DONE';
 
     if (!id) {
-      redirect(`/tasks?error=${encodeURIComponent('ID de tarea requerido')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('ID de tarea requerido')}`);
     }
     if (!['TODO', 'IN_PROGRESS', 'WAITING', 'DONE'].includes(status)) {
-      redirect(`/tasks?error=${encodeURIComponent('Status inválido')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('Status inválido')}`);
     }
 
     await prisma.tarea.update({
@@ -107,22 +120,24 @@ export async function updateTaskStatus(formData: FormData) {
 
     revalidatePath('/tasks');
     revalidatePath('/dashboard');
+    revalidatePath(returnTo);
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/tasks?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando la tarea. Intenta de nuevo.'))}`);
+    redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando la tarea. Intenta de nuevo.'))}`);
   }
 }
 
 export async function updateTaskPriority(formData: FormData) {
+  const returnTo = taskReturnTo(formData);
   try {
     const id = formData.get('id')?.toString() || '';
     const priority = formData.get('priority')?.toString() as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
     if (!id) {
-      redirect(`/tasks?error=${encodeURIComponent('ID de tarea requerido')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('ID de tarea requerido')}`);
     }
     if (!['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'].includes(priority)) {
-      redirect(`/tasks?error=${encodeURIComponent('Prioridad inválida')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('Prioridad inválida')}`);
     }
 
     await prisma.tarea.update({
@@ -132,9 +147,10 @@ export async function updateTaskPriority(formData: FormData) {
 
     revalidatePath('/tasks');
     revalidatePath('/dashboard');
+    revalidatePath(returnTo);
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/tasks?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando la prioridad. Intenta de nuevo.'))}`);
+    redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando la prioridad. Intenta de nuevo.'))}`);
   }
 }
 
@@ -205,11 +221,12 @@ export async function unplanTask(formData: FormData) {
 }
 
 export async function deleteTask(formData: FormData) {
+  const returnTo = taskReturnTo(formData);
   try {
     const id = formData.get('id')?.toString() || '';
 
     if (!id) {
-      redirect(`/tasks?error=${encodeURIComponent('ID de tarea requerido')}`);
+      redirect(`${returnTo}?error=${encodeURIComponent('ID de tarea requerido')}`);
     }
 
     await prisma.tarea.delete({
@@ -218,8 +235,9 @@ export async function deleteTask(formData: FormData) {
 
     revalidatePath('/tasks');
     revalidatePath('/dashboard');
+    revalidatePath(returnTo);
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/tasks?error=${encodeURIComponent(toUserMessage(error, 'Error eliminando tarea. Intenta de nuevo.'))}`);
+    redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error eliminando tarea. Intenta de nuevo.'))}`);
   }
 }
