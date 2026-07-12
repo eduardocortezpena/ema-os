@@ -309,13 +309,13 @@ dueño — de momento es solo contexto anotado en el backlog.
   — 9 notas reales, 0 huérfanas (garantía estructural: `Archivo.projectId`
   no-nulo), no hizo falta migración de datos.
 
-### Sprint 9.4 — Dashboard con resúmenes y filtros (~4h)
+### Sprint 9.4 — Dashboard con resúmenes y filtros (~4h) ✅ COMPLETA
 - Alcance: tarjetas de resumen (activos, tareas abiertas, tareas de hoy,
   próximas fechas límite); filtro de "Siguientes acciones" por proyecto/
   prioridad/fecha; orden seleccionable. Sin librerías nuevas de UI.
 - Dependencias: Sprint 9.2.
 - DoD: filtrar y reordenar las siguientes acciones, verificado en
-  navegador con datos reales.
+  navegador con datos reales. Cumplido.
 
 ### Sprint 9.5 — Micro-interactividad (~3h, opcional/si sobra presupuesto)
 - Alcance: editar estado y prioridad de una tarea desde el dashboard y

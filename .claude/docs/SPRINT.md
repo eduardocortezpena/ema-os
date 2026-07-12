@@ -2,7 +2,7 @@
 ## Current Sprint: Fase 9 — Interactividad y navegación conectada
 
 ### Sprint Goal
-Fase 9 en curso (9.1, 9.2, 9.3 completos; 9.4-9.5 pendientes). Fase 4
+Fase 9 en curso (9.1, 9.2, 9.3, 9.4 completos; 9.5 pendiente/opcional). Fase 4
 (Calendar) sigue bloqueada en 4.1 esperando pasos manuales del dueño en
 Google Cloud Console — ver sección "⚠️ BLOQUEADO" más abajo.
 
@@ -101,9 +101,32 @@ hallazgo menor: `.claude/skills/ui-guidelines/SKILL.md` mencionaba
 "Notes" en la lista de sidebar, desalineado con `app/layout.tsx` real —
 actualizado.
 
-**Siguiente: Sprint 9.4 — dashboard con resúmenes y filtros (tarjetas de
-resumen, filtro de Siguientes acciones por proyecto/prioridad/fecha,
-orden seleccionable).**
+### ✅ Sprint 9.4 — Dashboard con resúmenes y filtros (2026-07-12)
+
+Sin decisión de architect (sprint de UI, sin schema). Sin librerías
+nuevas: filtros vía query params de URL (`?project=&priority=&sort=`),
+server-side en `app/dashboard/page.tsx`. 2 tarjetas de resumen nuevas
+("Tareas de hoy" con `plannedFor`, "Próx. fechas límite 7d" con
+`dueDate`), grid ampliado a 6 tarjetas. "Siguientes acciones" ahora se
+filtra por proyecto/prioridad y se ordena por prioridad (default,
+`byPriorityAndDueDate` existente)/proyecto (alfabético)/fecha límite.
+`DashboardFilters.tsx` nuevo (client component): 3 selects que navegan
+con `router.push` preservando los demás filtros activos.
+
+**Verificado con los 9 proyectos reales**: 6 tarjetas muestran 9/7/33/0/4/0;
+filtro por "Xalma Residencial" redujo correctamente a 1 resultado, URL
+reflejó `?project={id real}`; `?sort=project` confirmado en orden
+alfabético exacto de las 8 Siguientes acciones; sin errores de consola.
+Reviewer encontró un bug real: "Limpiar filtros" perdía el `sort` activo
+pese a que la intención documentada era preservarlo (no es un "filtro"
+que oculte resultados). **Corregido y re-verificado**: con
+`?sort=project&priority=HIGH`, el botón ahora limpia solo `priority`
+(confirmado `?sort=project` sobrevive).
+
+**Fase 9: 9.1, 9.2, 9.3, 9.4 completos. Sprint 9.5 (micro-interactividad
+en dashboard) es opcional — 9.1 ya cubre edición inline en
+`/projects/[id]`; falta llevar el mismo patrón al dashboard si se
+retoma esta fase.**
 
 ### 🌱 Sesión de seed inicial completada (2026-07-11)
 

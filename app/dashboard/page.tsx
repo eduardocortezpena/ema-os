@@ -1,7 +1,15 @@
 import { prisma } from '@/app/lib/db';
 import { byPriorityAndDueDate } from '../lib/sort';
+import { startOfDay } from '../lib/date';
+import { DashboardFilters } from '../components/DashboardFilters';
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ project?: string; priority?: string; sort?: string }>;
+}) {
+  const { project: projectFilter, priority: priorityFilter, sort = 'priority' } = await searchParams;
+
   const projects = await prisma.proyecto.findMany({
     include: {
       tasks: {
@@ -12,9 +20,37 @@ export default async function DashboardPage() {
     orderBy: { createdAt: 'desc' },
   });
 
-  const nextActions = projects
-    .filter((p) => p.nextActionTask)
-    .sort((a, b) => byPriorityAndDueDate(a.nextActionTask!, b.nextActionTask!));
+  const today = startOfDay(new Date());
+  const in7Days = new Date(today);
+  in7Days.setDate(in7Days.getDate() + 7);
+
+  const allOpenTasks = projects.flatMap((p) => p.tasks);
+  const tasksToday = allOpenTasks.filter(
+    (t) => t.plannedFor && startOfDay(t.plannedFor).getTime() === today.getTime()
+  );
+  const upcomingDueTasks = allOpenTasks.filter(
+    (t) => t.dueDate && t.dueDate >= today && t.dueDate < in7Days
+  );
+
+  let nextActions = projects.filter((p) => p.nextActionTask);
+
+  if (projectFilter) nextActions = nextActions.filter((p) => p.id === projectFilter);
+  if (priorityFilter) nextActions = nextActions.filter((p) => p.nextActionTask!.priority === priorityFilter);
+
+  if (sort === 'project') {
+    nextActions = [...nextActions].sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sort === 'dueDate') {
+    nextActions = [...nextActions].sort((a, b) => {
+      const da = a.nextActionTask!.dueDate;
+      const db_ = b.nextActionTask!.dueDate;
+      if (!da && !db_) return 0;
+      if (!da) return 1;
+      if (!db_) return -1;
+      return da.getTime() - db_.getTime();
+    });
+  } else {
+    nextActions = [...nextActions].sort((a, b) => byPriorityAndDueDate(a.nextActionTask!, b.nextActionTask!));
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
@@ -23,7 +59,7 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold">Dashboard</h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
           <div className="bg-gray-800 p-4 rounded-lg flex flex-col items-center">
             <div className="text-3xl font-bold text-primary-500">{projects.length}</div>
             <p className="text-sm text-gray-400">Proyectos totales</p>
@@ -35,10 +71,16 @@ export default async function DashboardPage() {
             <p className="text-sm text-gray-400">Activos</p>
           </div>
           <div className="bg-gray-800 p-4 rounded-lg flex flex-col items-center">
-            <div className="text-3xl font-bold text-warning-500">
-              {projects.reduce((sum, p) => sum + p.tasks.length, 0)}
-            </div>
+            <div className="text-3xl font-bold text-warning-500">{allOpenTasks.length}</div>
             <p className="text-sm text-gray-400">Tareas abiertas</p>
+          </div>
+          <div className="bg-gray-800 p-4 rounded-lg flex flex-col items-center">
+            <div className="text-3xl font-bold text-primary-500">{tasksToday.length}</div>
+            <p className="text-sm text-gray-400">Tareas de hoy</p>
+          </div>
+          <div className="bg-gray-800 p-4 rounded-lg flex flex-col items-center">
+            <div className="text-3xl font-bold text-warning-500">{upcomingDueTasks.length}</div>
+            <p className="text-sm text-gray-400">Próx. fechas límite (7d)</p>
           </div>
           <div className="bg-gray-800 p-4 rounded-lg flex flex-col items-center">
             <div className="text-3xl font-bold text-gray-300">
@@ -48,9 +90,12 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {nextActions.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-3">Siguientes acciones</h2>
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold mb-3">Siguientes acciones</h2>
+          <DashboardFilters projects={projects.map((p) => ({ id: p.id, name: p.name }))} />
+          {nextActions.length === 0 ? (
+            <p className="text-gray-500 text-sm">Sin resultados para este filtro.</p>
+          ) : (
             <div className="space-y-2">
               {nextActions.map((project) => (
                 <a
@@ -68,8 +113,8 @@ export default async function DashboardPage() {
                 </a>
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {projects.length === 0 ? (
           <p className="text-gray-500">
