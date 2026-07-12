@@ -87,6 +87,37 @@
 - [ ] **Command palette: el guard `busy` usa `useState`, no confirmado a prueba de doble-submit** (`app/components/CommandPalette.tsx`, Sprint 7.3, hallazgo propio). En Sprint 7.3 se descubrió que un guard `useState` para evitar doble-submit NO es fiable dentro de una transición de `<form action>` (verificado con un doble-submit real de 50ms que duplicaba filas en TaskBoard/NoteBoard — arreglado ahí con `useRef`). El `busy` de CommandPalette no está dentro de un `<form action>` (se dispara desde `onKeyDown`, no desde un form action de React), así que puede no tener el mismo problema, pero no se verificó con una prueba de doble-invocación real. Si aparece un reporte de creación duplicada desde la paleta, revisar esto primero.
 - [ ] **Tarea optimista aparece al final de la lista, no en su posición ordenada** (`app/components/TaskBoard.tsx`, Sprint 7.3, reviewer). `optimisticTasks` inserta al final (`[...state, newTask]`) pero la lista real usa `byPriorityAndDueDate`; una tarea CRITICAL creada aparece momentáneamente al final y salta a su posición correcta cuando el servidor confirma. Cosmético, bajo impacto. `NoteBoard` no tiene este problema (inserta al frente, coincide con el orden real `createdAt desc`).
 
+### Ideas futuras (post-Fase 6)
+
+- [ ] **Hermes Agent como canal de entrada por Telegram/WhatsApp.** Usar
+  Hermes Agent (agente open source de Nous Research, MIT, conectado vía
+  OpenRouter con los créditos ya existentes del usuario) como interfaz
+  conversacional externa a EMA OS. El usuario le escribe por Telegram
+  (WhatsApp solo si se confirma que Hermes usa la API oficial de Meta, no
+  una integración no oficial con riesgo de baneo — ver regla ya existente
+  en `ROADMAP.md` "Qué NO hacer" sobre WhatsApp) y Hermes ejecuta acciones
+  reales sobre la base de datos de EMA OS:
+  - "Recuérdame revisar el expediente del IMPI" → crea la tarea (y evento
+    de Calendar si aplica) en el proyecto correcto.
+  - "Ya terminé X, Y, Z" → identifica las tareas existentes que coinciden
+    y las marca completadas, CON CONFIRMACIÓN antes de marcar (no marcar a
+    ciegas por ambigüedad de lenguaje natural).
+  - Preguntas generales no relacionadas con los proyectos también deben
+    poder responderse (Hermes no debe limitarse solo a CRUD).
+
+  Requisitos técnicos a resolver cuando se aborde:
+  - Se construye sobre el mismo tool-use de la Fase 6 (IA vía OpenRouter),
+    no es una fase aparte — mismo mecanismo, canal de entrada distinto.
+  - Recomendado correr Hermes en la misma máquina que EMA OS (evita
+    exponer la base de datos local a un servidor externo).
+  - Verificar primero si la integración de Hermes con WhatsApp usa la API
+    oficial de Meta antes de conectar cualquier número real.
+  - Diseñar el matching de lenguaje natural → tarea existente con
+    confirmación explícita antes de acciones destructivas o de cierre.
+
+  NO implementar hasta que la Fase 6 esté construida. Anotado 2026-07-11,
+  sin implementar.
+
 ### Known Issues
 - Ninguno bloqueante actualmente. Ver Technical Debt para deuda no bloqueante conocida.
 
