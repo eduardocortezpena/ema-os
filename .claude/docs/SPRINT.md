@@ -128,6 +128,33 @@ en dashboard) es opcional — 9.1 ya cubre edición inline en
 `/projects/[id]`; falta llevar el mismo patrón al dashboard si se
 retoma esta fase.**
 
+### 🛑 Cierre de sesión (2026-07-12, sesión larga)
+
+Parado aquí en verde tras cerrar 4 sprints completos de Fase 9 (9.1-9.4),
+cada uno con consulta a `architect` cuando aplicaba, `reviewer` al cerrar,
+verificación real en navegador contra los 9 proyectos reales del usuario,
+y bugs reales encontrados y corregidos en 3 de los 4 sprints (redirect/
+revalidación de rutas reutilizadas en 9.1, y "Limpiar filtros" perdiendo
+`sort` en 9.4). Decisión de parar aquí: Sprint 9.5 es opcional y este es
+un punto de corte limpio tras un volumen grande de trabajo verificado —
+preferible a seguir indefinidamente sin un cierre claro.
+
+**Objetivo 2 (Fase 4/Calendar) NO se tocó**: el usuario no confirmó
+durante esta sesión haber completado los 3 pasos de Google Cloud Console
+(ver sección "⚠️ BLOQUEADO — Sprint 4.1" más abajo). Sigue bloqueada
+exactamente donde estaba.
+
+**Estado final verificado**: `git status` limpio, `npm run build` limpio,
+DB en 9 proyectos / 33 tareas / 9 notas (sin cambios de datos reales del
+usuario, solo los que él mismo hizo usando la app entre sesiones —
+confirmado que no se revirtió nada real).
+
+**Primero que hay que mirar al despertar:**
+1. Si el dueño ya completó los pasos de Google Cloud Console → arrancar
+   Fase 4 (Sprint 4.1), ver sección "⚠️ BLOQUEADO" abajo.
+2. Si no → seguir con Fase 9: Sprint 9.5 (opcional) o continuar con otra
+   fase a elección del dueño.
+
 ### 🌱 Sesión de seed inicial completada (2026-07-11)
 
 **9 proyectos reales cargados con contexto y tareas concretas. Dashboard
