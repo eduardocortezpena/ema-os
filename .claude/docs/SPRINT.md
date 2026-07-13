@@ -1,5 +1,144 @@
 # SPRINT.md
-## Current Sprint: Sesión de mejoras de UX (Partes 0-6 completas) — Fase 4 completa (4.1-4.4)
+## Current Sprint: Sesión con supervisión parcial (2026-07-13) — Partes 1, 2, 4 completas; 3 en curso; 5 análisis listo para ejecutar CON supervisión
+
+### ✅ Parte 1 — Botón compacto de completar tarea (5 vistas)
+Ver commit `044305f`. `CompleteTaskButton.tsx` nuevo (standalone, no
+comparte lógica con `TaskCard.tsx` por decisión de architect — evita
+acoplar el mutex de 3 controles ya probado). Verificado en navegador+DB
+en las 5 vistas: dashboard (Siguientes acciones + Agenda), My Day,
+/tasks, /projects/[id]. Reviewer: sin bloqueantes. Regresión menor
+documentada en BACKLOG.md (My Day perdió el ciclo completo de estado,
+solo completar).
+
+### ✅ Parte 2 — Vista /calendar
+Ver commit `b1d0175`. Calendario mensual CSS Grid puro (sin librerías),
+navegación `?year=&month=`, link genérico a Google Calendar (sin
+deep-link a evento — el `id` de la API no es el `eid` de la URL web).
+Verificado con datos reales de Xalma Residencial. Reviewer: sin
+bloqueantes. Deuda de timezone en `dueDate` documentada en BACKLOG.md
+(preexistente de Sprint 4.2, no introducida por esta vista).
+
+### ✅ Parte 4 — AGENTES.md (borrador)
+Ver commit `633981f`. Diseño de 3 agentes (Organizador, Comunicador,
+Seguridad/Configuración) + sección de seguridad del sistema completo
+(credenciales reales, qué expone el acceso LAN, mínimo privilegio).
+Marcado explícitamente como borrador — nada configurado en Hermes.
+
+**Hallazgo relevante durante la Parte 5**: ya existe un agente
+Organizador REAL corriendo por fuera de EMA OS/Hermes-tools todavía
+(`C:\Users\EdEma\Desktop\Proyectos\AGENTS.md`), con **más autonomía**
+que la propuesta cautelosa de este borrador — su propio `AGENTS.md`
+dice "Mueves archivos por tu cuenta, sin pedir aprobación previa,
+SIEMPRE que la clasificación sea clara". Esto es una discrepancia real
+entre lo que propuse (fase inicial con aprobación manual) y lo que el
+dueño ya tiene operando. **No se tocó nada de ese agente ni de su
+configuración en esta sesión** — solo se detectó al inventariar su
+carpeta de salida para la Parte 5. Aclarar con el dueño en la próxima
+sesión si `AGENTES.md` debe actualizarse para reflejar la autonomía
+real ya en uso, o si el agente existente debe ajustarse al criterio
+más cauteloso del borrador.
+
+### 🔄 Parte 3 — Acceso LAN desde el teléfono
+- **3a (bind 0.0.0.0)**: no hizo falta tocar `npm run dev` ni
+  `EMA_Launcher.ps1` — confirmado que Next.js ya escucha en todas las
+  interfaces por defecto (`Get-NetTCPConnection` mostró `LocalAddress: ::`,
+  y `curl http://192.168.0.43:3000/dashboard` respondió 200 desde antes
+  de tocar nada).
+- **3b (firewall)**: comando ejecutado por el dueño (requería PowerShell
+  como Administrador, UAC no se puede aprobar remotamente):
+  ```powershell
+  New-NetFirewallRule -DisplayName "EMA OS LAN (puerto 3000)" -Direction Inbound -LocalPort 3000 -Protocol TCP -Action Allow -Profile Private
+  ```
+  **Hallazgo durante la ejecución**: la interfaz Wi-Fi estaba clasificada
+  por Windows como "Pública", no "Privada" — la regla acotada a
+  `-Profile Private` no habría funcionado en la WiFi real sin este paso
+  adicional (confirmado con el dueño antes de ejecutar):
+  ```powershell
+  Set-NetConnectionProfile -InterfaceAlias "Wi-Fi" -NetworkCategory Private
+  ```
+  Ambos comandos confirmados aplicados: `Get-NetConnectionProfile` →
+  Wi-Fi = Private; `Get-NetFirewallRule` → regla activa, perfil Private,
+  dirección entrante, puerto 3000.
+- **3c (IP + URL)**: IP LAN real de la PC: `192.168.0.43`. URL para
+  probar desde el Poco F7 Pro (Brave, misma WiFi):
+  `http://192.168.0.43:3000/dashboard`. **Esperando confirmación del
+  dueño desde su teléfono** (DoD explícito: "el usuario confirma desde
+  su teléfono que el dashboard carga y es usable").
+- **3d (BACKLOG Tailscale)**: agregado a `BACKLOG.md`. Hallazgo
+  importante: Tailscale YA está instalado, corriendo, y el teléfono del
+  dueño YA está enrolado en el mismo tailnet (`100.87.81.60` /
+  `100.124.107.36`, offline al momento de anotar) — de una configuración
+  previa no relacionada con EMA OS. Falta solo probar
+  `http://100.87.81.60:3000` desde el teléfono fuera de la WiFi de casa,
+  y confirmar que la interfaz Tailscale (ya "Private") no necesita una
+  regla de firewall aparte (la regla del puerto 3000 ya cubre cualquier
+  interfaz clasificada como Private, así que Tailscale debería
+  funcionar ya con la misma regla — no verificado explícitamente en esta
+  sesión).
+
+### 📋 Parte 5 — Preparación del espejo a Drive (SOLO análisis, sin ejecutar)
+
+**5a — Inventario de la carpeta organizada** (`C:\Users\EdEma\Desktop\Proyectos`,
+organizada por el agente Organizador mencionado arriba):
+- **306 archivos, 72 carpetas, ~1.09 GB total.**
+- Estructura (resumen; árbol completo disponible en el propio
+  `Proyectos\AGENTS.md` del dueño):
+  ```
+  Proyectos/
+  ├── _INBOX/          (0 archivos — vacío, listo para recibir)
+  ├── _LOG/            (2 archivos — bitácora de movimientos)
+  ├── _MEMORIA/sesiones/ (1 archivo)
+  ├── AMH/             (Arte en Madera y Hierro: 3 + subcarpetas con 147
+  │                      archivos — fotos crudas, editadas, IA)
+  ├── AntiSargazo_Project/ (vacío)
+  ├── Asociación Civil/ (2 archivos)
+  ├── Barrera y panga antisargazo/ (14 archivos entre subcarpetas)
+  ├── Nuevo X Habbin/  (venta de terrenos — 12 clientes con
+  │                      Contratos/Identificacion/Recibos, ~40 archivos)
+  ├── Xalma Residencial/ (venta de terrenos — 1 cliente + Marketing
+                          (22) + Legal_Planos (10) + Finanzas (2))
+  ```
+- **⚠️ Nota de sensibilidad**: `Nuevo X Habbin` y `Xalma Residencial`
+  contienen identificaciones, contratos y recibos de clientes reales
+  (nombres completos en las rutas de carpeta). Esto sube a Drive como
+  cualquier otro archivo — sin cifrado adicional propio de EMA OS. El
+  dueño debe confirmar que su cuenta de Drive es privada/personal antes
+  de subir (no una compartida/de trabajo con acceso de terceros).
+
+**5b — Esquema espejo propuesto y plan de subida inicial**:
+1. **Estructura espejo**: idéntica a la local, una carpeta raíz "Proyectos"
+   en Drive con la misma jerarquía (`rclone` con `bisync` replica la
+   estructura de carpetas automáticamente, no hace falta crearla a mano).
+2. **Prerequisito no cumplido todavía**: `rclone` **no está instalado**
+   en esta máquina (`rclone version` → comando no encontrado). Antes de
+   cualquier ejecución hace falta: instalar rclone, configurar un remote
+   de Google Drive (`rclone config`, flujo OAuth propio de rclone,
+   independiente del OAuth de la app EMA OS), y confirmar el remote con
+   `rclone lsd remote:` antes de tocar datos reales.
+3. **Respaldo previo local OBLIGATORIO** antes del primer `--resync`:
+   copia completa de `C:\Users\EdEma\Desktop\Proyectos` (1.09 GB, cabe
+   en cualquier USB/disco externo o un segundo destino en la misma PC)
+   — condición no negociable ya establecida en `BACKLOG.md` Sprint 3.5.
+4. **Primera corrida con `--resync`** (obligatoria, establece la línea
+   base — sin esto `bisync` no sabe el estado previo).
+5. **Flags robustos**: `--resilient --recover --conflict-resolve newer --drive-skip-gdocs`.
+6. **Prueba piloto con UNA subcarpeta pequeña primero**: candidata
+   `_LOG/` (2 archivos, bajo riesgo) o `AntiSargazo_Project/` (vacía,
+   riesgo cero) antes del volcado total — confirmar que el ciclo
+   completo (subir, bajar, resolver un conflicto simulado) funciona
+   antes de arriesgar `Nuevo X Habbin`/`Xalma Residencial` (las carpetas
+   con datos sensibles de clientes).
+7. **Solo después de (6) exitoso**: bisync de la carpeta completa.
+
+**5c — PARADO aquí, según lo pedido.** Nada de esto se ejecutó. La
+ejecución de la subida inicial (instalar rclone, configurar el remote,
+el respaldo previo, el `--resync` inicial, y la prueba piloto) se hace
+en una sesión futura con el dueño presente, confirmando cada paso — no
+en modo autónomo ni en el resto de esta sesión con supervisión parcial.
+
+---
+
+
 
 ### ✅ Sesión de mejoras de UX (2026-07-12) — Partes 0-6, todas completas
 
