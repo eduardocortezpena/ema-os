@@ -1,6 +1,6 @@
 import { prisma } from '@/app/lib/db';
-import { updateTaskStatus, planForToday, rolloverToTomorrow, unplanTask } from '../actions';
-import { AutoSubmitSelect } from '../components/AutoSubmitSelect';
+import { planForToday, rolloverToTomorrow, unplanTask } from '../actions';
+import { CompleteTaskButton } from '../components/CompleteTaskButton';
 import { byPriorityAndDueDate } from '../lib/sort';
 import { startOfDay } from '../lib/date';
 
@@ -88,7 +88,10 @@ export default async function MyDayPage({
                 <div key={task.id} className="bg-gray-800 p-3 rounded-lg">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h3 className="font-semibold">{task.title}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold">{task.title}</h3>
+                        {task.status === 'DONE' && <span className="text-green-400 text-sm">✓ Completada</span>}
+                      </div>
                       <div className="flex gap-2 mt-1 flex-wrap">
                         <span className={`badge badge-${task.priority.toLowerCase()}`}>{task.priority}</span>
                         {task.project ? (
@@ -101,20 +104,7 @@ export default async function MyDayPage({
                       </div>
                     </div>
                     <div className="flex flex-col gap-2 items-end">
-                      <form action={updateTaskStatus} className="flex items-center gap-2">
-                        <input type="hidden" name="id" value={task.id} />
-                        <AutoSubmitSelect
-                          name="status"
-                          defaultValue={task.status}
-                          className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          options={[
-                            { value: 'TODO', label: 'Todo' },
-                            { value: 'IN_PROGRESS', label: 'In Progress' },
-                            { value: 'WAITING', label: 'Waiting' },
-                            { value: 'DONE', label: 'Done' },
-                          ]}
-                        />
-                      </form>
+                      <CompleteTaskButton taskId={task.id} status={task.status} returnTo="/my-day" />
                       <form action={unplanTask}>
                         <input type="hidden" name="id" value={task.id} />
                         <button type="submit" className="text-gray-500 hover:text-white text-xs">

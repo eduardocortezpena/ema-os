@@ -2,6 +2,7 @@ import { prisma } from '@/app/lib/db';
 import { byPriorityAndDueDate } from '../lib/sort';
 import { startOfDay } from '../lib/date';
 import { DashboardFilters } from '../components/DashboardFilters';
+import { CompleteTaskButton } from '../components/CompleteTaskButton';
 
 export default async function DashboardPage({
   searchParams,
@@ -113,19 +114,25 @@ export default async function DashboardPage({
           ) : (
             <div className="space-y-2">
               {nextActions.map((project) => (
-                <a
+                <div
                   key={project.id}
-                  href={`/projects/${project.id}`}
-                  className="flex items-center justify-between bg-gray-800 hover:bg-gray-700 transition-colors p-3 rounded-lg"
+                  className="flex items-center justify-between bg-gray-800 hover:bg-gray-700 transition-colors p-3 rounded-lg gap-3"
                 >
-                  <div>
+                  <a href={`/projects/${project.id}`} className="flex-1 min-w-0">
                     <span className="text-primary-500">→ {project.nextActionTask!.title}</span>
                     <span className="text-gray-500 text-sm ml-2">({project.name})</span>
+                  </a>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`badge badge-${project.nextActionTask!.priority.toLowerCase()}`}>
+                      {project.nextActionTask!.priority}
+                    </span>
+                    <CompleteTaskButton
+                      taskId={project.nextActionTask!.id}
+                      status={project.nextActionTask!.status}
+                      returnTo="/dashboard"
+                    />
                   </div>
-                  <span className={`badge badge-${project.nextActionTask!.priority.toLowerCase()}`}>
-                    {project.nextActionTask!.priority}
-                  </span>
-                </a>
+                </div>
               ))}
             </div>
           )}
@@ -136,19 +143,21 @@ export default async function DashboardPage({
             <h2 className="text-lg font-semibold mb-3">Agenda — Próximos 7 días</h2>
             <div className="space-y-2">
               {agendaTasks.map((task) => (
-                <a
+                <div
                   key={task.id}
-                  href={task.projectId ? `/projects/${task.projectId}` : '/tasks'}
-                  className="flex items-center justify-between bg-gray-800 hover:bg-gray-700 transition-colors p-3 rounded-lg"
+                  className="flex items-center justify-between bg-gray-800 hover:bg-gray-700 transition-colors p-3 rounded-lg gap-3"
                 >
-                  <div>
+                  <a href={task.projectId ? `/projects/${task.projectId}` : '/tasks'} className="flex-1 min-w-0">
                     <span>{task.title}</span>
                     {task.projectId && (
                       <span className="text-gray-500 text-sm ml-2">({projectNameById.get(task.projectId)})</span>
                     )}
+                  </a>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="badge bg-gray-700">{task.dueDate!.toLocaleDateString()}</span>
+                    <CompleteTaskButton taskId={task.id} status={task.status} returnTo="/dashboard" />
                   </div>
-                  <span className="badge bg-gray-700">{task.dueDate!.toLocaleDateString()}</span>
-                </a>
+                </div>
               ))}
             </div>
           </div>
