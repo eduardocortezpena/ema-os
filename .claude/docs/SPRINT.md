@@ -1,5 +1,63 @@
 # SPRINT.md
-## Current Sprint: Sesión de auditoría de memoria (2026-07-14)
+## Current Sprint: Sesión de auditoría de memoria (2026-07-14) — Partes 1-4 completas
+
+### ✅ Parte 2 — rtk instalado (2026-07-14, continuación con presupuesto extra)
+
+Binario `rtk-x86_64-pc-windows-msvc.zip` v0.43.0 descargado del GitHub
+Releases oficial de `rtk-ai/rtk` (NO crates.io, es otro proyecto —
+confirmado antes de instalar). Checksum SHA256 verificado contra
+`checksums.txt` de la release antes de ejecutar nada. Instalado en
+`C:\Users\EdEma\AppData\Local\rtk\bin\rtk.exe`, agregado al PATH de
+usuario (persistente, sin requerir Admin). `rtk init --global`
+registró `RTK.md` + referencia `@RTK.md` en el `CLAUDE.md` global del
+usuario. Verificado: `rtk --version` → `rtk 0.43.0`; `rtk git status`
+funcionó dentro del repo de EMA OS; `rtk gain` mostró 66.7% de ahorro
+de tokens en esa llamada.
+
+**Hallazgo real durante la instalación**: el hook `PreToolUse` que
+`rtk init` pide agregar a `~/.claude/settings.json` se activó a mitad
+de esta misma sesión (los hooks no esperan a un reinicio, se leen en
+vivo) y rompió los comandos de Bash siguientes, porque reescribe
+comandos internamente usando `rtk` sin ruta completa, y el PATH de
+usuario recién actualizado no lo ve el proceso de Bash ya abierto
+(solo procesos nuevos lo heredan). Se desactivó el hook de inmediato,
+se terminó el resto del trabajo de la sesión sin él, y se reactivó
+como el último cambio antes de cerrar (ver abajo) — así que debería
+funcionar correctamente ya en la próxima sesión/terminal nueva sin
+sorpresas.
+
+### ✅ Parte 3 — Ponytail instalado en modo lite (2026-07-14)
+
+Instalado como plugin de Claude Code (mecanismo nativo: `claude plugin
+marketplace add DietrichGebert/ponytail` + `claude plugin install
+ponytail@ponytail`), confirmado `enabled` en `settings.json`. Igual
+que pasó con `frontend-design` en una sesión anterior: un plugin
+instalado a mitad de sesión no aparece en la lista de skills
+invocables de esa misma sesión (requiere reiniciar Claude Code) — así
+que no se pudo probar el slash command `/ponytail lite` en vivo.
+
+Se activó el modo "lite" de forma persistente sin depender del slash
+command: archivo `%APPDATA%\ponytail\config.json` con
+`{"defaultMode": "lite"}` (orden de resolución documentado por el
+propio plugin: variable de entorno > archivo de config > `full` por
+defecto — sin variable de entorno seteada, el archivo de config manda).
+
+**Verificación de choque con CLAUDE.md**: sin conflicto. El modo lite
+("construir lo pedido, nombrar la alternativa más perezosa en una
+línea") refuerza directamente las reglas ya existentes del proyecto
+("Simplicidad", "Nunca agregar funcionalidades no solicitadas") y no
+toca el proceso de verificación/Definition of Done, que es un área
+distinta. `CLAUDE.md` sigue siendo la autoridad en cualquier caso de
+duda futura, tal como pidió el dueño.
+
+**Pendiente para el dueño**: reiniciar Claude Code para que
+`ponytail:ponytail` y el resto de sus skills queden invocables
+(`/ponytail`, `/ponytail-review`, `/ponytail-audit`, `/ponytail-debt`,
+`/ponytail-gain`, `/ponytail-help`), y para que el hook de `rtk` quede
+activo desde el arranque limpio.
+
+---
+
 
 ### 📊 Reporte de estado del ROADMAP (Parte 4, 2026-07-14)
 
