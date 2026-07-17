@@ -69,6 +69,9 @@ export default function AssistantPage() {
   return (
     <div className="max-w-3xl">
         <h1 className="text-2xl font-bold mb-6">Asistente</h1>
+        <p className="text-gray-500 text-xs mb-4">
+          Tus datos de proyecto (nombres, prioridad, tareas abiertas) se envían al proveedor de IA vía OpenRouter para responder.
+        </p>
 
         <div className="space-y-3 mb-4 min-h-[300px]">
           {messages.length === 0 ? (

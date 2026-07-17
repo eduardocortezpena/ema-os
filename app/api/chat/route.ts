@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { buildSystemPrompt } from '@/app/lib/assistant-context';
 
 // Sprint 6.1: Route Handler de streaming, primer endpoint de este tipo en
 // el proyecto (patrón ya establecido: Server Actions para mutaciones, Route
@@ -37,11 +38,20 @@ export async function POST(req: NextRequest) {
     return new Response('Se requiere al menos un mensaje.', { status: 400 });
   }
 
-  let upstream = await callOpenRouter(messages, DEFAULT_MODEL);
+  // Sprint 6.2: el system prompt SIEMPRE se arma server-side, nunca se
+  // confía en uno que mande el cliente -- se descarta cualquier mensaje
+  // 'system' que venga en el body antes de anteponer el nuestro.
+  const systemPrompt = await buildSystemPrompt();
+  const messagesWithContext: ChatMessage[] = [
+    { role: 'system', content: systemPrompt },
+    ...messages.filter((m) => m.role !== 'system'),
+  ];
+
+  let upstream = await callOpenRouter(messagesWithContext, DEFAULT_MODEL);
 
   if (upstream.status === 429) {
     console.error(`[chat] ${DEFAULT_MODEL} devolvió 429 (rate limit), fallback a ${FALLBACK_MODEL}`);
-    upstream = await callOpenRouter(messages, FALLBACK_MODEL);
+    upstream = await callOpenRouter(messagesWithContext, FALLBACK_MODEL);
   }
 
   if (!upstream.ok || !upstream.body) {
