@@ -1,5 +1,27 @@
 # SPRINT.md
-## Current Sprint: Fase 6 — IA vía OpenRouter (Sprint 6.1 completo, 6.2 siguiente)
+## Current Sprint: Fase 6 — IA vía OpenRouter (6.1, 6.2 completos; 6.3 en curso)
+
+### ✅ Sprint 6.2 — Inyección de contexto de proyectos (2026-07-17)
+
+Ver commit `d9a5dbf`. `app/lib/assistant-context.ts` nuevo:
+`buildSystemPrompt()` combina `MASTER_CONTEXT.md` + resumen en vivo de
+proyectos ACTIVE (Prisma). System prompt siempre armado server-side,
+mensajes `role: 'system'` del cliente descartados. Prompt caching
+documentado como no aplicable hoy (ningún modelo en uso real lo
+soporta) — no implementado a propósito, evita funcionalidad fantasma.
+
+Bug propio (fallback 429 sin contexto) encontrado y corregido antes de
+pedir revisión. Reviewer: sin bloqueantes. Riesgo de prompt injection
+vía mensajes de usuario documentado en `BACKLOG.md` — relevante sobre
+todo para Sprint 6.4 (tool-use de escritura).
+
+**Verificado con datos reales**: pregunta sobre next action de Xalma
+Residencial devolvió el título exacto de la BD; pregunta en navegador
+sobre proyectos activos devolvió "7 proyectos" con la lista real,
+coincidiendo con el conteo ya conocido.
+
+---
+
 
 ### ✅ Sprint 6.1 — Endpoint de chat con streaming + UI mínima (2026-07-17)
 
