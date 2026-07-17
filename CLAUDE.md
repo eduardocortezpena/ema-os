@@ -77,3 +77,29 @@ usuario.
 - **Fase 6** — Documentos automáticos
 - **Fase 7** — UX avanzada
 - **Fase 8** — Endurecimiento y pulido final
+
+## Arquitectura de memoria
+
+(Documentado 2026-07-17, sesión de auditoría de memoria — regla, no
+ejecución: no dispara ninguna acción por sí sola.)
+
+- **5 documentos vivos, única fuente de verdad**: `CLAUDE.md`,
+  `.claude/docs/SPRINT.md`, `.claude/docs/BACKLOG.md`,
+  `.claude/docs/ROADMAP.md`, `.claude/docs/AGENTES.md`. Se actualizan en
+  cada sesión relevante, en el mismo cambio que cierra el trabajo — no
+  después.
+- **`MASTER_CONTEXT.md`** (raíz del repo) se genera SIEMPRE a partir de
+  los 5 vivos, nunca se edita a mano directamente. Se regenera cuando
+  cambia algo sustancial: una fase completada, un cambio de prioridades,
+  o agentes nuevos/modificados en `AGENTES.md`. Verificar su fecha/
+  contenido contra el estado real antes de decidir si hace falta
+  regenerarlo — no regenerar por rutina si nada sustancial cambió.
+- **Ningún agente de Hermes recibe los 5 documentos fuente
+  directamente** — solo `MASTER_CONTEXT.md`. Evita que cada agente tenga
+  su propia versión de "la verdad" del proyecto.
+- **Cualquier archivo `.md` de contexto fuera de esta lista de 5 es
+  sospechoso por defecto**: auditar su contenido contra los 5 vivos antes
+  de confiar en él o de citarlo desde una skill/otro doc. Ver
+  `.claude/docs/archive/` para precedente (4 docs legado archivados en
+  esta misma sesión, con hallazgos de contenido no migrado reportados al
+  dueño antes de archivar).
