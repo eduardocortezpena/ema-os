@@ -1,6 +1,28 @@
+import { randomUUID } from 'node:crypto';
 import { NextRequest } from 'next/server';
 import { buildSystemPrompt } from '@/app/lib/assistant-context';
-import { TOOL_DEFINITIONS, executeTool } from '@/app/lib/assistant-tools';
+import { TOOL_DEFINITIONS, WRITE_TOOL_DEFINITIONS, WRITE_TOOL_NAMES, executeTool, executeWriteTool } from '@/app/lib/assistant-tools';
+
+// Sprint 6.4, regla dura no negociable: NINGUNA tool de escritura ejecuta
+// sin confirmación explícita del usuario (un clic real en la UI, nunca el
+// modelo decidiendo que "ya hubo confirmación" -- ver AGENTES.md, mismo
+// patrón que ConfirmButton.tsx en toda la app). Cuando el loop encuentra
+// un tool_call de escritura, el servidor PAUSA y guarda la propuesta acá,
+// keyed por un id que ÉL genera -- el cliente nunca puede alterar qué se
+// va a ejecutar. Mapa en memoria del proceso (un solo usuario, sin
+// necesidad de tabla en DB); expira a los 5 minutos.
+const PENDING_CONFIRMATIONS = new Map<
+  string,
+  { tool: string; args: unknown; conversation: ChatMessage[]; toolCallId: string; expiresAt: number }
+>();
+const CONFIRMATION_TTL_MS = 5 * 60 * 1000;
+
+function cleanupExpiredConfirmations() {
+  const now = Date.now();
+  for (const [id, entry] of PENDING_CONFIRMATIONS) {
+    if (entry.expiresAt < now) PENDING_CONFIRMATIONS.delete(id);
+  }
+}
 
 // Sprint 6.1: Route Handler de streaming, primer endpoint de este tipo en
 // el proyecto (patrón ya establecido: Server Actions para mutaciones, Route
@@ -48,7 +70,7 @@ async function callOpenRouterOnce(
       model,
       messages,
       stream: opts.stream,
-      ...(opts.withTools ? { tools: TOOL_DEFINITIONS } : {}),
+      ...(opts.withTools ? { tools: [...TOOL_DEFINITIONS, ...WRITE_TOOL_DEFINITIONS] } : {}),
     }),
   });
 }
@@ -115,7 +137,30 @@ function textResponse(text: string) {
 }
 
 export async function POST(req: NextRequest) {
-  const { messages } = (await req.json()) as { messages: ChatMessage[] };
+  const body = (await req.json()) as
+    | { messages: ChatMessage[] }
+    | { confirmationId: string; confirm: boolean };
+
+  cleanupExpiredConfirmations();
+
+  // Sprint 6.4: segunda petición, tras un clic REAL del usuario en la UI
+  // (nunca generada por el modelo). El servidor recupera la propuesta que
+  // ÉL MISMO guardó -- el cliente solo manda el id + sí/no, nunca los args.
+  if ('confirmationId' in body) {
+    const pending = PENDING_CONFIRMATIONS.get(body.confirmationId);
+    PENDING_CONFIRMATIONS.delete(body.confirmationId);
+    if (!pending) {
+      return textResponse('Esta confirmación ya expiró o no es válida. Pídemelo de nuevo.');
+    }
+    if (!body.confirm) {
+      return textResponse('Acción cancelada.');
+    }
+    const result = await executeWriteTool(pending.tool, pending.args);
+    const r = result as { ok?: boolean; mensaje?: string; error?: string };
+    return textResponse(r.error ? `❌ ${r.error}` : `✅ ${r.mensaje ?? 'Hecho.'}`);
+  }
+
+  const { messages } = body as { messages: ChatMessage[] };
 
   if (!process.env.OPENROUTER_API_KEY) {
     return new Response('OPENROUTER_API_KEY no configurada en el servidor.', { status: 500 });
@@ -154,6 +199,11 @@ export async function POST(req: NextRequest) {
       return textResponse(message?.content ?? '');
     }
 
+    // Si CUALQUIERA de los tool_calls de esta ronda es de escritura, se
+    // pausa el loop entero para esa tool (no se ejecuta nada) y se devuelve
+    // la propuesta al cliente. Simplifica el caso de múltiples tool_calls
+    // en la misma ronda: procesamos las de lectura que vengan antes, pero
+    // en cuanto aparece una de escritura, paramos ahí sin ejecutarla.
     conversation.push({ role: 'assistant', content: message.content ?? null, tool_calls: message.tool_calls });
 
     for (const call of message.tool_calls) {
@@ -164,6 +214,24 @@ export async function POST(req: NextRequest) {
         console.error(`[chat] tool_call.arguments mal formado para ${call.function.name}:`, call.function.arguments);
         args = {};
       }
+
+      if (WRITE_TOOL_NAMES.has(call.function.name)) {
+        const confirmationId = randomUUID();
+        PENDING_CONFIRMATIONS.set(confirmationId, {
+          tool: call.function.name,
+          args,
+          conversation,
+          toolCallId: call.id,
+          expiresAt: Date.now() + CONFIRMATION_TTL_MS,
+        });
+        return Response.json({
+          type: 'pending_confirmation',
+          confirmationId,
+          tool: call.function.name,
+          args,
+        });
+      }
+
       const result = await executeTool(call.function.name, args);
       conversation.push({
         role: 'tool',

@@ -1,5 +1,65 @@
 # SPRINT.md
-## Current Sprint: Fase 6 — IA vía OpenRouter (6.1-6.3 completos; 6.4 siguiente, el más delicado)
+## Current Sprint: Fase 6 — IA vía OpenRouter (6.1-6.4 COMPLETOS; 6.5 opcional, no tocado)
+
+### ✅ Sprint 6.4 — Tool-use de escritura con confirmación real (2026-07-17)
+
+El sprint más delicado de la Fase 6. Regla dura ("ninguna tool de
+escritura ejecuta sin confirmación explícita del usuario") garantizada
+en el código, no solo en el diseño — validado por architect (Opción B:
+confirmación real de UI/servidor, nunca el modelo) y confirmado por
+reviewer que `executeWriteTool` tiene un único call-site, dentro del
+branch de confirmación, sin caminos alternativos.
+
+4 tools nuevas en `app/lib/assistant-tools.ts` (`WRITE_TOOL_DEFINITIONS`):
+`crear_tarea`, `crear_nota`, `completar_tarea` reusan Server Actions
+existentes (`createTask`, `createNote`, `updateTaskStatus`);
+`mover_archivo_a_proyecto` es lógica nueva mínima (un `prisma.archivo.update`
+directo, sin Server Action existente que reusar — architect confirmó
+aceptable, reviewer dejó nota de precedente si aparece una segunda
+mutación de `Archivo` fuera de esto).
+
+Mecanismo: `app/api/chat/route.ts` mantiene `PENDING_CONFIRMATIONS`
+(Map en memoria, TTL 5 min) — cuando el loop encuentra un `tool_call`
+de escritura, PARA ahí, genera un `confirmationId` propio y responde
+JSON (`pending_confirmation`) en vez de ejecutar. El cliente
+(`/assistant`) renderiza botones reales "Confirmar"/"Cancelar"; solo
+un clic real dispara la segunda petición (`{confirmationId, confirm}`)
+que el servidor resuelve con los args que ÉL guardó (el cliente nunca
+manda los args de vuelta). El id se borra al usarse (protección
+replay).
+
+**Verificado contra datos reales, incluyendo los casos de seguridad
+más importantes** (no solo el camino feliz):
+1. Primera petición → `pending_confirmation`, confirmado en BD que NO
+   se ejecutó nada todavía.
+2. Confirmación real (`confirm:true`) → tarea creada de verdad en BD.
+3. **Replay del mismo `confirmationId` ya usado** → rechazado
+   ("confirmación ya expiró o no es válida"), confirmado que no se
+   ejecutó dos veces.
+4. Cancelar (`confirm:false`) → "Acción cancelada", confirmado en BD
+   que no cambió nada.
+5. **Navegador real, clic real** (no solo curl): mensaje real → propuesta
+   con botones reales → clic físico en "Confirmar" → `status: DONE`
+   confirmado en BD.
+6. Artefactos de prueba limpiados.
+
+Reviewer: sin bloqueantes. Aplicado 1 fix menor (validar `prioridad`
+contra el enum antes de construir el `FormData`, y `titulo` no vacío).
+2 hallazgos de severidad media/baja documentados en `BACKLOG.md`
+(asunción de proceso único del Map en memoria — riesgo de
+disponibilidad, no de seguridad; `createTask`/`crearNota` invocados
+fuera de su contrato original de formulario).
+
+**Sprint 6.5 (priorización asistida) — NO implementado.** Opcional
+por diseño ("si sobra presupuesto"), prioridad más baja de la fase, y
+el presupuesto de la sesión se cerró en Fase 6.4. Queda como siguiente
+paso natural para una sesión futura: la IA propone un plan de "My Day"
+que el usuario aprueba o edita (modelo Sunsama, nunca auto-agenda). El
+mecanismo de confirmación de 6.4 (Map + confirmationId + botones
+reales) es directamente reusable ahí.
+
+---
+
 
 ### ✅ Sprint 6.3 — Tool-use de solo lectura (2026-07-17)
 
