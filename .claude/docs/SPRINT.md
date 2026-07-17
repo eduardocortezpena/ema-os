@@ -1,5 +1,30 @@
 # SPRINT.md
-## Current Sprint: Sesión de auditoría de memoria (2026-07-14) — Partes 1-4 completas
+## Current Sprint: Fase 6 — IA vía OpenRouter (BLOQUEADA, esperando al dueño)
+
+### ⚠️ BLOQUEADO — Fase 6, Sprint 6.1, esperando al dueño (2026-07-17)
+
+Prerrequisito explícito de la sesión: `OPENROUTER_API_KEY` debe existir
+en `.env` antes de tocar cualquier código de esta fase. Verificado
+(`grep -i OPENROUTER .env`): **no existe**. Variables actuales en
+`.env`: `DATABASE_URL`, `ENCRYPTION_KEY`, `GOOGLE_OAUTH_CLIENT_ID`,
+`GOOGLE_OAUTH_CLIENT_SECRET` — ninguna de OpenRouter.
+
+**No se generó ni se inventó ninguna key** (instrucción explícita). Se
+paró la sesión de inmediato, sin tocar ningún archivo de código.
+
+**Acción requerida del dueño**: agregar a
+`C:\Users\EdEma\Oranizador de proyectos\ema-os\.env`:
+```
+OPENROUTER_API_KEY=sk-or-v1-...
+```
+(la misma key que ya usa con Hermes, o una nueva si prefiere
+separarlas por proyecto).
+
+**Al confirmar el dueño que la agregó**: retomar en Sprint 6.1 según
+el orden ya definido (6.1 → 6.2 → 6.3 → 6.4 → 6.5 opcional).
+
+---
+
 
 ### ✅ Parte 2 — rtk instalado (2026-07-14, continuación con presupuesto extra)
 
