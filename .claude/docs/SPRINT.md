@@ -1,5 +1,44 @@
 # SPRINT.md
-## Current Sprint: Fase 6 — IA vía OpenRouter (6.1, 6.2 completos; 6.3 en curso)
+## Current Sprint: Fase 6 — IA vía OpenRouter (6.1-6.3 completos; 6.4 siguiente, el más delicado)
+
+### ✅ Sprint 6.3 — Tool-use de solo lectura (2026-07-17)
+
+`app/lib/assistant-tools.ts` nuevo: 4 tools (`listar_proyectos`,
+`listar_tareas`, `buscar_tareas_por_texto`, `leer_nota_contexto`),
+todas invocando Prisma/`getNoteContent` ya existentes, ninguna
+escribe. `app/api/chat/route.ts` reescrito con loop de tool_use
+(máximo 3 rondas, arquitectura confirmada por architect: decisión
+sin streaming, respuesta final directa sin re-llamar innecesariamente).
+
+**Cambio de modelo importante**: `DEFAULT_MODEL` pasó de
+`openrouter/free` (auto-router no determinístico) a
+`nvidia/nemotron-nano-9b-v2:free` (modelo fijo). Motivo verificado
+contra la API real: al probar tool-calling, `meta-llama/llama-3.3-70b-instruct:free`
+y `qwen/qwen3-coder:free` devolvieron 429 (rate-limited por el
+proveedor en ese momento), `openai/gpt-oss-20b:free` devolvió 402
+(quota insuficiente del lado del proveedor) — `nvidia/nemotron-nano-9b-v2:free`
+respondió con un `tool_calls` bien formado en la prueba real. Sigue
+siendo gratuito, solo se fijó en vez de dejarlo al auto-router.
+
+Reviewer: sin bloqueantes. Aplicado 1 ajuste menor sugerido (loguear
+`tool_call.arguments` crudo si el `JSON.parse` falla, para debug
+futuro). Limitación conocida y documentada en la tool misma:
+`buscar_tareas_por_texto`/`proyecto_nombre` no distinguen acentos
+(`ó` ≠ `o` en SQLite `LIKE`) — aceptado, no se normaliza (alcance no
+pedido, sin evidencia de que sea un problema práctico).
+
+**Verificado contra datos reales, sin mocks**: `listar_tareas`
+(Barrera de sargazo) devolvió "4", exacto contra `COUNT(*)` directo a
+la BD; `leer_nota_contexto` (Xalma Residencial) devolvió el contenido
+real de la nota ("Carretera Costera del Golfo"); `buscar_tareas_por_texto`
+("IMPI") devolvió el título exacto real; `listar_proyectos` en
+navegador real listó los 9 proyectos reales incluyendo estados
+PAUSADO/PLANNING que el resumen fijo del system prompt (Sprint 6.2)
+no cubre — confirma que las tools traen datos más allá del contexto
+fijo, el punto central de este sprint.
+
+---
+
 
 ### ✅ Sprint 6.2 — Inyección de contexto de proyectos (2026-07-17)
 
