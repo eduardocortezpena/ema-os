@@ -1,27 +1,14 @@
 # SPRINT.md
-## Current Sprint: Fase 6 — IA vía OpenRouter (BLOQUEADA, esperando al dueño)
+## Current Sprint: Fase 6 — IA vía OpenRouter (Sprint 6.1 en curso)
 
-### ⚠️ BLOQUEADO — Fase 6, Sprint 6.1, esperando al dueño (2026-07-17)
+### ✅ Prerrequisito resuelto (2026-07-17)
 
-Prerrequisito explícito de la sesión: `OPENROUTER_API_KEY` debe existir
-en `.env` antes de tocar cualquier código de esta fase. Verificado
-(`grep -i OPENROUTER .env`): **no existe**. Variables actuales en
-`.env`: `DATABASE_URL`, `ENCRYPTION_KEY`, `GOOGLE_OAUTH_CLIENT_ID`,
-`GOOGLE_OAUTH_CLIENT_SECRET` — ninguna de OpenRouter.
-
-**No se generó ni se inventó ninguna key** (instrucción explícita). Se
-paró la sesión de inmediato, sin tocar ningún archivo de código.
-
-**Acción requerida del dueño**: agregar a
-`C:\Users\EdEma\Oranizador de proyectos\ema-os\.env`:
-```
-OPENROUTER_API_KEY=sk-or-v1-...
-```
-(la misma key que ya usa con Hermes, o una nueva si prefiere
-separarlas por proyecto).
-
-**Al confirmar el dueño que la agregó**: retomar en Sprint 6.1 según
-el orden ya definido (6.1 → 6.2 → 6.3 → 6.4 → 6.5 opcional).
+`OPENROUTER_API_KEY` agregada por el dueño a `.env`. Verificada contra
+la API real (`GET /api/v1/auth/key`): key válida, $4.28 de crédito
+disponible. Modelo por defecto confirmado: `openrouter/free` (ya
+documentado en ROADMAP.md, verificado que sigue siendo un id real y
+activo consultando `GET /api/v1/models`). Architect consultado para el
+diseño del Route Handler de streaming antes de escribir código.
 
 ---
 

@@ -49,6 +49,7 @@ export default async function RootLayout({
             <a href="/tasks" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Tasks</a>
             <a href="/calendar" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Calendar</a>
             <a href="/files" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Files</a>
+            <a href="/assistant" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Assistant</a>
             <a href="/settings" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Settings</a>
           </nav>
         </aside>
