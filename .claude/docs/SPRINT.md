@@ -1,5 +1,61 @@
 # SPRINT.md
-## Current Sprint: Sesión con supervisión parcial (2026-07-13) — Partes 1, 2, 4 completas; 3 en curso; 5 análisis listo para ejecutar CON supervisión
+## Current Sprint: Sesión de auditoría de memoria (2026-07-14)
+
+### 📊 Reporte de estado del ROADMAP (Parte 4, 2026-07-14)
+
+**Fases 100% completas**: 0 (MVP), 1 (Priorización), 4 (Calendar,
+4.1-4.4), 7 (UX avanzada), 9.1-9.4 (Interactividad; 9.5 opcional sin
+tocar). Además, fuera de la numeración de fases: Sesión de mejoras de
+UX y Sesión con supervisión parcial (renombrado, tareas cíclicas,
+botón completar, `/calendar`, acceso LAN) — todas cerradas con
+reviewer y verificación real.
+
+**Parcial**: Fase 3 (Drive) — OAuth/notas/subida funcionan, Sprint 3.5
+(rclone bisync) con plan documentado pero `rclone` sin instalar,
+ejecución pendiente de sesión supervisada.
+
+**Sin empezar**: Fase 2 (Clasificador de archivos — nota: ya existe un
+agente Organizador real operando por fuera de EMA OS, ver `AGENTES.md`
+y la discrepancia de autonomía anotada ahí), Fase 5 (Documentos
+automáticos), Fase 6 (IA/OpenRouter tool-use), Fase 6.5 (integración
+Hermes — borrador de diseño listo, cero código), Fase 10 (Estilización
+— deliberadamente abierta).
+
+**Ideas nuevas registradas esta sesión** (añadidas a `BACKLOG.md`):
+nueva pestaña de inventario en EMA OS + perfil agéntico
+"Inventarista". El dueño hará el primer inventario manual en su viaje
+a Xalma esta semana; quiere cotejo automatizado en la próxima
+quincena — sin implementar todavía, requiere diseño en sesión
+dedicada.
+
+**Recomendación del siguiente paso técnico**: cerrar el diagnóstico
+del bug de Tailscale (bloquea el objetivo real de "acceso remoto fuera
+de casa" que el dueño pidió explícitamente) antes de abrir cualquier
+fase nueva — es la pieza que quedó rota de la sesión anterior, no
+deuda vieja. Después, Fase 6 (tool-use) es el siguiente bloque grande
+con más apalancamiento (desbloquea Hermes/Fase 6.5 y el agente
+Inventarista al mismo tiempo).
+
+### 🗂️ Auditoría de memoria (Parte 1, 2026-07-14)
+
+Inventario completo de archivos de contexto reportado al dueño en
+chat. Propuesta de consolidación: archivar (no borrar)
+`PROJECT_CONTEXT.md`, `PROJECT_MEMORY.md`, `OWNER_PROFILE.md`,
+`NEXT_SESSION.md`, `MEMORY.md`, `VISION.md` — todos sin tocar desde
+2026-07-09 (scaffold inicial), superados en la práctica por
+`SPRINT.md`/`BACKLOG.md`. **Esperando aprobación del dueño antes de
+mover/borrar nada** — no ejecutado en esta sesión. Generado
+`MASTER_CONTEXT.md` (raíz del repo, ≤2 páginas) como resumen para
+cargar a Dona en Hermes.
+
+**Partes 2 (rtk) y 3 (ponytail) de esta sesión: NO ejecutadas** —
+presupuesto de tokens llegó a su límite semanal (~5% restante,
+advertido por el dueño). Priorización explícita del dueño era
+"1 > 4 > 2 > 3"; se cerraron 1 y 4 en verde, se paró ahí en vez de
+dejar una instalación de herramienta externa a medias. Pendiente para
+la próxima sesión.
+
+---
 
 ### ✅ Parte 1 — Botón compacto de completar tarea (5 vistas)
 Ver commit `044305f`. `CompleteTaskButton.tsx` nuevo (standalone, no
