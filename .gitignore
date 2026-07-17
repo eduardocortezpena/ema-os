@@ -45,3 +45,6 @@ next-env.d.ts
 
 # archivos locales de usuario por proyecto (Fase 3, nunca a git)
 /files/
+
+# graphify: grafo de codigo regenerable (graphify update .), no versionar
+/graphify-out/
