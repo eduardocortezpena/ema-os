@@ -1,5 +1,30 @@
 # SPRINT.md
-## Current Sprint: Fase 6 — IA vía OpenRouter (Sprint 6.1 en curso)
+## Current Sprint: Fase 6 — IA vía OpenRouter (Sprint 6.1 completo, 6.2 siguiente)
+
+### ✅ Sprint 6.1 — Endpoint de chat con streaming + UI mínima (2026-07-17)
+
+Ver commit `1b17fb9`. `app/api/chat/route.ts` (Route Handler, primer
+streaming del proyecto) + `app/assistant/page.tsx` (Client Component).
+Modelo `openrouter/free` por defecto, fallback a `openai/gpt-4o-mini`
+en 429. Reviewer encontró y se corrigió 1 bloqueante (wrapper de
+layout duplicado, violaba `ui-guidelines`) — re-verificado tras el fix.
+
+**Verificado contra la API real**: llamada directa confirmó el modelo
+real detrás del auto-router (`nvidia/nemotron-nano-9b-v2:free` esa
+vez); 2 pruebas de streaming vía `curl` con texto correcto; prueba en
+navegador real (mensaje real enviado, respuesta visible en streaming,
+confirmado tras el fix de layout); validación de `messages` vacío
+devuelve 400 sin crashear.
+
+**Riesgo residual no verificado**: el path de fallback en 429 está en
+el código (revisado y confirmado correcto por el reviewer a nivel de
+lógica — no crashea si el fallback también falla) pero **no se probó
+con un 429 real** — no se quiso abusar del rate limit del pool
+gratuito para forzarlo. Si en el futuro se ve un error real de
+fallback, revisar aquí primero.
+
+---
+
 
 ### ✅ Prerrequisito resuelto (2026-07-17)
 
