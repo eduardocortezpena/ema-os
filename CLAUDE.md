@@ -104,6 +104,28 @@ ejecución: no dispara ninguna acción por sí sola.)
   esta misma sesión, con hallazgos de contenido no migrado reportados al
   dueño antes de archivar).
 
+## Modelos de OpenRouter
+
+Cadena por defecto para **Dona y todos los agentes salvo Señor Dev**:
+1. `nvidia/nemotron-3-super:free`
+2. `nvidia/nemotron-3-ultra:free`
+3. `meta-llama/llama-3.3-70b-instruct:free`
+
+Cadena para **Señor Dev** (especializada en código):
+1. `poolside/laguna-m.1:free` — expira ~28 jul 2026
+2. `poolside/laguna-xs-2.1:free`
+3. `cohere/north-mini-code:free`
+4. `nvidia/nemotron-3-super:free`
+
+**Regla**: toda la cadena debe ser `:free` — imposible consumir créditos
+por accidente. Cuando un modelo `:free` se retira, su ID deja de existir
+y la cadena cae sola; sin job programado ni mantenimiento manual.
+
+El modelo del `/assistant` interno (`nvidia/nemotron-nano-9b-v2:free`,
+fijado en Sprint 6.3) se mantiene si funciona bien. Candidato de upgrade:
+`nvidia/nemotron-3-super:free` — evaluar con una prueba de tool-calling
+antes de cambiar.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
