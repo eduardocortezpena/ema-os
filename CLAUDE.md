@@ -20,111 +20,96 @@ Reglas:
 
 ## Checklist de inicio de sesión
 
-Se aplica SIEMPRE al empezar cualquier sesión nueva de trabajo en este
-proyecto, sin que el usuario tenga que pedirlo:
+Se aplica SIEMPRE al empezar cualquier sesión nueva, sin que el usuario tenga
+que pedirlo:
 
 1. Leer `.claude/docs/SPRINT.md` y `.claude/docs/BACKLOG.md` para retomar
    el estado exacto donde quedó la sesión anterior.
-2. Confirmar `git status` limpio (sin cambios sin commitear) antes de
-   empezar a programar.
-3. Correr `npm run build` y confirmar que compila limpio desde la sesión
-   anterior. Si algo se rompió, arreglarlo antes de seguir con cualquier
-   feature nueva.
-4. Si hubo una migración de Prisma en la sesión anterior (revisar en
-   `SPRINT.md`): correr `npx prisma generate`, verificar que
-   `app/lib/db.ts` sigue intacto, y reiniciar `npm run dev` (Turbopack
-   cachea el cliente viejo en memoria y provoca falsos errores si no se
-   reinicia).
-5. Confirmar que `.claude/skills/` y `.claude/agents/` siguen activos sin
-   conflictos (nombres duplicados, frontmatter inválido) — solo si hubo
-   cambios recientes en esa carpeta.
+2. Confirmar `git status` limpio antes de empezar a programar.
+3. Correr `npm run build` y confirmar que compila limpio. Si algo se rompió,
+   arreglarlo antes de cualquier feature nueva.
+4. Si hubo migración de Prisma (ver `SPRINT.md`): `npx prisma generate` y
+   reiniciar el proceso de `npm run dev` (Turbopack cachea el cliente viejo).
 
 ## Reglas permanentes de verificación
 
-- Toda funcionalidad se prueba en navegador real (`npm run dev`), no solo
-  con `npm run build`. El build limpio no es evidencia de que algo
-  funciona, solo de que compila.
-- El navegador de pruebas de este entorno tiene timing errático con
-  clicks en formularios; cuando falle, usar manipulación de DOM vía JS y
-  verificar el resultado contra la base de datos directamente.
-- No decir "listo" o "completado" sin mostrar el comando ejecutado y su
-  output como evidencia.
-- Usar el subagente `reviewer` al cerrar cada sprint, y que corra el
-  build por su cuenta en vez de confiar en el resumen del sprint.
-- Administrar el presupuesto de tokens de la sesión: si el límite se
-  acerca, cerrar el sprint en curso en verde (build limpio + commit +
-  `SPRINT.md` actualizado) y parar, en vez de dejar un sprint a medias.
+- Toda funcionalidad se prueba en navegador real (`npm run dev`), no solo con
+  `npm run build`. El build limpio no es evidencia de que algo funciona.
+- El navegador de pruebas tiene timing errático en formularios; cuando falle,
+  usar manipulación de DOM vía JS y verificar contra la BD directamente.
+- No decir "listo" sin mostrar el comando ejecutado y su output como evidencia.
+- Usar el subagente `reviewer` al cerrar cada sprint.
+- Si el presupuesto de tokens se acerca al límite: cerrar en verde (build limpio
+  + commit + `SPRINT.md` actualizado) y parar. Nunca dejar un sprint a medias.
 
 ## Mapa de fases
 
-Fuente de verdad: `.claude/docs/ROADMAP.md`. Numeración renumerada dos
-veces (2026-07-11): primero para fijar Fase 0=MVP/Fase 1=Priorización,
-después para reservar la Fase 2 y mover Drive a Fase 3. Esto ya causó
-confusión entre sesiones más de una vez — ante cualquier duda, confirmar
-el número de fase contra `ROADMAP.md`, nunca asumirlo del prompt del
-usuario.
-
-- **Fase 0** — Cerrar el MVP existente ✅ completa
-- **Fase 1** — Núcleo de priorización "¿qué hago ahora?" ✅ completa
-  (incluye Next Action por proyecto y vista "My Day"; Sprint 1.5 —orden
-  sugerido automático— opcional, pendiente)
-- **Fase 2** — Reservada, sin sprints planificados (candidata:
-  "Clasificador de archivos", ver `BACKLOG.md`)
-- **Fase 3** — Google Drive: archivos y notas Markdown editables desde
-  la web
-- **Fase 4** — Google Calendar como pilar
-- **Fase 5** — IA con OpenRouter (BYOK)
-- **Fase 6** — Documentos automáticos
-- **Fase 7** — UX avanzada
-- **Fase 8** — Endurecimiento y pulido final
+Fuente de verdad: `.claude/docs/ROADMAP.md`. La numeración se renumeró dos veces
+— ante cualquier duda, confirmar el número de fase contra `ROADMAP.md`, nunca
+asumirlo del prompt del usuario.
 
 ## Arquitectura de memoria
 
-(Documentado 2026-07-17, actualizado 2026-07-18 con reglas de rotación.)
-
 ### Archivos de contexto vivos (única fuente de verdad)
 
-Lista exacta — mantener actualizados, nunca dejar stale:
+Mantener actualizados. Actualizar en el mismo commit que cierra el trabajo:
 
 1. `CLAUDE.md` (este archivo)
 2. `.claude/docs/SPRINT.md`
 3. `.claude/docs/BACKLOG.md`
 4. `.claude/docs/ROADMAP.md`
 5. `.claude/docs/AGENTES.md`
-6. `.claude/docs/BITACORA.md` ← nuevo 2026-07-18
-
-Se actualizan en el mismo cambio que cierra el trabajo — no después.
+6. `.claude/docs/BITACORA.md`
 
 ### Tope duro: 80-100 líneas por archivo vivo
 
 Al superar 100 líneas: rotar contenido viejo a
-`.claude/docs/archive/<NOMBRE>_HISTORICO.md` (append al final, con separador
-de fecha). **La copia es ciega — NO se lee ni se resume el contenido, se
-copia completo.** El archivo activo queda con solo el estado vivo actual.
+`.claude/docs/archive/<NOMBRE>_HISTORICO.md` (append al final, separador de
+fecha). **Copia ciega — NO leer ni resumir, copiar completo.** El archivo activo
+queda solo con el estado actual.
 
-### PROHIBIDO leer archivos de archive/
+### PROHIBIDO leer archive/
 
-No leer `.claude/docs/archive/` salvo orden directa del usuario. Esos archivos
-son histórico, no contexto operativo.
+No leer `.claude/docs/archive/` salvo orden directa del usuario.
 
 ### Bitácora obligatoria
 
-Todo agente al cerrar una tarea DEBE registrar su entrada en `BITACORA.md`
-antes de hacer commit. Formato: `fecha | agente | acción | resultado`.
+Todo agente al cerrar una tarea DEBE agregar su entrada en `BITACORA.md` antes
+de hacer commit. Formato: `fecha | agente | acción | resultado`.
 Agentes válidos: Claude Code / Z Code / Hermes-Organizador / Hermes-Becario /
 Hermes-Dona.
 
 ### MASTER_CONTEXT.md
 
-Generado SIEMPRE a partir de los 6 vivos, nunca editado a mano. Regenerar
-cuando cambia algo sustancial (fase completada, cambio de prioridades, agentes
-nuevos). No regenerar por rutina si nada cambió.
+Generado a partir de los 6 vivos, nunca editado a mano. Regenerar solo cuando
+cambia algo sustancial (fase completada, cambio de prioridades, agentes nuevos).
+Ningún agente de Hermes recibe los 6 documentos fuente — solo `MASTER_CONTEXT.md`.
 
-**Ningún agente de Hermes recibe los 6 documentos fuente directamente** —
-solo `MASTER_CONTEXT.md`.
+Cualquier `.md` fuera de la lista de 6 es sospechoso: auditar antes de confiar.
 
-**Cualquier `.md` de contexto fuera de esta lista de 6 es sospechoso por
-defecto**: auditar contra los 6 vivos antes de confiar en él.
+## Revisión semanal de salud del proyecto
+
+**Cuándo:** al inicio de la primera sesión de trabajo después de 7 días desde el
+último commit de documentación (revisar con `git log --oneline -- "*.md"`).
+
+**Qué revisar (en orden):**
+
+1. **Archivos vivos**: verificar que los 6 están actualizados y reflejan el estado
+   real. Si alguno está stale (no se tocó en la sesión que cerró trabajo), corregirlo.
+2. **Tope de líneas**: `wc -l` sobre los 6 vivos. Si alguno supera 100 líneas,
+   rotar inmediatamente (copia ciega a archive/).
+3. **Archive/**: confirmar que solo tiene históricos nombrados `*_HISTORICO.md`.
+   Si hay archivos sueltos o con nombres raros, reportar al dueño antes de mover.
+4. **MASTER_CONTEXT.md**: verificar que su contenido coincide con el estado real
+   del ROADMAP.md y AGENTES.md. Si está desactualizado, regenerar.
+5. **Rutas en CLAUDE.md**: confirmar que todos los archivos mencionados en este
+   documento siguen existiendo. Si se movió o renombró algo, actualizar aquí.
+6. **BITACORA.md**: confirmar que tiene entradas de las sesiones recientes. Si
+   falta alguna, reconstruirla desde el `git log`.
+
+La revisión no requiere aprobación del dueño para ejecutarse — es mantenimiento
+rutinario. Si se detecta algo que requiere una decisión (borrar un archivo,
+cambiar estructura), reportar y esperar confirmación antes de actuar.
 
 ## Modelos de OpenRouter
 
@@ -139,46 +124,35 @@ Cadena para **Señor Dev** (especializada en código):
 3. `cohere/north-mini-code:free`
 4. `nvidia/nemotron-3-super:free`
 
-**Regla**: toda la cadena debe ser `:free` — imposible consumir créditos
-por accidente. Cuando un modelo `:free` se retira, su ID deja de existir
-y la cadena cae sola; sin job programado ni mantenimiento manual.
-
-El modelo del `/assistant` interno (`nvidia/nemotron-nano-9b-v2:free`,
-fijado en Sprint 6.3) se mantiene si funciona bien. Candidato de upgrade:
-`nvidia/nemotron-3-super:free` — evaluar con una prueba de tool-calling
-antes de cambiar.
+Modelo del `/assistant` interno: `nvidia/nemotron-nano-9b-v2:free` (fijado en
+Sprint 6.3). Toda la cadena debe ser `:free` — imposible consumir créditos por
+accidente. Cuando un modelo `:free` se retira, su ID deja de existir y la cadena
+cae sola.
 
 ## Reglas para trabajadores externos (Antigravity / Señor Dev)
-
-Estas reglas aplican a cualquier agente externo que trabaje en una rama
-paralela a main. Origen: incidente 2026-07-18 donde Antigravity instaló
-`@modelcontextprotocol/sdk` en `package.json` raíz sin que se le pidiera.
 
 **Archivos prohibidos (nunca tocar sin autorización explícita):**
 - `package.json` y `package-lock.json` (raíz del proyecto)
 - `.env` y `.env.example`
 - `prisma/schema.prisma` y archivos de migración
-- `main` — nunca pushear directo a main; solo el integrador mergea
+- `main` — nunca pushear directo; solo el integrador mergea
 
-**Regla de alcance:** una rama, una tarea. Si se asignó "añadir componentes
-UI", el commit toca solo los componentes UI — nada más.
+**Regla de alcance:** una rama, una tarea. El commit toca solo lo asignado.
 
-**Regla de bloqueo:** si el build falla por trabajo ajeno en vuelo (otra
-rama, dependencia no instalada, etc.), el trabajador **reporta el bloqueo
-y para**. Nunca "arregla" el bloqueo instalando cosas o modificando
-archivos fuera de su scope. El integrador desbloquea o reordena.
+**Regla de bloqueo:** si el build falla por trabajo ajeno, reportar y parar. No
+instalar dependencias ni modificar archivos fuera del scope asignado.
 
-**Proceso de merge:** el integrador (Claude en sesión de revisión) revisa
-el diff completo, hace cherry-pick selectivo si el commit mezcla cambios
-legítimos con violaciones, y documenta qué se excluyó y por qué en el
-mensaje de commit.
+**Proceso de merge:** el integrador revisa el diff completo, hace cherry-pick
+selectivo si el commit mezcla cambios legítimos con violaciones, y documenta
+qué se excluyó en el mensaje de commit.
 
 ## graphify
 
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+This project has a knowledge graph at `graphify-out/`.
 
-Rules:
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+- For codebase questions, first run `graphify query "<question>"` when
+  `graphify-out/graph.json` exists. Use `graphify path "<A>" "<B>"` for
+  relationships and `graphify explain "<concept>"` for focused concepts.
+- If `graphify-out/wiki/index.md` exists, use it for broad navigation.
+- Read `graphify-out/GRAPH_REPORT.md` only for broad architecture review.
+- After modifying code, run `graphify update .` to keep the graph current.
