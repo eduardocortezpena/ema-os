@@ -58,6 +58,13 @@ async function syncCalendarEvent(
   }
 }
 
+/**
+ * Crea una nueva tarea.
+ * Extrae campos del formData: title, description, priority, status, dueDate, projectId.
+ * Valida que el proyecto destino exista si projectId está presente.
+ * Sincroniza con Google Calendar si proyecto y fecha límite están definidos.
+ * @param formData - Formulario con datos de la tarea
+ */
 export async function createTask(formData: FormData) {
   const returnTo = taskReturnTo(formData);
   try {
@@ -151,6 +158,11 @@ export async function assignTaskToProject(formData: FormData) {
   }
 }
 
+/**
+ * Actualiza el estado de una tarea (TODO, IN_PROGRESS, WAITING, DONE).
+ * Al completar (DONE), elimina el evento de Google Calendar si existe.
+ * @param formData - Formulario con id y nuevo status
+ */
 export async function updateTaskStatus(formData: FormData) {
   const returnTo = taskReturnTo(formData);
   try {
@@ -286,6 +298,10 @@ export async function updateTaskReminderPreset(formData: FormData) {
   }
 }
 
+/**
+ * Actualiza la prioridad de una tarea (LOW, MEDIUM, HIGH, CRITICAL).
+ * @param formData - Formulario con id y nueva prioridad
+ */
 export async function updateTaskPriority(formData: FormData) {
   const returnTo = taskReturnTo(formData);
   try {
@@ -313,6 +329,11 @@ export async function updateTaskPriority(formData: FormData) {
   }
 }
 
+/**
+ * Programa una tarea para el día de hoy en la vista "My Day".
+ * Establece plannedFor con la fecha de inicio del día actual.
+ * @param formData - Formulario con id de la tarea
+ */
 export async function planForToday(formData: FormData) {
   try {
     const id = formData.get('id')?.toString() || '';
@@ -334,6 +355,10 @@ export async function planForToday(formData: FormData) {
   }
 }
 
+/**
+ * Mueve una tarea planificada de hoy a mañana en la vista "My Day".
+ * @param formData - Formulario con id de la tarea
+ */
 export async function rolloverToTomorrow(formData: FormData) {
   try {
     const id = formData.get('id')?.toString() || '';
@@ -358,6 +383,10 @@ export async function rolloverToTomorrow(formData: FormData) {
   }
 }
 
+/**
+ * Quita una tarea de la vista "My Day" (elimina plannedFor).
+ * @param formData - Formulario con id de la tarea
+ */
 export async function unplanTask(formData: FormData) {
   try {
     const id = formData.get('id')?.toString() || '';
@@ -379,6 +408,11 @@ export async function unplanTask(formData: FormData) {
   }
 }
 
+/**
+ * Elimina una tarea existente.
+ * Si la tarea tiene evento sincronizado en Google Calendar, lo elimina también.
+ * @param formData - Formulario con id de la tarea
+ */
 export async function deleteTask(formData: FormData) {
   const returnTo = taskReturnTo(formData);
   try {
