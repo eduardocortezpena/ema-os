@@ -22,6 +22,8 @@ model Proyecto {
   nextActionTaskId String? @unique
   nextActionTask   Tarea?  @relation("ProjectNextAction", fields: [nextActionTaskId], references: [id])
   archivos         Archivo[]
+  // Plantillas de documentos para este proyecto (Sprint 6.1)
+  templates        DocumentTemplate[]
   // Carpeta del proyecto en Drive (Sprint 3.4). Nullable: se crea de forma
   // perezosa en el primer upload, no al crear el proyecto (createProject no
   // depende de red/Drive).
@@ -129,4 +131,20 @@ enum ReminderPreset {
   FIVE_DAYS
   ONE_DAY
   NONE
+}
+
+model DocumentTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  // "docx" o "md" según el tipo de plantilla
+  docType     String
+  // Ruta relativa a ./templates/ donde se guarda el archivo .docx o .md
+  path        String
+  // Variables JSON esperadas por la plantilla (ej: {"fields": ["nombre", "fecha", "monto"]})
+  variables   String?  @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  // Relación opcional a proyecto para plantillas específicas
+  projectId   String?
+  project     Proyecto? @relation(fields: [projectId], references: [id])
 }
