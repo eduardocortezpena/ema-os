@@ -26,6 +26,30 @@ async function mirrorFileToDrive(
   }
 }
 
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB
+
+const ALLOWED_MIME = new Set([
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'image/png',
+  'image/jpeg',
+  'text/markdown',
+  'text/plain',
+]);
+
+const ALLOWED_EXT = new Set(['.pdf', '.docx', '.xlsx', '.png', '.jpg', '.jpeg', '.md', '.txt']);
+
+function validateUpload(file: File): string | null {
+  if (file.size > MAX_UPLOAD_BYTES) return 'El archivo supera el límite de 25 MB';
+  const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+  const mime = file.type || '';
+  if (!ALLOWED_EXT.has(ext) || (!ALLOWED_MIME.has(mime) && mime !== '')) {
+    return 'Tipo de archivo no permitido. Formatos aceptados: PDF, DOCX, XLSX, PNG, JPG, MD';
+  }
+  return null;
+}
+
 export async function uploadFile(formData: FormData) {
   try {
     const projectId = formData.get('projectId')?.toString() || '';
@@ -36,6 +60,11 @@ export async function uploadFile(formData: FormData) {
     }
     if (!(file instanceof File) || file.size === 0) {
       redirect(`/files?error=${encodeURIComponent('Selecciona un archivo')}`);
+    }
+
+    const validationError = validateUpload(file as File);
+    if (validationError) {
+      redirect(`/files?error=${encodeURIComponent(validationError)}`);
     }
 
     // Validar que el proyecto existe ANTES de usar projectId en una ruta de
