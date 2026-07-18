@@ -3,12 +3,25 @@
 import { useOptimistic, useRef, useState } from 'react';
 import { createTask } from '@/app/actions';
 import { TaskCard, type Task } from './TaskCard';
+import { GenerateDocumentForm, type TemplateOption } from './GenerateDocumentForm';
 
 // Lista de tareas acotada a UN proyecto (Sprint 9.1, /projects/[id]) — mismo
 // patrón de useOptimistic + guard useRef que TaskBoard.tsx (Sprint 7.3), pero
 // sin selector de proyecto en el formulario de creación (el proyecto ya está
 // fijo por la ruta, va como campo oculto).
-export function ProjectTaskList({ projectId, tasks }: { projectId: string; tasks: Task[] }) {
+//
+// `templates` (Fase 5/6 UI): si llega un arreglo no vacío, cada TaskCard va
+// seguida de un GenerateDocumentForm. Si está vacío o ausente, no se renderiza
+// nada (caso de proyecto sin plantillas — la UI no cambia respecto a antes).
+export function ProjectTaskList({
+  projectId,
+  tasks,
+  templates,
+}: {
+  projectId: string;
+  tasks: Task[];
+  templates?: TemplateOption[];
+}) {
   const returnTo = `/projects/${projectId}`;
   const [optimisticTasks, addOptimisticTask] = useOptimistic(tasks, (state, newTask: Task) => [
     ...state,
@@ -61,7 +74,16 @@ export function ProjectTaskList({ projectId, tasks }: { projectId: string; tasks
           <p className="text-gray-500 text-sm">Sin tareas todavía. ¡Crea una abajo!</p>
         ) : (
           optimisticTasks.map((task) => (
-            <TaskCard key={task.id} task={task} showProject={false} returnTo={returnTo} />
+            <div key={task.id} className="space-y-1">
+              <TaskCard task={task} showProject={false} returnTo={returnTo} />
+              {!task.pending && templates && templates.length > 0 && (
+                <GenerateDocumentForm
+                  taskId={task.id}
+                  templates={templates}
+                  returnTo={returnTo}
+                />
+              )}
+            </div>
           ))
         )}
       </div>

@@ -2,7 +2,6 @@ import { headers } from 'next/headers';
 import { buildAuthUrl, isDriveConnected } from '@/app/lib/google-drive-auth';
 import { migrateLegacyNotes } from '@/app/actions/notes';
 import { disconnectAndReconnectDrive } from '@/app/actions/settings';
-import { registerDocumentTemplate } from '@/app/actions/document-actions';
 
 export default async function Settings({
   searchParams,
@@ -109,45 +108,19 @@ export default async function Settings({
 
         <div className="space-y-6 rounded-lg bg-gray-800 p-6">
           <div>
-            <h2 className="text-xl font-semibold mb-4">Plantillas de documentos</h2>
-            <p className="text-gray-400 text-sm mb-4">
-              Registra plantillas .docx o .md para generar documentos automáticamente.
+            <h2 className="text-xl font-semibold mb-2">Plantillas de documentos</h2>
+            <p className="text-gray-400 text-sm mb-3">
+              La gestión de plantillas se mudó a su propia página.
             </p>
-            <form action={registerDocumentTemplate} className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-300 mb-1">Nombre</label>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  className="w-full bg-gray-700 rounded px-3 py-2 text-sm"
-                  placeholder="Ej: Reporte de proyecto"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-300 mb-1">Tipo</label>
-                <select name="docType" required className="w-full bg-gray-700 rounded px-3 py-2 text-sm">
-                  <option value="docx">DOCX (.docx)</option>
-                  <option value="md">Markdown (.md)</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-300 mb-1">Archivo de plantilla</label>
-                <input
-                  type="file"
-                  name="template"
-                  required
-                  accept=".docx,.md"
-                  className="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-primary-500 file:text-white hover:file:bg-primary-600"
-                />
-              </div>
-              <button
-                type="submit"
-                className="inline-block bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors text-sm"
-              >
-                Registrar plantilla
-              </button>
-            </form>
+            <a
+              href="/templates"
+              className="inline-block bg-primary-500 px-4 py-2 rounded hover:bg-primary-600 transition-colors text-sm"
+            >
+              Ir a Plantillas →
+            </a>
+            <p className="text-gray-500 text-xs mt-2">
+              CRUD completo de plantillas .docx / .md y vínculo con proyectos.
+            </p>
           </div>
         </div>
 

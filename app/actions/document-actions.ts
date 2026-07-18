@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@/app/lib/db';
-import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync, writeFileSync, readFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { redirect } from 'next/navigation';
 import Docxtemplater from 'docxtemplater';
@@ -28,6 +28,11 @@ function ensureTemplatesDir() {
  * @param formData - Contiene name, docType, y el archivo de plantilla
  */
 export async function registerDocumentTemplate(formData: FormData): Promise<void> {
+  // returnTo permite que el formulario viva en cualquier página (originalmente
+  // /settings, ahora /templates). Si no se especifica, se redirige a /templates.
+  const returnTo = formData.get('returnTo')?.toString() || '/templates';
+  const errorBase = `${returnTo}${returnTo.includes('?') ? '&' : '?'}error=`;
+
   try {
     ensureTemplatesDir();
 
@@ -36,12 +41,12 @@ export async function registerDocumentTemplate(formData: FormData): Promise<void
     const projectId = formData.get('projectId')?.toString() || null;
 
     if (!name || !docType) {
-      redirect(`/settings?error=${encodeURIComponent('Nombre y tipo de documento son requeridos')}`);
+      redirect(`${errorBase}${encodeURIComponent('Nombre y tipo de documento son requeridos')}`);
     }
 
     const file = formData.get('template') as File;
     if (!file || file.size === 0) {
-      redirect(`/settings?error=${encodeURIComponent('Archivo de plantilla requerido')}`);
+      redirect(`${errorBase}${encodeURIComponent('Archivo de plantilla requerido')}`);
     }
 
     // Guardar archivo en ./templates/
@@ -61,10 +66,12 @@ export async function registerDocumentTemplate(formData: FormData): Promise<void
         projectId: projectId || null,
       },
     });
+
+    redirect(`${returnTo}?created=1`);
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
     console.error('[document-actions] registerDocumentTemplate error:', error);
-    redirect(`/settings?error=${encodeURIComponent(toUserMessage(error, 'Error registrando la plantilla. Intenta de nuevo.'))}`);
+    redirect(`${errorBase}${encodeURIComponent(toUserMessage(error, 'Error registrando la plantilla. Intenta de nuevo.'))}`);
   }
 }
 
@@ -251,4 +258,51 @@ export async function generateDocumentAndCompleteTask(
   }
 
   return result;
+}
+
+/**
+ * Elimina una plantilla de documento: borra el registro en la BD y el
+ * archivo físico en ./templates/. Si el archivo ya no existe en disco (ej.
+ * migración manual, borrado parcial previo), lo ignora y solo borra el
+ * registro — la BD es la fuente de verdad de lo que el usuario ve.
+ * @param formData - Contiene id (de la plantilla) y returnTo opcional
+ */
+export async function deleteDocumentTemplate(formData: FormData): Promise<void> {
+  const id = formData.get('id')?.toString();
+  const returnTo = formData.get('returnTo')?.toString() || '/templates';
+  const errorBase = `${returnTo}${returnTo.includes('?') ? '&' : '?'}error=`;
+
+  if (!id) {
+    redirect(`${errorBase}${encodeURIComponent('ID de plantilla requerido')}`);
+  }
+
+  try {
+    const template = await prisma.documentTemplate.findUnique({
+      where: { id },
+      select: { path: true },
+    });
+
+    if (!template) {
+      // Ya no existe — tratamos como éxito idempotente.
+      redirect(returnTo);
+    }
+
+    // Borrar archivo físico si sigue en disco. try/catch interno: que la
+    // ausencia del archivo no impida borrar el registro huérfano.
+    const filePath = join(TEMPLATES_DIR, template.path);
+    if (existsSync(filePath)) {
+      try {
+        unlinkSync(filePath);
+      } catch (unlinkError) {
+        console.error('[document-actions] No se pudo borrar el archivo físico:', unlinkError);
+      }
+    }
+
+    await prisma.documentTemplate.delete({ where: { id } });
+    redirect(returnTo);
+  } catch (error: any) {
+    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    console.error('[document-actions] deleteDocumentTemplate error:', error);
+    redirect(`${errorBase}${encodeURIComponent(toUserMessage(error, 'Error eliminando la plantilla. Intenta de nuevo.'))}`);
+  }
 }

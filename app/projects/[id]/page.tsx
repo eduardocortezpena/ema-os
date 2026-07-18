@@ -25,6 +25,15 @@ export default async function ProjectDetailPage({
   });
   if (!project) notFound();
 
+  // Plantillas disponibles para este proyecto: las globales (projectId null)
+  // más las específicas del proyecto. Se pasan a ProjectTaskList para que
+  // cada tarea pueda generar documentos (Fase 5/6 UI).
+  const templates = await prisma.documentTemplate.findMany({
+    where: { OR: [{ projectId: null }, { projectId: id }] },
+    select: { id: true, name: true, docType: true },
+    orderBy: { name: 'asc' },
+  });
+
   // Sesión de mejoras de UX, Parte 4: la nota de contexto (kind='NOTE') ya
   // no se renderiza aquí — se conserva íntegra en Drive + Archivo (índice),
   // será el contexto de futuros agentes organizadores. app/actions/notes.ts
@@ -145,6 +154,7 @@ export default async function ProjectDetailPage({
           <ProjectTaskList
             projectId={project.id}
             tasks={project.tasks.map((t) => ({ ...t, project: null }))}
+            templates={templates}
           />
         </div>
 
