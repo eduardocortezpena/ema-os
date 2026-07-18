@@ -1,0 +1,20 @@
+{
+  "name": "ema-os-mcp-server",
+  "version": "1.0.0",
+  "description": "Servidor MCP local de EMA OS — expone las 8 tools de la Fase 6 para Hermes/Dona",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "start": "tsx index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^20.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.0.0"
+  }
+}
