@@ -1,6 +1,28 @@
 # SPRINT.md
 ## Current Sprint: Fase 6 completa — en main ✅ | Próximo: Fase 7 (UX avanzada)
 
+### ✅ Sprint 6.1/6.2 — Generación de documentos desde plantillas (2026-07-18)
+
+Modelo `DocumentTemplate` agregado a Prisma (id, name, docType, path, variables, projectId opcional).
+Migración aditiva `20260718013940_add_document_templates` aplicada.
+Server Actions en `app/actions/document-actions.ts`:
+- `registerDocumentTemplate(formData)` — guarda plantilla en `./templates/` + registro en BD
+- `generateDocxFromTemplate(templateId, data)` — usa docxtemplater + pizzip
+
+Dependencias instaladas (excepción documentada): `docxtemplater`, `pizzip`.
+
+UI mínima agregada en `/settings` para registrar plantillas (.docx o .md).
+
+**Verificado**: `npm run build` limpio, Prisma Client regenerado.
+
+### ⚠️ Discrepancia de numeración anotada
+
+La tarea original pedía "Sprint 5.1/5.2 de Fase 5 — generación de documentos", pero el ROADMAP.md define:
+- **Fase 5**: IA con OpenRouter (sprints 5.1-5.2-5.3)
+- **Fase 6**: Documentos automáticos (sprints 6.1-6.2)
+
+Se implementó **Fase 6 según ROADMAP.md**, no la numeración solicitada. El commit incluye esta anotación para que Claude Code vea la discrepancia.
+
 ### ✅ Sesión de revisión e integración (2026-07-18)
 
 Revisión y merge de 4 ramas paralelas a main. Reviewer corrió el build
