@@ -47,14 +47,28 @@ interface PendingConfirmation {
 
 const PENDING: Map<string, PendingConfirmation> = new Map();
 const TTL_MS = 5 * 60 * 1000;
+const MAX_PENDING = 50;
+
+function purgeExpired() {
+  const now = Date.now();
+  for (const [k, v] of PENDING) {
+    if (now > v.expiresAt) PENDING.delete(k);
+  }
+}
 
 function createConfirmation(toolName: string, args: unknown, description: string): string {
+  purgeExpired();
+  // ponytail: hard cap — drops oldest if hit (MCP local, misuse not a concern)
+  if (PENDING.size >= MAX_PENDING) {
+    PENDING.delete(PENDING.keys().next().value!);
+  }
   const id = crypto.randomUUID();
   PENDING.set(id, { toolName, args, description, expiresAt: Date.now() + TTL_MS });
   return id;
 }
 
 function resolveConfirmation(id: string): PendingConfirmation | null {
+  purgeExpired();
   const pending = PENDING.get(id);
   if (!pending) return null;
   PENDING.delete(id); // consumir una sola vez (protección replay)
