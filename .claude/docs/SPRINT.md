@@ -1,5 +1,44 @@
 # SPRINT.md
-## Current Sprint: Fase 6 — IA vía OpenRouter (6.1-6.4 COMPLETOS; 6.5 opcional, no tocado)
+## Current Sprint: Fase 6 completa — 6.1-6.5 COMPLETOS (6.5 = servidor MCP)
+
+### ✅ Sprint 6.5 — Servidor MCP local de EMA OS (2026-07-18)
+
+Servidor MCP en `mcp-server/` (Node.js/TypeScript, stdio, paquete
+independiente). Expone 9 tools: las mismas 4 de lectura y 4 de escritura
+de las Fases 6.3/6.4, más `confirmar_accion`.
+
+**Regla dura heredada**: las 4 tools de escritura (`crear_tarea`,
+`crear_nota`, `completar_tarea`, `mover_archivo_a_proyecto`) devuelven
+`pending_confirmation` + `confirmationId` en el primer llamado — ninguna
+ejecuta sin pasar por `confirmar_accion({confirmationId, confirm:true})`.
+Gate verificado por reviewer (único camino de escritura, sin bypass).
+
+Fix de reviewer aplicado: `completar_tarea` y `mover_archivo_a_proyecto`
+resuelven el ID de la entidad en el momento de la propuesta, no en el
+ejecutor — evita ambigüedad por título cuando hay varias entidades con
+nombres similares.
+
+El servidor accede a Prisma directamente (sin importar nada de Next.js).
+Dos procesos independientes sobre la misma SQLite: riesgo bajo para uso
+local, documentado (architect).
+
+**Verificado con cliente MCP real (JSON-RPC sobre stdio)**:
+- 9 tools expuestas correctamente.
+- `listar_proyectos` → 9 proyectos reales de la BD.
+- `crear_tarea` → `pending_confirmation`, BD sin cambios.
+
+Docs generados:
+- `.claude/docs/MCP_HERMES.md` — instrucciones para conectar desde Hermes.
+- `CLAUDE.md` sección "Modelos de OpenRouter" — cadenas :free para DEFAULT
+  y Señor Dev.
+- `.claude/docs/SKILL_AUDITORIA_MODELOS.md` — procedimiento mensual para
+  que Dona audite que los modelos siguen siendo :free.
+
+Siguiente paso natural: el usuario conecta Hermes a este servidor MCP
+siguiendo `.claude/docs/MCP_HERMES.md`. Fase 7 (UX avanzada) queda
+desbloqueada.
+
+---
 
 ### ✅ Sprint 6.4 — Tool-use de escritura con confirmación real (2026-07-17)
 
