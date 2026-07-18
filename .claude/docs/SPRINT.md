@@ -1,5 +1,35 @@
 # SPRINT.md
-## Current Sprint: Fase 6 completa — 6.1-6.5 COMPLETOS (6.5 = servidor MCP)
+## Current Sprint: Fase 6 completa — en main ✅ | Próximo: Fase 7 (UX avanzada)
+
+### ✅ Sesión de revisión e integración (2026-07-18)
+
+Revisión y merge de 4 ramas paralelas a main. Reviewer corrió el build
+por su cuenta en cada rama antes de aprobar.
+
+**Mergeado:**
+- `senior-dev/backup-script` (0739e44) → PASS. `scripts/backup-db.ps1`,
+  rotación 30 días con `CreationTime` (aceptable para uso local).
+- `senior-dev/docs-readme` (5f4a749) → PASS con observación menor
+  (falta newline al final de README.md, no bloqueante).
+- `senior-dev/jsdoc-actions` (cd545ed) → PASS. JSDoc puro en
+  `task-actions.ts`, cero cambios de lógica.
+- `antigravity/ui-components` (999bde2) → PASS parcial. Los 3 componentes
+  tsx (EmptyState, Badge, Skeleton) mergeados via cherry-pick selectivo.
+  Dark-only, sin librerías nuevas, correctos.
+
+**Rechazado / excluido:**
+- `package.json` y `package-lock.json` del commit de Antigravity —
+  instaló `@modelcontextprotocol/sdk` en el raíz sin que se pidiera.
+  La dep ya existe en `mcp-server/package.json`. Excluida del merge.
+
+**Incidente documentado:** reglas para trabajadores externos añadidas
+a `CLAUDE.md` (sección nueva). Antigravity debe recibir feedback: si el
+build falla por trabajo ajeno en vuelo, reportar y parar — no instalar
+dependencias fuera de scope.
+
+**Build limpio tras todos los merges**: confirmado `npm run build`.
+
+---
 
 ### ✅ Sprint 6.5 — Servidor MCP local de EMA OS (2026-07-18)
 
