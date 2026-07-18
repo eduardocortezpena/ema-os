@@ -126,6 +126,31 @@ fijado en Sprint 6.3) se mantiene si funciona bien. Candidato de upgrade:
 `nvidia/nemotron-3-super:free` — evaluar con una prueba de tool-calling
 antes de cambiar.
 
+## Reglas para trabajadores externos (Antigravity / Señor Dev)
+
+Estas reglas aplican a cualquier agente externo que trabaje en una rama
+paralela a main. Origen: incidente 2026-07-18 donde Antigravity instaló
+`@modelcontextprotocol/sdk` en `package.json` raíz sin que se le pidiera.
+
+**Archivos prohibidos (nunca tocar sin autorización explícita):**
+- `package.json` y `package-lock.json` (raíz del proyecto)
+- `.env` y `.env.example`
+- `prisma/schema.prisma` y archivos de migración
+- `main` — nunca pushear directo a main; solo el integrador mergea
+
+**Regla de alcance:** una rama, una tarea. Si se asignó "añadir componentes
+UI", el commit toca solo los componentes UI — nada más.
+
+**Regla de bloqueo:** si el build falla por trabajo ajeno en vuelo (otra
+rama, dependencia no instalada, etc.), el trabajador **reporta el bloqueo
+y para**. Nunca "arregla" el bloqueo instalando cosas o modificando
+archivos fuera de su scope. El integrador desbloquea o reordena.
+
+**Proceso de merge:** el integrador (Claude en sesión de revisión) revisa
+el diff completo, hace cherry-pick selectivo si el commit mezcla cambios
+legítimos con violaciones, y documenta qué se excluyó y por qué en el
+mensaje de commit.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
