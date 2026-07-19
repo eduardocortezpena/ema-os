@@ -51,6 +51,12 @@ model Tarea {
   plannedFor  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  // Sello de finalización (UX tareas v2): se setea al pasar a DONE y se
+  // limpia al volver a un estado no-DONE (ver updateTaskStatus). Aditivo,
+  // nullable, sin backfill — las tareas DONE pre-existentes quedan null y
+  // simplemente no aparecen en "Completadas recientes" ni entran en la purga
+  // de >30 días (que filtra por completedAt).
+  completedAt DateTime?
   project     Proyecto? @relation("ProjectTasks", fields: [projectId], references: [id], onDelete: SetNull)
   notes       Nota[]
   isNextActionFor Proyecto? @relation("ProjectNextAction")

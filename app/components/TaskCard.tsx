@@ -233,14 +233,25 @@ export function TaskCard({
               </form>
             )}
             {!task.pending && (
-              <form action={handleReminderChange} className="inline-block">
+              // UX tareas v2: etiqueta visible "Recordatorios Calendar:" + tooltip
+              // (antes era un dropdown suelto sin contexto). La lógica no cambia.
+              <form action={handleReminderChange} className="inline-flex items-center gap-1">
                 <input type="hidden" name="id" value={task.id} />
                 {returnTo && <input type="hidden" name="returnTo" value={returnTo} />}
+                <label
+                  htmlFor={`reminder-${task.id}`}
+                  className="text-gray-400 text-xs"
+                  title="Recordatorios que Google Calendar creará para esta tarea (solo si tiene proyecto y fecha límite)."
+                >
+                  Recordatorios Calendar:
+                </label>
                 <select
+                  id={`reminder-${task.id}`}
                   name="reminderPreset"
                   disabled={reminderSubmitting}
                   defaultValue={task.reminderPreset ?? 'DEFAULT'}
                   onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                  title="Recordatorios en Google Calendar (requiere proyecto y fecha límite)."
                   className="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
                 >
                   {REMINDER_OPTIONS.map((opt) => (

@@ -43,7 +43,6 @@ export default async function RootLayout({
           </div>
           <nav className="space-y-2">
             <a href="/dashboard" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Dashboard</a>
-            <a href="/my-day" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">My Day</a>
             <a href="/inbox" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Inbox</a>
             <a href="/projects" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Projects</a>
             <a href="/tasks" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Tasks</a>

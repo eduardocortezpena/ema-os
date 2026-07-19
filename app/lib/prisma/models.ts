@@ -8,10 +8,10 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/Proyecto'
-export type * from './models/Tarea'
-export type * from './models/Nota'
-export type * from './models/Archivo'
-export type * from './models/GoogleDriveToken'
-export type * from './models/DocumentTemplate'
-export type * from './commonInputTypes'
+export type * from './models/Proyecto.ts'
+export type * from './models/Tarea.ts'
+export type * from './models/Nota.ts'
+export type * from './models/Archivo.ts'
+export type * from './models/GoogleDriveToken.ts'
+export type * from './models/DocumentTemplate.ts'
+export type * from './commonInputTypes.ts'

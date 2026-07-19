@@ -7,9 +7,18 @@ import { CompleteTaskButton } from '../components/CompleteTaskButton';
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ project?: string; priority?: string; sort?: string }>;
+  searchParams: Promise<{ priority?: string; sort?: string }>;
 }) {
-  const { project: projectFilter, priority: priorityFilter, sort = 'priority' } = await searchParams;
+  const { priority: priorityFilter, sort = 'priority' } = await searchParams;
+
+  // ponytail: purga de tareas DONE viejas al cargar el dashboard (UX tareas
+  // v2). Side-effect en render — aceptable en app mono-user local, sin cron.
+  // Ceiling: si el dashboard se carga N veces/día, ejecuta N deleteMany;
+  // irrelevante a esta escala. Solo borra DONE con completedAt >30 días (las
+  // sin completedAt —legacy o completadas vía MCP— no se tocan).
+  const purgeBefore = new Date();
+  purgeBefore.setDate(purgeBefore.getDate() - 30);
+  await prisma.tarea.deleteMany({ where: { status: 'DONE', completedAt: { lt: purgeBefore } } });
 
   const projects = await prisma.proyecto.findMany({
     include: {
@@ -39,9 +48,10 @@ export default async function DashboardPage({
   const agendaTasks = [...upcomingDueTasks].sort((a, b) => a.dueDate!.getTime() - b.dueDate!.getTime());
   const projectNameById = new Map(projects.map((p) => [p.id, p.name]));
 
-  let nextActions = projects.filter((p) => p.nextActionTask);
+  // UX tareas v2: una siguiente acción completada (DONE) desaparece de aquí
+  // de inmediato — el dashboard ya no la muestra como pendiente.
+  let nextActions = projects.filter((p) => p.nextActionTask && p.nextActionTask.status !== 'DONE');
 
-  if (projectFilter) nextActions = nextActions.filter((p) => p.id === projectFilter);
   if (priorityFilter) nextActions = nextActions.filter((p) => p.nextActionTask!.priority === priorityFilter);
 
   if (sort === 'project') {
@@ -108,7 +118,7 @@ export default async function DashboardPage({
 
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-3">Siguientes acciones</h2>
-          <DashboardFilters projects={projects.map((p) => ({ id: p.id, name: p.name }))} />
+          <DashboardFilters />
           {nextActions.length === 0 ? (
             <p className="text-gray-500 text-sm">Sin resultados para este filtro.</p>
           ) : (
