@@ -9,7 +9,7 @@
  *     - buscar_tareas_por_texto
  *     - leer_nota_contexto
  *     - leer_next_actions       (próximas acciones por proyecto)
- *     - leer_my_day             (tareas de hoy / atrasadas / disponibles)
+ *     - leer_my_day             (foco del día: TODO de mayor prioridad)
  *     - listar_plantillas       (DocumentTemplate)
  *   ESCRITURA (2 pasos: devuelven confirmationId; confirmar_accion ejecuta):
  *     - crear_tarea
@@ -56,14 +56,6 @@ const adapter = new PrismaBetterSqlite3({ url: dbUrl });
 const prisma = new PrismaClient({ adapter } as ConstructorParameters<typeof PrismaClient>[0]);
 
 // --- Helpers ----------------------------------------------------------------
-
-// ponytail: startOfDay inlineada (4 líneas) en vez de importar app/lib/date.ts
-// (imports sin extensión, incompatibles con Node ESM puro).
-function startOfDay(date: Date): Date {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
 
 async function findProject(nombre: string) {
   return prisma.proyecto.findFirst({ where: { name: { contains: nombre } } });
@@ -340,36 +332,35 @@ server.registerTool(
   },
 );
 
-// LECTURA 6: leer_my_day
+// LECTURA 6: leer_my_day — tras eliminar la vista "My Day" (UX tareas v2),
+// esta tool devuelve el foco del día: las tareas TODO de mayor prioridad
+// (mismo criterio con el que el dashboard ordena "Siguientes acciones"). Se
+// conserva el nombre para no romper configuraciones existentes de Hermes.
 server.registerTool(
   'leer_my_day',
   {
-    description: 'Lista las tareas de "My Day": planificadas para hoy, atrasadas y disponibles (sin planificar).',
+    description: 'Devuelve las tareas TODO de mayor prioridad (foco del día). "My Day" fue eliminado; el dashboard ordena las siguientes acciones por prioridad.',
     inputSchema: {},
     annotations: { readOnlyHint: true },
   },
   async () => {
-    const today = startOfDay(new Date());
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const [hoy, atrasadas, disponibles] = await Promise.all([
-      prisma.tarea.findMany({
-        where: { plannedFor: { gte: today, lt: tomorrow } },
-        include: { project: { select: { name: true } } },
-      }),
-      prisma.tarea.findMany({
-        where: { plannedFor: { lt: today }, status: { not: 'DONE' } },
-        include: { project: { select: { name: true } } },
-      }),
-      prisma.tarea.findMany({
-        where: { plannedFor: null, status: { not: 'DONE' } },
-        include: { project: { select: { name: true } } },
-        orderBy: { createdAt: 'desc' },
-        take: 30,
-      }),
-    ]);
-    return textResult({ hoy, atrasadas, disponibles });
+    const tareas = await prisma.tarea.findMany({
+      where: { status: 'TODO' },
+      include: { project: { select: { name: true } } },
+    });
+    // ponytail: sort por prioridad inlineado (mismos pesos que app/lib/sort.ts)
+    // — orderBy de Prisma no sirve: el enum Priority ordena alfabético en
+    // SQLite (CRITICAL < HIGH < LOW < MEDIUM, incorrecto). Desempate por dueDate.
+    const ORDEN: Record<string, number> = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
+    tareas.sort((a, b) => {
+      const pd = (ORDEN[a.priority] ?? 99) - (ORDEN[b.priority] ?? 99);
+      if (pd !== 0) return pd;
+      if (!a.dueDate && !b.dueDate) return 0;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      return a.dueDate.getTime() - b.dueDate.getTime();
+    });
+    return textResult({ tareas: tareas.slice(0, 10) });
   },
 );
 

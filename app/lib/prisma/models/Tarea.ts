@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.ts"
+import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model Tarea
@@ -36,6 +36,7 @@ export type TareaMinAggregateOutputType = {
   plannedFor: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  completedAt: Date | null
   eventId: string | null
 }
 
@@ -51,6 +52,7 @@ export type TareaMaxAggregateOutputType = {
   plannedFor: Date | null
   createdAt: Date | null
   updatedAt: Date | null
+  completedAt: Date | null
   eventId: string | null
 }
 
@@ -66,6 +68,7 @@ export type TareaCountAggregateOutputType = {
   plannedFor: number
   createdAt: number
   updatedAt: number
+  completedAt: number
   eventId: number
   _all: number
 }
@@ -83,6 +86,7 @@ export type TareaMinAggregateInputType = {
   plannedFor?: true
   createdAt?: true
   updatedAt?: true
+  completedAt?: true
   eventId?: true
 }
 
@@ -98,6 +102,7 @@ export type TareaMaxAggregateInputType = {
   plannedFor?: true
   createdAt?: true
   updatedAt?: true
+  completedAt?: true
   eventId?: true
 }
 
@@ -113,6 +118,7 @@ export type TareaCountAggregateInputType = {
   plannedFor?: true
   createdAt?: true
   updatedAt?: true
+  completedAt?: true
   eventId?: true
   _all?: true
 }
@@ -201,6 +207,7 @@ export type TareaGroupByOutputType = {
   plannedFor: Date | null
   createdAt: Date
   updatedAt: Date
+  completedAt: Date | null
   eventId: string | null
   _count: TareaCountAggregateOutputType | null
   _min: TareaMinAggregateOutputType | null
@@ -237,6 +244,7 @@ export type TareaWhereInput = {
   plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
+  completedAt?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   eventId?: Prisma.StringNullableFilter<"Tarea"> | string | null
   project?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
   notes?: Prisma.NotaListRelationFilter
@@ -255,6 +263,7 @@ export type TareaOrderByWithRelationInput = {
   plannedFor?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   eventId?: Prisma.SortOrderInput | Prisma.SortOrder
   project?: Prisma.ProyectoOrderByWithRelationInput
   notes?: Prisma.NotaOrderByRelationAggregateInput
@@ -276,6 +285,7 @@ export type TareaWhereUniqueInput = Prisma.AtLeast<{
   plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
+  completedAt?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   eventId?: Prisma.StringNullableFilter<"Tarea"> | string | null
   project?: Prisma.XOR<Prisma.ProyectoNullableScalarRelationFilter, Prisma.ProyectoWhereInput> | null
   notes?: Prisma.NotaListRelationFilter
@@ -294,6 +304,7 @@ export type TareaOrderByWithAggregationInput = {
   plannedFor?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   eventId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.TareaCountOrderByAggregateInput
   _max?: Prisma.TareaMaxOrderByAggregateInput
@@ -315,6 +326,7 @@ export type TareaScalarWhereWithAggregatesInput = {
   plannedFor?: Prisma.DateTimeNullableWithAggregatesFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Tarea"> | Date | string
+  completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Tarea"> | Date | string | null
   eventId?: Prisma.StringNullableWithAggregatesFilter<"Tarea"> | string | null
 }
 
@@ -329,6 +341,7 @@ export type TareaCreateInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  completedAt?: Date | string | null
   eventId?: string | null
   project?: Prisma.ProyectoCreateNestedOneWithoutTasksInput
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
@@ -347,6 +360,7 @@ export type TareaUncheckedCreateInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  completedAt?: Date | string | null
   eventId?: string | null
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
   isNextActionFor?: Prisma.ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput
@@ -363,6 +377,7 @@ export type TareaUpdateInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project?: Prisma.ProyectoUpdateOneWithoutTasksNestedInput
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
@@ -381,6 +396,7 @@ export type TareaUncheckedUpdateInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
   isNextActionFor?: Prisma.ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput
@@ -398,6 +414,7 @@ export type TareaCreateManyInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  completedAt?: Date | string | null
   eventId?: string | null
 }
 
@@ -412,6 +429,7 @@ export type TareaUpdateManyMutationInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -427,6 +445,7 @@ export type TareaUncheckedUpdateManyInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -457,6 +476,7 @@ export type TareaCountOrderByAggregateInput = {
   plannedFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
 }
 
@@ -472,6 +492,7 @@ export type TareaMaxOrderByAggregateInput = {
   plannedFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
 }
 
@@ -487,6 +508,7 @@ export type TareaMinOrderByAggregateInput = {
   plannedFor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  completedAt?: Prisma.SortOrder
   eventId?: Prisma.SortOrder
 }
 
@@ -587,6 +609,7 @@ export type TareaCreateWithoutProjectInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  completedAt?: Date | string | null
   eventId?: string | null
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
   isNextActionFor?: Prisma.ProyectoCreateNestedOneWithoutNextActionTaskInput
@@ -603,6 +626,7 @@ export type TareaUncheckedCreateWithoutProjectInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  completedAt?: Date | string | null
   eventId?: string | null
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
   isNextActionFor?: Prisma.ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput
@@ -628,6 +652,7 @@ export type TareaCreateWithoutIsNextActionForInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  completedAt?: Date | string | null
   eventId?: string | null
   project?: Prisma.ProyectoCreateNestedOneWithoutTasksInput
   notes?: Prisma.NotaCreateNestedManyWithoutTaskInput
@@ -645,6 +670,7 @@ export type TareaUncheckedCreateWithoutIsNextActionForInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  completedAt?: Date | string | null
   eventId?: string | null
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutTaskInput
 }
@@ -685,6 +711,7 @@ export type TareaScalarWhereInput = {
   plannedFor?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Tarea"> | Date | string
+  completedAt?: Prisma.DateTimeNullableFilter<"Tarea"> | Date | string | null
   eventId?: Prisma.StringNullableFilter<"Tarea"> | string | null
 }
 
@@ -710,6 +737,7 @@ export type TareaUpdateWithoutIsNextActionForInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project?: Prisma.ProyectoUpdateOneWithoutTasksNestedInput
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
@@ -727,6 +755,7 @@ export type TareaUncheckedUpdateWithoutIsNextActionForInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
 }
@@ -742,6 +771,7 @@ export type TareaCreateWithoutNotesInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  completedAt?: Date | string | null
   eventId?: string | null
   project?: Prisma.ProyectoCreateNestedOneWithoutTasksInput
   isNextActionFor?: Prisma.ProyectoCreateNestedOneWithoutNextActionTaskInput
@@ -759,6 +789,7 @@ export type TareaUncheckedCreateWithoutNotesInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  completedAt?: Date | string | null
   eventId?: string | null
   isNextActionFor?: Prisma.ProyectoUncheckedCreateNestedOneWithoutNextActionTaskInput
 }
@@ -790,6 +821,7 @@ export type TareaUpdateWithoutNotesInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project?: Prisma.ProyectoUpdateOneWithoutTasksNestedInput
   isNextActionFor?: Prisma.ProyectoUpdateOneWithoutNextActionTaskNestedInput
@@ -807,6 +839,7 @@ export type TareaUncheckedUpdateWithoutNotesInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isNextActionFor?: Prisma.ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput
 }
@@ -822,6 +855,7 @@ export type TareaCreateManyProjectInput = {
   plannedFor?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  completedAt?: Date | string | null
   eventId?: string | null
 }
 
@@ -836,6 +870,7 @@ export type TareaUpdateWithoutProjectInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUpdateManyWithoutTaskNestedInput
   isNextActionFor?: Prisma.ProyectoUpdateOneWithoutNextActionTaskNestedInput
@@ -852,6 +887,7 @@ export type TareaUncheckedUpdateWithoutProjectInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUncheckedUpdateManyWithoutTaskNestedInput
   isNextActionFor?: Prisma.ProyectoUncheckedUpdateOneWithoutNextActionTaskNestedInput
@@ -868,6 +904,7 @@ export type TareaUncheckedUpdateManyWithoutProjectInput = {
   plannedFor?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   eventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -914,6 +951,7 @@ export type TareaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  completedAt?: boolean
   eventId?: boolean
   project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
   notes?: boolean | Prisma.Tarea$notesArgs<ExtArgs>
@@ -933,6 +971,7 @@ export type TareaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  completedAt?: boolean
   eventId?: boolean
   project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
 }, ExtArgs["result"]["tarea"]>
@@ -949,6 +988,7 @@ export type TareaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  completedAt?: boolean
   eventId?: boolean
   project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
 }, ExtArgs["result"]["tarea"]>
@@ -965,10 +1005,11 @@ export type TareaSelectScalar = {
   plannedFor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  completedAt?: boolean
   eventId?: boolean
 }
 
-export type TareaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "title" | "description" | "priority" | "status" | "dueDate" | "reminderPreset" | "plannedFor" | "createdAt" | "updatedAt" | "eventId", ExtArgs["result"]["tarea"]>
+export type TareaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "title" | "description" | "priority" | "status" | "dueDate" | "reminderPreset" | "plannedFor" | "createdAt" | "updatedAt" | "completedAt" | "eventId", ExtArgs["result"]["tarea"]>
 export type TareaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.Tarea$projectArgs<ExtArgs>
   notes?: boolean | Prisma.Tarea$notesArgs<ExtArgs>
@@ -1001,6 +1042,7 @@ export type $TareaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     plannedFor: Date | null
     createdAt: Date
     updatedAt: Date
+    completedAt: Date | null
     eventId: string | null
   }, ExtArgs["result"]["tarea"]>
   composites: {}
@@ -1439,6 +1481,7 @@ export interface TareaFieldRefs {
   readonly plannedFor: Prisma.FieldRef<"Tarea", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Tarea", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Tarea", 'DateTime'>
+  readonly completedAt: Prisma.FieldRef<"Tarea", 'DateTime'>
   readonly eventId: Prisma.FieldRef<"Tarea", 'String'>
 }
     

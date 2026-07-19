@@ -1,17 +1,23 @@
 # SPRINT.md
 ## Estado actual: Fase 6 ✅ completa + endurecida | MCP operativo (13 tools, PDF, tests)
 
-### Sprint activo (2026-07-18)
+### Sprint activo (2026-07-19)
 
-Cambios en vuelo (ver `git status`):
-- `app/lib/prisma/` — refactor interno del cliente Prisma (browser, client,
-  class, models, namespaces). Modelo `DocumentTemplate` nuevo.
-- `app/lib/prisma/models/DocumentTemplate.ts` — archivo sin trackear (??).
+- **Rama `glm/ux-tareas-v2`** — rediseño del flujo de tareas (UX v2), lista
+  para revisión/integración. **No mergeada a main, sin push.** Detalle y
+  decisiones en `BITACORA.md` (entrada 2026-07-19 Señor Dev).
+  - `completedAt` en `Tarea` (migración aditiva), purga de DONE >30 días al
+    cargar dashboard, DONE fuera de vistas activas, filtros + "Completadas
+    recientes" en `/tasks`, My Day eliminado (redirect), selector de
+    recordatorios con etiqueta, MCP `leer_my_day` repurposada.
+  - Build limpio + `npm run test:mcp` 24/24 + verificación HTTP/BD OK.
+
+Cambios cerrados (2026-07-18): refactor Prisma y Fase 6 MCP ya en main.
 
 Acción inmediata al retomar:
-1. Correr `npm run build` — confirmar que compila.
-2. Si hay migración nueva: `npx prisma generate` + reiniciar `npm run dev`.
-3. Registrar entrada en `BITACORA.md` al cerrar.
+1. El integrador revisa `glm/ux-tareas-v2` (diff completo) y mergea si procede.
+2. Si se mergea: `npx prisma generate` + reiniciar `npm run dev` (migración
+   `20260719000000_tarea_completed_at` nueva).
 
 ### Próximo paso para el dueño
 

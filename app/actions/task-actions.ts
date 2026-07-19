@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/app/lib/db';
 import { toUserMessage } from '@/app/lib/errors';
-import { startOfDay } from '@/app/lib/date';
 import { createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '@/app/lib/google-calendar';
 
 // Ruta a la que redirigir en error y a revalidar además de las fijas
@@ -176,7 +175,12 @@ export async function updateTaskStatus(formData: FormData) {
       redirect(`${returnTo}?error=${encodeURIComponent('Status inválido')}`);
     }
 
-    const data: { status: typeof status; eventId?: null } = { status };
+    // UX tareas v2: se sella completedAt al pasar a DONE; se limpia al volver
+    // a cualquier estado no-DONE (TODO/IN_PROGRESS/WAITING = no completada).
+    const data: { status: typeof status; eventId?: null; completedAt: Date | null } = {
+      status,
+      completedAt: status === 'DONE' ? new Date() : null,
+    };
 
     // Al completar una tarea con evento sincronizado, borrarlo (Sprint 4.2:
     // "completar/borrar la tarea, borrar el evento según corresponda"). Si
@@ -326,85 +330,6 @@ export async function updateTaskPriority(formData: FormData) {
   } catch (error: any) {
     if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
     redirect(`${returnTo}?error=${encodeURIComponent(toUserMessage(error, 'Error actualizando la prioridad. Intenta de nuevo.'))}`);
-  }
-}
-
-/**
- * Programa una tarea para el día de hoy en la vista "My Day".
- * Establece plannedFor con la fecha de inicio del día actual.
- * @param formData - Formulario con id de la tarea
- */
-export async function planForToday(formData: FormData) {
-  try {
-    const id = formData.get('id')?.toString() || '';
-
-    if (!id) {
-      redirect(`/my-day?error=${encodeURIComponent('ID de tarea requerido')}`);
-    }
-
-    await prisma.tarea.update({
-      where: { id },
-      data: { plannedFor: startOfDay(new Date()) },
-    });
-
-    revalidatePath('/my-day');
-    revalidatePath('/tasks');
-  } catch (error: any) {
-    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/my-day?error=${encodeURIComponent(toUserMessage(error, 'Error planificando la tarea. Intenta de nuevo.'))}`);
-  }
-}
-
-/**
- * Mueve una tarea planificada de hoy a mañana en la vista "My Day".
- * @param formData - Formulario con id de la tarea
- */
-export async function rolloverToTomorrow(formData: FormData) {
-  try {
-    const id = formData.get('id')?.toString() || '';
-
-    if (!id) {
-      redirect(`/my-day?error=${encodeURIComponent('ID de tarea requerido')}`);
-    }
-
-    const tomorrow = startOfDay(new Date());
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    await prisma.tarea.update({
-      where: { id },
-      data: { plannedFor: tomorrow },
-    });
-
-    revalidatePath('/my-day');
-    revalidatePath('/tasks');
-  } catch (error: any) {
-    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/my-day?error=${encodeURIComponent(toUserMessage(error, 'Error moviendo la tarea a mañana. Intenta de nuevo.'))}`);
-  }
-}
-
-/**
- * Quita una tarea de la vista "My Day" (elimina plannedFor).
- * @param formData - Formulario con id de la tarea
- */
-export async function unplanTask(formData: FormData) {
-  try {
-    const id = formData.get('id')?.toString() || '';
-
-    if (!id) {
-      redirect(`/my-day?error=${encodeURIComponent('ID de tarea requerido')}`);
-    }
-
-    await prisma.tarea.update({
-      where: { id },
-      data: { plannedFor: null },
-    });
-
-    revalidatePath('/my-day');
-    revalidatePath('/tasks');
-  } catch (error: any) {
-    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
-    redirect(`/my-day?error=${encodeURIComponent(toUserMessage(error, 'Error quitando la tarea de hoy. Intenta de nuevo.'))}`);
   }
 }
 

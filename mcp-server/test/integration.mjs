@@ -132,7 +132,7 @@ async function run() {
   assert('leer_next_actions', Array.isArray(r), JSON.stringify(r));
 
   r = await call(client, 'leer_my_day');
-  assert('leer_my_day', r && Array.isArray(r.hoy) && Array.isArray(r.atrasadas) && Array.isArray(r.disponibles), JSON.stringify(r));
+  assert('leer_my_day', r && Array.isArray(r.tareas) && r.tareas.some((t) => t.id === 'task-test'), JSON.stringify(r));
 
   r = await call(client, 'listar_plantillas');
   assert('listar_plantillas', Array.isArray(r) && r.some((t) => t.id === 'tpl-docx') && r.some((t) => t.id === 'tpl-md'), JSON.stringify(r));
