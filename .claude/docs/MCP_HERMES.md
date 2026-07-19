@@ -1,28 +1,45 @@
 # Conectar Hermes a EMA OS MCP
 
-## Qué es esto
+El servidor MCP de EMA OS (`mcp-server/index.ts`) expone **13 tools** vía stdio
+para que agentes externos (Hermes / Dona / Claude Code) operen la app sin la UI:
+listar/crear proyectos y tareas, leer Next Actions y My Day, gestionar
+plantillas y generar documentos **DOCX y PDF**.
 
-El servidor MCP de EMA OS corre en `mcp-server/index.ts` y expone 9 tools
-(8 de la Fase 6 + `confirmar_accion`) via stdio. Hermes/Dona puede usarlas
-conectándose como cliente MCP.
+Fuente de verdad del servidor: `MCP_SERVER.md` (raíz del repo).
 
-## Prerequisito
+## Prerrequisitos
 
-EMA OS debe estar instalado y la DB (`emaos.db`) debe existir en la raíz del
-proyecto. El servidor MCP no requiere que `npm run dev` esté corriendo — es
-un proceso independiente.
+- Repo de EMA OS instalado y `emaos.db` con datos en la raíz.
+- **Node >= 22.6** (type stripping nativo). Verificar: `node --v8-options | grep strip` o `node --version`.
+- Dependencias instaladas: `npm install` en la raíz (el servidor MCP vive en
+  `mcp-server/` pero usa el `node_modules` y el cliente Prisma de la raíz).
+- No requiere que `npm run dev` esté corriendo: es un proceso independiente que
+  lee `emaos.db` directo.
 
-Instalar dependencias del servidor MCP (una sola vez):
+## Bloque de configuración (stdio) — recomendado
 
-```bash
-cd "C:\Users\EdEma\Oranizador de proyectos\ema-os\mcp-server"
-npm install
+Hermes arranca el servidor con `npm run mcp`, que ya resuelve Node, el loader
+ESM (`mcp-server/loader.mjs`), el type-stripping y `DATABASE_URL` desde `.env`.
+
+```json
+{
+  "mcpServers": {
+    "ema-os": {
+      "command": "npm",
+      "args": ["run", "mcp"],
+      "cwd": "C:/Users/EdEma/Oranizador de proyectos/ema-os"
+    }
+  }
+}
 ```
 
-## Conectar desde Claude Desktop (Hermes)
+`cwd` es obligatorio: el servidor resuelve `emaos.db`, `templates/` y `files/`
+relativos al repo. Sin `cwd`, Hermes puede spawnearlo desde otro directorio y
+fallar al encontrar la DB.
 
-Editar `%APPDATA%\Claude\claude_desktop_config.json` y añadir dentro de
-`"mcpServers"`:
+## Forma alternativa (sin envolver en npm)
+
+Para runtimes que no aceptan `cwd` o donde el wrapper de npm estorba:
 
 ```json
 {
@@ -30,59 +47,74 @@ Editar `%APPDATA%\Claude\claude_desktop_config.json` y añadir dentro de
     "ema-os": {
       "command": "node",
       "args": [
-        "C:/Users/EdEma/Oranizador de proyectos/ema-os/mcp-server/node_modules/tsx/dist/cli.mjs",
-        "C:/Users/EdEma/Oranizador de proyectos/ema-os/mcp-server/index.ts"
+        "--env-file=.env",
+        "--experimental-strip-types",
+        "--loader", "./mcp-server/loader.mjs",
+        "mcp-server/index.ts"
       ],
-      "env": {
-        "DATABASE_URL": "file:C:/Users/EdEma/Oranizador de proyectos/ema-os/emaos.db"
-      }
+      "cwd": "C:/Users/EdEma/Oranizador de proyectos/ema-os"
     }
   }
 }
 ```
 
-> Nota: se usa ruta absoluta en `DATABASE_URL` para que el servidor MCP
-> encuentre la DB sin importar desde qué directorio lo spawnea Claude Desktop.
+> **No uses `tsx`** (forma antigua de docs previos): ya no está instalado. El
+> servidor usa su propio loader ESM + type-stripping nativo de Node.
 
-Reiniciar Claude Desktop. Las tools aparecerán automáticamente en Dona y
-cualquier otro perfil/proyecto de Hermes que use ese config.
+## Las 13 tools
 
-## Conectar desde Claude Code (cli)
+**Lectura** (ejecutan directo, sin confirmación):
+- `listar_proyectos` — filtros opcionales `estado`, `prioridad`.
+- `listar_tareas` — filtros opcionales `proyecto_nombre`, `estado`, `prioridad`.
+- `buscar_tareas_por_texto` — substring en el título.
+- `leer_nota_contexto` — contenido Markdown de notas de un proyecto.
+- `leer_next_actions` — próxima acción de cada proyecto activo.
+- `leer_my_day` — `{ hoy, atrasadas, disponibles }`.
+- `listar_plantillas` — `DocumentTemplate`, filtro opcional `tipo` (`docx`/`md`).
 
-```bash
-claude mcp add ema-os \
-  --command "node" \
-  --args "C:/Users/EdEma/Oranizador de proyectos/ema-os/mcp-server/node_modules/tsx/dist/cli.mjs" \
-  --args "C:/Users/EdEma/Oranizador de proyectos/ema-os/mcp-server/index.ts" \
-  --env "DATABASE_URL=file:C:/Users/EdEma/Oranizador de proyectos/ema-os/emaos.db"
+**Escritura** (2 pasos: devuelven `confirmationId`, se ejecutan con `confirmar_accion`):
+- `crear_tarea` — `titulo`, `proyecto_nombre?`, `prioridad?`, `fecha?` (YYYY-MM-DD).
+- `actualizar_estado_tarea` — `titulo`, `estado` (TODO/IN_PROGRESS/WAITING/DONE).
+- `crear_nota` — `proyecto_nombre`, `titulo`, `contenido`.
+- `mover_archivo_a_proyecto` — `archivo_titulo`, `proyecto_destino`.
+- `generar_documento` — `tarea_id`, `plantilla_id`, `data?`. **DOCX o PDF**
+  (PDF desde plantilla Markdown). El archivo queda en `files/<projectId>/` y se
+  registra como `Archivo`.
+- `confirmar_accion` — `{ confirmationId, confirm }`. `false` = cancelar.
+
+> **Regla dura:** Dona **nunca** llama `confirmar_accion` sin mostrar la propuesta
+> al usuario y obtener aprobación explícita. Las confirmaciones viven en memoria
+> (TTL 5 min) — no persisten entre reinicios.
+
+## Invocación probada
+
+La suite `npm run test:mcp` (raíz) arranca el servidor contra una BD de prueba,
+invoca las 13 tools y valida respuestas + casos borde. Salida esperada:
+
+```
+=== 24 pasaron, 0 fallaron ===
 ```
 
-## Uso desde Hermes
+Ejemplo concreto de una llamada manual (cualquier cliente MCP stdio):
 
-Las 4 tools de **lectura** ejecutan directo:
-- `listar_proyectos` — todos los proyectos con estado y prioridad
-- `listar_tareas` — con filtros opcionales de proyecto/estado
-- `buscar_tareas_por_texto` — búsqueda por substring en título
-- `leer_nota_contexto` — contenido Markdown de notas de un proyecto
-
-Las 4 tools de **escritura** requieren confirmación en 2 pasos:
-
-1. Llamar `crear_tarea` / `crear_nota` / `completar_tarea` /
-   `mover_archivo_a_proyecto` → devuelve `{status: "pending_confirmation",
-   confirmationId, propuesta}`.
-2. Llamar `confirmar_accion({confirmationId, confirm: true})` para ejecutar,
-   o `confirm: false` para cancelar.
-
-> Regla dura: Dona **nunca** debe llamar `confirmar_accion` sin mostrarle
-> al usuario la propuesta y esperar su aprobación explícita.
-
-## Verificar que funciona
-
-Con el MCP Inspector (requiere npm):
-```bash
-npx @modelcontextprotocol/inspector node \
-  "C:/Users/EdEma/Oranizador de proyectos/ema-os/mcp-server/node_modules/tsx/dist/cli.mjs" \
-  "C:/Users/EdEma/Oranizador de proyectos/ema-os/mcp-server/index.ts"
+```
+listar_proyectos {}  →  [{ "id": "…", "name": "…", "status": "ACTIVE", "priority": "HIGH", "progress": 0 }, …]
 ```
 
-Abrir `http://localhost:5173` en el navegador y llamar `listar_proyectos`.
+Para probar una sola tool con UI: MCP Inspector —
+
+```bash
+npx @modelcontextprotocol/inspector npm run mcp
+```
+
+(abrir `http://localhost:6274`; `cwd` debe ser el repo).
+
+## Troubleshooting
+
+- **`Cannot find module`/`protocol 'c:'`**: falta `cwd` o se pasaron paths
+  absolutos. Usa siempre paths relativos + `cwd` = repo.
+- **`Puppeteer/Chrome` al generar PDF**: el servidor usa el Chrome de Playwright
+  si está instalado (`~/AppData/Local/ms-playwright`). Si no hay Chrome, instala
+  Playwright o fija `PUPPETEER_EXECUTABLE_PATH`.
+- **Las tools no aparecen tras cambiar el schema**: `npx prisma generate` y
+  reiniciar Hermes (el cliente Prisma se cachea).

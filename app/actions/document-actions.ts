@@ -1,22 +1,19 @@
 'use server';
 
 import { prisma } from '@/app/lib/db';
-import { generateDocxFromTemplate as libGenerateDocx, saveDocxForTask } from '@/app/lib/documents';
-import { existsSync, mkdirSync, writeFileSync, readFileSync, unlinkSync } from 'fs';
+import {
+  generateDocxFromTemplate as libGenerateDocx,
+  generatePdfFromMarkdown as libGeneratePdf,
+  saveDocxForTask,
+  savePdfForTask,
+} from '@/app/lib/documents';
+import { existsSync, mkdirSync, writeFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { redirect } from 'next/navigation';
 import { toUserMessage } from '@/app/lib/errors';
 
-// Configuración de puppeteer para usar Chrome de Playwright existente.
-// NOTA: la generación PDF (md→pdf) tiene un bug preexistente
-// (puppeteer_1.default.launch is not a function) — no arreglado, fuera de
-// alcance de la Fase 6 MCP. Solo se mantiene para no romper la UI existente.
-process.env.PUPPETEER_EXECUTABLE_PATH =
-  'C:\\Users\\EdEma\\AppData\\Local\\ms-playwright\\chromium-1228\\chrome-win64\\chrome.exe';
-
 // Directorio base para plantillas
 const TEMPLATES_DIR = join(process.cwd(), 'templates');
-const PROJECT_FILES_DIR = join(process.cwd(), 'files');
 
 // Asegurar que existe el directorio de plantillas
 function ensureTemplatesDir() {
@@ -91,55 +88,15 @@ export async function generateDocxFromTemplate(
 }
 
 /**
- * Genera un PDF desde una plantilla Markdown usando md-to-pdf.
- * Configurado para usar Chrome existente de Playwright.
- *
- * BUG PREEXISTENTE (no arreglado en Fase 6): puppeteer falla al lanzar
- * (`puppeteer_1.default.launch is not a function`). La generación PDF está
- * rota en main; no introducida por el trabajo MCP. Se mantiene el código para
- * no alterar la superficie de la UI; la variante DOCX sí funciona.
- * @param templateId - ID de la plantilla en la base de datos
- * @param data - Variables para reemplazar en el template (opcional)
+ * Genera un PDF desde una plantilla Markdown. Delega en app/lib/documents.ts
+ * (compartido con el MCP server). El motor (md-to-pdf/puppeteer) y la
+ * resolución del Chrome viven ahí.
  */
 export async function generatePdfFromMarkdown(
   templateId: string,
   data?: Record<string, unknown>
 ): Promise<{ buf?: Buffer; error?: string }> {
-  try {
-    ensureTemplatesDir();
-
-    const template = await prisma.documentTemplate.findUnique({
-      where: { id: templateId },
-    });
-
-    if (!template) return { error: 'Plantilla no encontrada' };
-    if (template.docType !== 'md') return { error: 'La plantilla no es de tipo Markdown' };
-
-    const filePath = join(TEMPLATES_DIR, template.path);
-    if (!existsSync(filePath)) return { error: 'Archivo de plantilla no encontrado en disco' };
-
-    let content = readFileSync(filePath, 'utf8');
-
-    // Reemplazo simple de variables si se proporcionan datos
-    if (data && Object.keys(data).length > 0) {
-      for (const [key, value] of Object.entries(data)) {
-        content = content.replace(new RegExp(`{{${key}}}`, 'g'), String(value ?? ''));
-      }
-    }
-
-    // md-to-pdf espera path a archivo o config vacía
-    const { mdToPdf } = await import('md-to-pdf');
-    const pdf = await mdToPdf({ content }, {} as any);
-
-    if (!pdf || !pdf.content) {
-      return { error: 'No se pudo generar el PDF' };
-    }
-
-    return { buf: pdf.content };
-  } catch (error) {
-    console.error('[document-actions] generatePdfFromMarkdown error:', error);
-    return { error: toUserMessage(error, 'Error generando el PDF. Intenta de nuevo.') };
-  }
+  return libGeneratePdf(prisma, templateId, data ?? {});
 }
 
 /**
@@ -162,43 +119,10 @@ export async function generateDocumentFromTask(
 
     if (!template) return { success: false, error: 'Plantilla no encontrada' };
 
-    // Rama DOCX: reutiliza la lógica compartida (generar + guardar + registrar).
-    if (template.docType === 'docx') {
-      return saveDocxForTask(prisma, taskId, templateId, data);
-    }
-
-    // Rama MD/PDF: bug preexistente de puppeteer, fuera de alcance.
-    const task = await prisma.tarea.findUnique({
-      where: { id: taskId },
-      include: { project: true },
-    });
-
-    if (!task) return { success: false, error: 'Tarea no encontrada' };
-    if (!task.projectId) return { success: false, error: 'La tarea no tiene proyecto asignado' };
-
-    const result = await generatePdfFromMarkdown(templateId, data);
-    if (!result.buf) return { success: false, error: result.error };
-
-    const projectDir = join(PROJECT_FILES_DIR, task.projectId);
-    if (!existsSync(projectDir)) {
-      mkdirSync(projectDir, { recursive: true });
-    }
-
-    const fileName = `${Date.now()}_${task.title.replace(/\s+/g, '_').toLowerCase()}.pdf`;
-    const filePath = join(projectDir, fileName);
-    writeFileSync(filePath, result.buf);
-
-    await prisma.archivo.create({
-      data: {
-        projectId: task.projectId,
-        kind: 'FILE',
-        title: `${task.title} - ${template.name}`,
-        path: `files/${task.projectId}/${fileName}`,
-        mimeType: 'application/pdf',
-      },
-    });
-
-    return { success: true, filePath };
+    // DOCX y PDF delegan a la lógica compartida (generar + guardar + registrar).
+    if (template.docType === 'docx') return saveDocxForTask(prisma, taskId, templateId, data);
+    if (template.docType === 'md') return savePdfForTask(prisma, taskId, templateId, data);
+    return { success: false, error: `Tipo de plantilla no soportado: ${template.docType}` };
   } catch (error) {
     console.error('[document-actions] generateDocumentFromTask error:', error);
     return { success: false, error: toUserMessage(error, 'Error generando el documento desde la tarea.') };
