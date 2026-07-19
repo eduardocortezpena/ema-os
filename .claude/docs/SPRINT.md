@@ -1,5 +1,5 @@
 # SPRINT.md
-## Estado actual: Fase 6 ✅ completa en main | Prisma en refactor (rama activa)
+## Estado actual: Fase 6 ✅ completa + endurecida | MCP operativo (13 tools, PDF, tests)
 
 ### Sprint activo (2026-07-18)
 

@@ -16,7 +16,7 @@
  *     - actualizar_estado_tarea (TODO/IN_PROGRESS/WAITING/DONE)
  *     - crear_nota
  *     - mover_archivo_a_proyecto
- *     - generar_documento       (DOCX; el PDF tiene bug preexistente de puppeteer)
+ *     - generar_documento       (DOCX o PDF desde plantilla Markdown)
  *     - confirmar_accion
  *
  * NO importa nada de Next.js. Accede a Prisma directamente con la misma DB.
@@ -33,7 +33,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { PrismaClient } from '../app/lib/prisma/client.ts';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import { saveDocxForTask } from '../app/lib/documents.ts';
+import { saveDocxForTask, savePdfForTask } from '../app/lib/documents.ts';
 import { z } from 'zod';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -149,6 +149,8 @@ async function execCrearTarea(args: {
 }
 
 async function execCrearNota(args: { proyecto_nombre: string; titulo: string; contenido: string }) {
+  if (!args.titulo?.trim()) return { error: 'El título de la nota no puede estar vacío.' };
+  if (!args.contenido?.trim()) return { error: 'El contenido de la nota no puede estar vacío.' };
   const p = await findProject(args.proyecto_nombre);
   if (!p) return { error: `No se encontró el proyecto "${args.proyecto_nombre}".` };
 
@@ -171,11 +173,17 @@ async function execCrearNota(args: { proyecto_nombre: string; titulo: string; co
 }
 
 async function execActualizarEstado(args: { id: string; titulo: string; estado: 'TODO' | 'IN_PROGRESS' | 'WAITING' | 'DONE' }) {
+  // Validar existencia antes del update: sin esto, un id inexistente (ej. tarea
+  // borrada entre propuesta y confirmación) lanza P2025 y crashea el server.
+  const exists = await prisma.tarea.findUnique({ where: { id: args.id }, select: { id: true } });
+  if (!exists) return { error: `La tarea "${args.titulo}" ya no existe (id ${args.id}).` };
   await prisma.tarea.update({ where: { id: args.id }, data: { status: args.estado } });
   return { ok: true, mensaje: `Tarea "${args.titulo}" → ${args.estado}.` };
 }
 
 async function execMoverArchivo(args: { id: string; archivo_titulo: string; proyecto_destino: string }) {
+  const exists = await prisma.archivo.findUnique({ where: { id: args.id }, select: { id: true } });
+  if (!exists) return { error: `El archivo "${args.archivo_titulo}" ya no existe (id ${args.id}).` };
   const p = await findProject(args.proyecto_destino);
   if (!p) return { error: `No se encontró el proyecto "${args.proyecto_destino}".` };
   await prisma.archivo.update({ where: { id: args.id }, data: { projectId: p.id } });
@@ -187,9 +195,12 @@ async function execGenerarDocumento(args: {
   plantilla_id: string;
   data?: Record<string, string>;
 }) {
-  const result = await saveDocxForTask(prisma, args.tarea_id, args.plantilla_id, args.data ?? {});
+  const template = await prisma.documentTemplate.findUnique({ where: { id: args.plantilla_id } });
+  if (!template) return { error: `No se encontró la plantilla "${args.plantilla_id}".` };
+  const save = template.docType === 'md' ? savePdfForTask : saveDocxForTask;
+  const result = await save(prisma, args.tarea_id, args.plantilla_id, args.data ?? {});
   if (!result.success) return { error: result.error };
-  return { ok: true, filePath: result.filePath, mensaje: 'Documento DOCX generado y guardado.' };
+  return { ok: true, filePath: result.filePath, mensaje: `Documento ${template.docType.toUpperCase()} generado y guardado.` };
 }
 
 // --- MCP Server -------------------------------------------------------------
@@ -477,11 +488,11 @@ server.registerTool(
   },
 );
 
-// ESCRITURA 5: generar_documento (2 pasos, DOCX)
+// ESCRITURA 5: generar_documento (2 pasos, DOCX/PDF)
 server.registerTool(
   'generar_documento',
   {
-    description: 'Propone generar un documento DOCX desde una plantilla, asociado a una tarea. Devuelve confirmationId. (La variante PDF tiene bug preexistente de puppeteer.)',
+    description: 'Propone generar un documento DOCX o PDF (plantilla Markdown) asociado a una tarea. Devuelve confirmationId.',
     inputSchema: {
       tarea_id: z.string().describe('ID de la tarea (obtenlo con listar_tareas).'),
       plantilla_id: z.string().describe('ID de una plantilla DOCX (obtenlo con listar_plantillas).'),
@@ -492,8 +503,10 @@ server.registerTool(
   async (args) => {
     const template = await prisma.documentTemplate.findUnique({ where: { id: args.plantilla_id } });
     if (!template) return textResult({ error: `No se encontró la plantilla "${args.plantilla_id}".` });
-    if (template.docType !== 'docx') return textResult({ error: `La plantilla "${template.name}" no es DOCX (es ${template.docType}). La generación PDF está deshabilitada por bug preexistente.` });
-    const desc = `Generar documento DOCX "${template.name}" para la tarea ${args.tarea_id}.`;
+    if (template.docType !== 'docx' && template.docType !== 'md') {
+      return textResult({ error: `La plantilla "${template.name}" no es DOCX ni Markdown (es ${template.docType}).` });
+    }
+    const desc = `Generar documento ${template.docType.toUpperCase()} "${template.name}" para la tarea ${args.tarea_id}.`;
     return textResult({
       status: 'pending_confirmation',
       confirmationId: createConfirmation('generar_documento', args, desc),
@@ -521,24 +534,30 @@ server.registerTool(
     if (!confirm) return textResult({ ok: true, mensaje: 'Acción cancelada.' });
 
     let result: unknown;
-    switch (pending.toolName) {
-      case 'crear_tarea':
-        result = await execCrearTarea(pending.args as Parameters<typeof execCrearTarea>[0]);
-        break;
-      case 'crear_nota':
-        result = await execCrearNota(pending.args as Parameters<typeof execCrearNota>[0]);
-        break;
-      case 'actualizar_estado_tarea':
-        result = await execActualizarEstado(pending.args as Parameters<typeof execActualizarEstado>[0]);
-        break;
-      case 'mover_archivo_a_proyecto':
-        result = await execMoverArchivo(pending.args as Parameters<typeof execMoverArchivo>[0]);
-        break;
-      case 'generar_documento':
-        result = await execGenerarDocumento(pending.args as Parameters<typeof execGenerarDocumento>[0]);
-        break;
-      default:
-        result = { error: `Tool desconocida: ${pending.toolName}` };
+    try {
+      switch (pending.toolName) {
+        case 'crear_tarea':
+          result = await execCrearTarea(pending.args as Parameters<typeof execCrearTarea>[0]);
+          break;
+        case 'crear_nota':
+          result = await execCrearNota(pending.args as Parameters<typeof execCrearNota>[0]);
+          break;
+        case 'actualizar_estado_tarea':
+          result = await execActualizarEstado(pending.args as Parameters<typeof execActualizarEstado>[0]);
+          break;
+        case 'mover_archivo_a_proyecto':
+          result = await execMoverArchivo(pending.args as Parameters<typeof execMoverArchivo>[0]);
+          break;
+        case 'generar_documento':
+          result = await execGenerarDocumento(pending.args as Parameters<typeof execGenerarDocumento>[0]);
+          break;
+        default:
+          result = { error: `Tool desconocida: ${pending.toolName}` };
+      }
+    } catch (error) {
+      // Endurecimiento: nunca crashear el server por un error de ejecución;
+      // devolver siempre un error estructurado.
+      result = { error: `Error ejecutando ${pending.toolName}: ${error instanceof Error ? error.message : String(error)}` };
     }
 
     return textResult(result);
