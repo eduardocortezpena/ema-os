@@ -1,18 +1,39 @@
 /**
- * Servidor MCP local de EMA OS (Fase 6.5)
+ * Servidor MCP local de EMA OS (Fase 6 — fundación).
  *
- * Expone 8 tools: 4 lectura (ejecutan directo) + 4 escritura (requieren
- * confirmación explícita en 2 pasos). Las tools de escritura devuelven una
- * propuesta + confirmationId en el primer llamado; solo un segundo llamado a
- * `confirmar_accion` con ese ID ejecuta la acción real.
+ * Expone 13 tools para que agentes externos (Hermes, Claude Code, otros)
+ * operen la app sin pasar por la UI:
+ *   LECTURA (ejecutan directo):
+ *     - listar_proyectos        (filtros estado/prioridad)
+ *     - listar_tareas           (filtros proyecto/estado/prioridad)
+ *     - buscar_tareas_por_texto
+ *     - leer_nota_contexto
+ *     - leer_next_actions       (próximas acciones por proyecto)
+ *     - leer_my_day             (tareas de hoy / atrasadas / disponibles)
+ *     - listar_plantillas       (DocumentTemplate)
+ *   ESCRITURA (2 pasos: devuelven confirmationId; confirmar_accion ejecuta):
+ *     - crear_tarea
+ *     - actualizar_estado_tarea (TODO/IN_PROGRESS/WAITING/DONE)
+ *     - crear_nota
+ *     - mover_archivo_a_proyecto
+ *     - generar_documento       (DOCX; el PDF tiene bug preexistente de puppeteer)
+ *     - confirmar_accion
  *
  * NO importa nada de Next.js. Accede a Prisma directamente con la misma DB.
+ * La generación DOCX reutiliza app/lib/documents.ts (compartido con las
+ * Server Actions) para no duplicar docxtemplater.
+ *
+ * LIMITACIÓN: las tareas creadas/actualizadas vía MCP NO sincronizan Google
+ * Calendar (las Server Actions sí lo hacen, pero esa lógica vive acoplada al
+ * request context de Next). Es aceptable para agentes; documentado en
+ * MCP_SERVER.md.
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { PrismaClient } from '../app/lib/prisma/client.js';
+import { PrismaClient } from '../app/lib/prisma/client.ts';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { saveDocxForTask } from '../app/lib/documents.ts';
 import { z } from 'zod';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -33,6 +54,20 @@ const dbUrl = `file:${absoluteDbPath}`;
 
 const adapter = new PrismaBetterSqlite3({ url: dbUrl });
 const prisma = new PrismaClient({ adapter } as ConstructorParameters<typeof PrismaClient>[0]);
+
+// --- Helpers ----------------------------------------------------------------
+
+// ponytail: startOfDay inlineada (4 líneas) en vez de importar app/lib/date.ts
+// (imports sin extensión, incompatibles con Node ESM puro).
+function startOfDay(date: Date): Date {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+async function findProject(nombre: string) {
+  return prisma.proyecto.findFirst({ where: { name: { contains: nombre } } });
+}
 
 // --- Pending confirmations --------------------------------------------------
 // ponytail: Map en memoria, TTL 5 min, mismo patrón que app/api/chat/route.ts
@@ -58,7 +93,6 @@ function purgeExpired() {
 
 function createConfirmation(toolName: string, args: unknown, description: string): string {
   purgeExpired();
-  // ponytail: hard cap — drops oldest if hit (MCP local, misuse not a concern)
   if (PENDING.size >= MAX_PENDING) {
     PENDING.delete(PENDING.keys().next().value!);
   }
@@ -71,15 +105,13 @@ function resolveConfirmation(id: string): PendingConfirmation | null {
   purgeExpired();
   const pending = PENDING.get(id);
   if (!pending) return null;
-  PENDING.delete(id); // consumir una sola vez (protección replay)
+  PENDING.delete(id);
   if (Date.now() > pending.expiresAt) return null;
   return pending;
 }
 
-// --- DB helpers -------------------------------------------------------------
-
-async function findProject(nombre: string) {
-  return prisma.proyecto.findFirst({ where: { name: { contains: nombre } } });
+function textResult(obj: unknown) {
+  return { content: [{ type: 'text' as const, text: JSON.stringify(obj, null, 2) }] };
 }
 
 // --- Ejecutores de escritura (llamados SOLO tras confirmación) --------------
@@ -104,7 +136,7 @@ async function execCrearTarea(args: {
     ? (args.prioridad as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL')
     : 'LOW';
 
-  await prisma.tarea.create({
+  const created = await prisma.tarea.create({
     data: {
       title: args.titulo,
       projectId: projectId ?? null,
@@ -113,15 +145,13 @@ async function execCrearTarea(args: {
       dueDate: args.fecha && !isNaN(new Date(args.fecha).getTime()) ? new Date(args.fecha) : undefined,
     },
   });
-  return { ok: true, mensaje: `Tarea "${args.titulo}" creada.` };
+  return { ok: true, id: created.id, mensaje: `Tarea "${args.titulo}" creada.` };
 }
 
 async function execCrearNota(args: { proyecto_nombre: string; titulo: string; contenido: string }) {
   const p = await findProject(args.proyecto_nombre);
   if (!p) return { error: `No se encontró el proyecto "${args.proyecto_nombre}".` };
 
-  // Las notas viven en Archivo (kind=NOTE) desde Sprint 3.3.
-  // El archivo físico en Drive/local queda fuera del alcance del MCP por ahora.
   const notasDir = path.join(__dirname, '..', 'files', p.id);
   fs.mkdirSync(notasDir, { recursive: true });
   const fileName = `${Date.now()}-${args.titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
@@ -140,10 +170,9 @@ async function execCrearNota(args: { proyecto_nombre: string; titulo: string; co
   return { ok: true, mensaje: `Nota "${args.titulo}" creada en ${p.name}.` };
 }
 
-// id resuelto en el momento de la propuesta — evita ambigüedad por título en el ejecutor
-async function execCompletarTarea(args: { id: string; titulo: string }) {
-  await prisma.tarea.update({ where: { id: args.id }, data: { status: 'DONE' } });
-  return { ok: true, mensaje: `Tarea "${args.titulo}" marcada como completada.` };
+async function execActualizarEstado(args: { id: string; titulo: string; estado: 'TODO' | 'IN_PROGRESS' | 'WAITING' | 'DONE' }) {
+  await prisma.tarea.update({ where: { id: args.id }, data: { status: args.estado } });
+  return { ok: true, mensaje: `Tarea "${args.titulo}" → ${args.estado}.` };
 }
 
 async function execMoverArchivo(args: { id: string; archivo_titulo: string; proyecto_destino: string }) {
@@ -153,6 +182,16 @@ async function execMoverArchivo(args: { id: string; archivo_titulo: string; proy
   return { ok: true, mensaje: `"${args.archivo_titulo}" movido a ${p.name}.` };
 }
 
+async function execGenerarDocumento(args: {
+  tarea_id: string;
+  plantilla_id: string;
+  data?: Record<string, string>;
+}) {
+  const result = await saveDocxForTask(prisma, args.tarea_id, args.plantilla_id, args.data ?? {});
+  if (!result.success) return { error: result.error };
+  return { ok: true, filePath: result.filePath, mensaje: 'Documento DOCX generado y guardado.' };
+}
+
 // --- MCP Server -------------------------------------------------------------
 
 const server = new McpServer({
@@ -160,48 +199,55 @@ const server = new McpServer({
   version: '1.0.0',
 });
 
-// LECTURA 1: listar_proyectos
+// LECTURA 1: listar_proyectos (con filtros estado/prioridad)
 server.registerTool(
   'listar_proyectos',
   {
-    description: 'Lista TODOS los proyectos del usuario con su estado, prioridad y progreso.',
-    inputSchema: {},
-    annotations: { readOnlyHint: true },
-  },
-  async () => {
-    const projects = await prisma.proyecto.findMany({
-      orderBy: { name: 'asc' },
-      select: { name: true, status: true, priority: true, progress: true },
-    });
-    return { content: [{ type: 'text', text: JSON.stringify(projects, null, 2) }] };
-  },
-);
-
-// LECTURA 2: listar_tareas
-server.registerTool(
-  'listar_tareas',
-  {
-    description: 'Lista tareas, opcionalmente filtradas por proyecto y/o estado.',
+    description: 'Lista proyectos con estado, prioridad y progreso. Opcionalmente filtra por estado y/o prioridad.',
     inputSchema: {
-      proyecto_nombre: z.string().optional().describe('Nombre (o parte) del proyecto.'),
-      estado: z.enum(['TODO', 'IN_PROGRESS', 'WAITING', 'DONE']).optional(),
+      estado: z.enum(['PLANNING', 'ACTIVE', 'PAUSED', 'COMPLETED']).optional().describe('Filtrar por estado.'),
+      prioridad: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional().describe('Filtrar por prioridad.'),
     },
     annotations: { readOnlyHint: true },
   },
-  async ({ proyecto_nombre, estado }) => {
+  async ({ estado, prioridad }) => {
+    const projects = await prisma.proyecto.findMany({
+      where: { status: estado, priority: prioridad },
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true, status: true, priority: true, progress: true },
+    });
+    return textResult(projects);
+  },
+);
+
+// LECTURA 2: listar_tareas (con filtros proyecto/estado/prioridad)
+server.registerTool(
+  'listar_tareas',
+  {
+    description: 'Lista tareas, opcionalmente filtradas por proyecto, estado y/o prioridad.',
+    inputSchema: {
+      proyecto_nombre: z.string().optional().describe('Nombre (o parte) del proyecto.'),
+      estado: z.enum(['TODO', 'IN_PROGRESS', 'WAITING', 'DONE']).optional(),
+      prioridad: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),
+    },
+    annotations: { readOnlyHint: true },
+  },
+  async ({ proyecto_nombre, estado, prioridad }) => {
     const where: Record<string, unknown> = {};
     if (estado) where.status = estado;
+    if (prioridad) where.priority = prioridad;
     if (proyecto_nombre) {
       const p = await findProject(proyecto_nombre);
-      if (!p) return { content: [{ type: 'text', text: JSON.stringify({ error: `No se encontró proyecto "${proyecto_nombre}".` }) }] };
+      if (!p) return textResult({ error: `No se encontró proyecto "${proyecto_nombre}".` });
       where.projectId = p.id;
     }
     const tasks = await prisma.tarea.findMany({
       where,
-      select: { title: true, status: true, priority: true, dueDate: true },
+      select: { id: true, title: true, status: true, priority: true, dueDate: true, projectId: true },
       take: 50,
+      orderBy: { createdAt: 'desc' },
     });
-    return { content: [{ type: 'text', text: JSON.stringify(tasks, null, 2) }] };
+    return textResult(tasks);
   },
 );
 
@@ -209,19 +255,17 @@ server.registerTool(
 server.registerTool(
   'buscar_tareas_por_texto',
   {
-    description: 'Busca tareas cuyo título contenga el texto dado (substring, sin distinción de mayúsculas en ASCII).',
-    inputSchema: {
-      texto: z.string().describe('Texto a buscar en el título.'),
-    },
+    description: 'Busca tareas cuyo título contenga el texto dado.',
+    inputSchema: { texto: z.string().describe('Texto a buscar en el título.') },
     annotations: { readOnlyHint: true },
   },
   async ({ texto }) => {
     const tasks = await prisma.tarea.findMany({
       where: { title: { contains: texto } },
-      select: { title: true, status: true, priority: true, dueDate: true },
+      select: { id: true, title: true, status: true, priority: true, dueDate: true },
       take: 20,
     });
-    return { content: [{ type: 'text', text: JSON.stringify(tasks, null, 2) }] };
+    return textResult(tasks);
   },
 );
 
@@ -230,30 +274,111 @@ server.registerTool(
   'leer_nota_contexto',
   {
     description: 'Lee las notas de contexto Markdown de un proyecto.',
-    inputSchema: {
-      proyecto_nombre: z.string().describe('Nombre (o parte) del proyecto.'),
-    },
+    inputSchema: { proyecto_nombre: z.string().describe('Nombre (o parte) del proyecto.') },
     annotations: { readOnlyHint: true },
   },
   async ({ proyecto_nombre }) => {
     const p = await findProject(proyecto_nombre);
-    if (!p) return { content: [{ type: 'text', text: JSON.stringify({ error: `No se encontró proyecto "${proyecto_nombre}".` }) }] };
+    if (!p) return textResult({ error: `No se encontró proyecto "${proyecto_nombre}".` });
 
     const notas = await prisma.archivo.findMany({
       where: { projectId: p.id, kind: 'NOTE' },
       select: { title: true, path: true },
     });
-    if (notas.length === 0) return { content: [{ type: 'text', text: JSON.stringify({ error: `El proyecto "${p.name}" no tiene notas.` }) }] };
+    if (notas.length === 0) return textResult({ error: `El proyecto "${p.name}" no tiene notas.` });
 
     const results = notas.map((n) => {
       try {
-        const contenido = fs.readFileSync(n.path, 'utf-8');
-        return { titulo: n.title, contenido };
+        return { titulo: n.title, contenido: fs.readFileSync(n.path, 'utf-8') };
       } catch {
         return { titulo: n.title, contenido: '(no se pudo leer el archivo)' };
       }
     });
-    return { content: [{ type: 'text', text: JSON.stringify(results, null, 2) }] };
+    return textResult(results);
+  },
+);
+
+// LECTURA 5: leer_next_actions
+server.registerTool(
+  'leer_next_actions',
+  {
+    description: 'Lista la próxima acción (Next Action) de cada proyecto: texto y/o tarea asignada.',
+    inputSchema: {},
+    annotations: { readOnlyHint: true },
+  },
+  async () => {
+    const projects = await prisma.proyecto.findMany({
+      where: { status: { not: 'COMPLETED' } },
+      select: {
+        name: true,
+        status: true,
+        nextAction: true,
+        nextActionTask: { select: { id: true, title: true, status: true } },
+      },
+      orderBy: { name: 'asc' },
+    });
+    const conNext = projects
+      .filter((p) => p.nextAction || p.nextActionTask)
+      .map((p) => ({
+        proyecto: p.name,
+        status: p.status,
+        nextAction: p.nextAction ?? null,
+        nextActionTask: p.nextActionTask ? { id: p.nextActionTask.id, title: p.nextActionTask.title, status: p.nextActionTask.status } : null,
+      }));
+    return textResult(conNext);
+  },
+);
+
+// LECTURA 6: leer_my_day
+server.registerTool(
+  'leer_my_day',
+  {
+    description: 'Lista las tareas de "My Day": planificadas para hoy, atrasadas y disponibles (sin planificar).',
+    inputSchema: {},
+    annotations: { readOnlyHint: true },
+  },
+  async () => {
+    const today = startOfDay(new Date());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const [hoy, atrasadas, disponibles] = await Promise.all([
+      prisma.tarea.findMany({
+        where: { plannedFor: { gte: today, lt: tomorrow } },
+        include: { project: { select: { name: true } } },
+      }),
+      prisma.tarea.findMany({
+        where: { plannedFor: { lt: today }, status: { not: 'DONE' } },
+        include: { project: { select: { name: true } } },
+      }),
+      prisma.tarea.findMany({
+        where: { plannedFor: null, status: { not: 'DONE' } },
+        include: { project: { select: { name: true } } },
+        orderBy: { createdAt: 'desc' },
+        take: 30,
+      }),
+    ]);
+    return textResult({ hoy, atrasadas, disponibles });
+  },
+);
+
+// LECTURA 7: listar_plantillas
+server.registerTool(
+  'listar_plantillas',
+  {
+    description: 'Lista las plantillas de documento (DocumentTemplate), opcionalmente por tipo.',
+    inputSchema: {
+      tipo: z.enum(['docx', 'md']).optional().describe('Filtrar por tipo de plantilla.'),
+    },
+    annotations: { readOnlyHint: true },
+  },
+  async ({ tipo }) => {
+    const templates = await prisma.documentTemplate.findMany({
+      where: tipo ? { docType: tipo } : undefined,
+      select: { id: true, name: true, docType: true, variables: true, project: { select: { name: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+    return textResult(templates);
   },
 );
 
@@ -272,13 +397,12 @@ server.registerTool(
   },
   async (args) => {
     const desc = `Crear tarea "${args.titulo}"${args.proyecto_nombre ? ` en proyecto "${args.proyecto_nombre}"` : ' (Inbox)'}${args.prioridad ? `, prioridad ${args.prioridad}` : ''}${args.fecha ? `, fecha ${args.fecha}` : ''}.`;
-    const confirmationId = createConfirmation('crear_tarea', args, desc);
-    return {
-      content: [{
-        type: 'text',
-        text: JSON.stringify({ status: 'pending_confirmation', confirmationId, propuesta: desc, instruccion: 'Llama a confirmar_accion con este confirmationId y confirm=true para ejecutar, o confirm=false para cancelar.' }),
-      }],
-    };
+    return textResult({
+      status: 'pending_confirmation',
+      confirmationId: createConfirmation('crear_tarea', args, desc),
+      propuesta: desc,
+      instruccion: 'Llama a confirmar_accion con este confirmationId y confirm=true para ejecutar, o false para cancelar.',
+    });
   },
 );
 
@@ -296,38 +420,36 @@ server.registerTool(
   },
   async (args) => {
     const desc = `Crear nota "${args.titulo}" en proyecto "${args.proyecto_nombre}".`;
-    const confirmationId = createConfirmation('crear_nota', args, desc);
-    return {
-      content: [{
-        type: 'text',
-        text: JSON.stringify({ status: 'pending_confirmation', confirmationId, propuesta: desc, instruccion: 'Llama a confirmar_accion con este confirmationId y confirm=true para ejecutar.' }),
-      }],
-    };
+    return textResult({
+      status: 'pending_confirmation',
+      confirmationId: createConfirmation('crear_nota', args, desc),
+      propuesta: desc,
+      instruccion: 'Llama a confirmar_accion con este confirmationId y confirm=true para ejecutar.',
+    });
   },
 );
 
-// ESCRITURA 3: completar_tarea (2 pasos)
+// ESCRITURA 3: actualizar_estado_tarea (2 pasos) — TODO/DONE (+ IN_PROGRESS/WAITING)
 server.registerTool(
-  'completar_tarea',
+  'actualizar_estado_tarea',
   {
-    description: 'Propone marcar una tarea como completada (DONE). Devuelve confirmationId.',
+    description: 'Propone cambiar el estado de una tarea (TODO/IN_PROGRESS/WAITING/DONE). Devuelve confirmationId.',
     inputSchema: {
-      titulo: z.string().describe('Título (o parte) de la tarea a completar.'),
+      titulo: z.string().describe('Título (o parte) de la tarea.'),
+      estado: z.enum(['TODO', 'IN_PROGRESS', 'WAITING', 'DONE']).describe('Nuevo estado.'),
     },
     annotations: { readOnlyHint: false, destructiveHint: false },
   },
   async (args) => {
     const task = await prisma.tarea.findFirst({ where: { title: { contains: args.titulo } } });
-    if (!task) return { content: [{ type: 'text', text: JSON.stringify({ error: `No se encontró tarea con "${args.titulo}".` }) }] };
-    const desc = `Marcar como completada la tarea "${task.title}".`;
-    // Almacenar id (no solo titulo) para evitar ambiguedad en el ejecutor
-    const confirmationId = createConfirmation('completar_tarea', { id: task.id, titulo: task.title }, desc);
-    return {
-      content: [{
-        type: 'text',
-        text: JSON.stringify({ status: 'pending_confirmation', confirmationId, propuesta: desc, instruccion: 'Llama a confirmar_accion con este confirmationId y confirm=true para ejecutar.' }),
-      }],
-    };
+    if (!task) return textResult({ error: `No se encontró tarea con "${args.titulo}".` });
+    const desc = `Cambiar tarea "${task.title}" (estado actual ${task.status}) → ${args.estado}.`;
+    return textResult({
+      status: 'pending_confirmation',
+      confirmationId: createConfirmation('actualizar_estado_tarea', { id: task.id, titulo: task.title, estado: args.estado }, desc),
+      propuesta: desc,
+      instruccion: 'Llama a confirmar_accion con este confirmationId y confirm=true para ejecutar.',
+    });
   },
 );
 
@@ -344,16 +466,40 @@ server.registerTool(
   },
   async (args) => {
     const archivo = await prisma.archivo.findFirst({ where: { title: { contains: args.archivo_titulo } } });
-    if (!archivo) return { content: [{ type: 'text', text: JSON.stringify({ error: `No se encontró archivo/nota con "${args.archivo_titulo}".` }) }] };
+    if (!archivo) return textResult({ error: `No se encontró archivo/nota con "${args.archivo_titulo}".` });
     const desc = `Mover "${archivo.title}" al proyecto "${args.proyecto_destino}".`;
-    // Almacenar id resuelto para evitar ambiguedad en el ejecutor
-    const confirmationId = createConfirmation('mover_archivo_a_proyecto', { id: archivo.id, archivo_titulo: archivo.title, proyecto_destino: args.proyecto_destino }, desc);
-    return {
-      content: [{
-        type: 'text',
-        text: JSON.stringify({ status: 'pending_confirmation', confirmationId, propuesta: desc, instruccion: 'Llama a confirmar_accion con este confirmationId y confirm=true para ejecutar.' }),
-      }],
-    };
+    return textResult({
+      status: 'pending_confirmation',
+      confirmationId: createConfirmation('mover_archivo_a_proyecto', { id: archivo.id, archivo_titulo: archivo.title, proyecto_destino: args.proyecto_destino }, desc),
+      propuesta: desc,
+      instruccion: 'Llama a confirmar_accion con este confirmationId y confirm=true para ejecutar.',
+    });
+  },
+);
+
+// ESCRITURA 5: generar_documento (2 pasos, DOCX)
+server.registerTool(
+  'generar_documento',
+  {
+    description: 'Propone generar un documento DOCX desde una plantilla, asociado a una tarea. Devuelve confirmationId. (La variante PDF tiene bug preexistente de puppeteer.)',
+    inputSchema: {
+      tarea_id: z.string().describe('ID de la tarea (obtenlo con listar_tareas).'),
+      plantilla_id: z.string().describe('ID de una plantilla DOCX (obtenlo con listar_plantillas).'),
+      data: z.record(z.string(), z.string()).optional().describe('Variables {campo: valor} para rellenar la plantilla.'),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false },
+  },
+  async (args) => {
+    const template = await prisma.documentTemplate.findUnique({ where: { id: args.plantilla_id } });
+    if (!template) return textResult({ error: `No se encontró la plantilla "${args.plantilla_id}".` });
+    if (template.docType !== 'docx') return textResult({ error: `La plantilla "${template.name}" no es DOCX (es ${template.docType}). La generación PDF está deshabilitada por bug preexistente.` });
+    const desc = `Generar documento DOCX "${template.name}" para la tarea ${args.tarea_id}.`;
+    return textResult({
+      status: 'pending_confirmation',
+      confirmationId: createConfirmation('generar_documento', args, desc),
+      propuesta: desc,
+      instruccion: 'Llama a confirmar_accion con este confirmationId y confirm=true para ejecutar.',
+    });
   },
 );
 
@@ -370,13 +516,9 @@ server.registerTool(
   },
   async ({ confirmationId, confirm }) => {
     const pending = resolveConfirmation(confirmationId);
-    if (!pending) {
-      return { content: [{ type: 'text', text: JSON.stringify({ error: 'Confirmación expirada, ya usada, o ID inválido.' }) }] };
-    }
+    if (!pending) return textResult({ error: 'Confirmación expirada, ya usada, o ID inválido.' });
 
-    if (!confirm) {
-      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, mensaje: 'Acción cancelada.' }) }] };
-    }
+    if (!confirm) return textResult({ ok: true, mensaje: 'Acción cancelada.' });
 
     let result: unknown;
     switch (pending.toolName) {
@@ -386,17 +528,20 @@ server.registerTool(
       case 'crear_nota':
         result = await execCrearNota(pending.args as Parameters<typeof execCrearNota>[0]);
         break;
-      case 'completar_tarea':
-        result = await execCompletarTarea(pending.args as Parameters<typeof execCompletarTarea>[0]);
+      case 'actualizar_estado_tarea':
+        result = await execActualizarEstado(pending.args as Parameters<typeof execActualizarEstado>[0]);
         break;
       case 'mover_archivo_a_proyecto':
         result = await execMoverArchivo(pending.args as Parameters<typeof execMoverArchivo>[0]);
+        break;
+      case 'generar_documento':
+        result = await execGenerarDocumento(pending.args as Parameters<typeof execGenerarDocumento>[0]);
         break;
       default:
         result = { error: `Tool desconocida: ${pending.toolName}` };
     }
 
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+    return textResult(result);
   },
 );
 
@@ -404,4 +549,3 @@ server.registerTool(
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
-// Sin console.log aquí: stdout es el canal MCP, cualquier texto lo rompe.
