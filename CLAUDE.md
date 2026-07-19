@@ -111,6 +111,13 @@ La revisión no requiere aprobación del dueño para ejecutarse — es mantenimi
 rutinario. Si se detecta algo que requiere una decisión (borrar un archivo,
 cambiar estructura), reportar y esperar confirmación antes de actuar.
 
+## Proveedor: esta CLI usa solo Z.ai (GLM), no Anthropic
+
+Esta terminal de Claude Code está desconectada de la cuenta Anthropic
+(`claude auth logout` aplicado) y fijada a `glm-5.2` vía Z.ai — nunca consume
+tokens de la suscripción Claude Pro. La app de escritorio de Claude es la
+sesión separada para eso. Reconfigurar: `& "$env:USERPROFILE\.claude\switch-mode.ps1" glm`.
+
 ## Modelos de OpenRouter
 
 Cadena por defecto para **Dona y todos los agentes salvo Señor Dev**:
