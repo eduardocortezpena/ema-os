@@ -4,6 +4,8 @@ Formato: `fecha | agente | acción | resultado`
 
 ---
 
+2026-07-19 | Claude Code (Integrador) | Merge en orden a main: `zcode/prisma-refactor-cierre` (ya estaba, sobrevivió a la purga de historia), `glm/fase-6-mcp-server` (servidor MCP 13 tools), `glm/fase-6-hardening` (PDF operativo + suite de integración + hardening). Build limpio verificado tras cada merge (estrategia `ort`, sin conflictos fuera de BITACORA.md). | `npm run test:mcp` → 24/24 pasaron (lectura, escritura con confirmación de 2 pasos, generación DOCX/PDF real en disco, casos borde). Fase 6 MCP integrada completa en main. No se hizo push (pendiente del dueño).
+
 2026-07-18 | Claude Code (Integrador express) | Merge `zcode/prisma-refactor-cierre` (1f96d01) → main. Verificado antes de mergear: diff vs main solo tocaba archivos Prisma + BITACORA.md (confirma el reporte de Señor Dev). Fast-forward limpio (main y la rama compartían el mismo padre 7765f0f). Cambios locales sin commitear preexistentes (CLAUDE.md, `.zcode/plans/`) guardados en stash antes del merge y restaurados después; el único conflicto fue `DocumentTemplate.ts` duplicado (stash vs mergeado) — verificado byte-a-byte idéntico, se descartó la copia del stash. | Build: `npm run build` limpio en main, `document-actions.ts:61` resuelto. Error conocido y no bloqueante: `mcp-server/index.ts` sin `@modelcontextprotocol/sdk` instalado (fuera de scope, tarea siguiente).
 
 2026-07-18 | Claude Code | Rotación de documentos de contexto (SPRINT.md 1310→38 líneas, BACKLOG.md 164→65 líneas, ROADMAP.md 407→51 líneas). Históricos en `.claude/docs/archive/`. Creación de BITACORA.md y reglas de rotación en CLAUDE.md. | Build pendiente de verificar.
