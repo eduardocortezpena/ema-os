@@ -17,6 +17,8 @@ Reglas:
 - Nunca agregar funcionalidades no solicitadas.
 - Nunca detener el desarrollo por decisiones menores.
 - Nunca marcar una tarea como terminada sin cumplir la Definition of Done.
+- Prompts a agentes: UNA tarea de alcance cerrado por sesión. Referenciar
+  lecturas previas, no releer.
 
 ## Checklist de inicio de sesión
 
