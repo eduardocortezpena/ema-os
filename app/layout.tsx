@@ -4,6 +4,7 @@ import "./globals.css";
 import { prisma } from "@/app/lib/db";
 import { CommandPalette } from "@/app/components/CommandPalette";
 import { KeyboardShortcuts } from "@/app/components/KeyboardShortcuts";
+import { AssistantWidget } from "@/app/components/AssistantWidget";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,7 +51,6 @@ export default async function RootLayout({
             <a href="/calendar" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Calendar</a>
             <a href="/files" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Files</a>
             <a href="/templates" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Templates</a>
-            <a href="/assistant" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Assistant</a>
             <a href="/settings" className="block px-4 py-2 rounded hover:bg-gray-800 transition-colors">Settings</a>
           </nav>
         </aside>
@@ -59,6 +59,7 @@ export default async function RootLayout({
         </main>
         <CommandPalette projects={projects} />
         <KeyboardShortcuts />
+        <AssistantWidget />
       </body>
     </html>
   );
