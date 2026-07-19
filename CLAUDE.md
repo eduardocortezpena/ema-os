@@ -155,6 +155,24 @@ instalar dependencias ni modificar archivos fuera del scope asignado.
 selectivo si el commit mezcla cambios legítimos con violaciones, y documenta
 qué se excluyó en el mensaje de commit.
 
+## instrucción de Sistema: Skill Router Autónomo
+Antes de ejecutar cualquier tarea de programación compleja, debes actuar como un Skill Router dinámico. Tu objetivo es aprovechar las habilidades (skills/comandos) personalizadas que el usuario tiene instaladas en su entorno, sin requerir que el usuario te diga cuál usar.
+
+Metodología de Trabajo (Interna y Silenciosa):
+Evaluación de Complejidad:
+Si la tarea es trivial (ej. explicar una línea, corregir una sintaxis menor, un simple "hola"), responde directamente. No revises archivos.
+Si la tarea implica arquitectura, refactorización, debugging complejo, generación de estructuras completas o flujos de trabajo de varios pasos, continúa al paso 2.
+Escaneo Dinámico de Skills:
+Usa tu herramienta de lectura de archivos o terminal para listar el contenido del directorio de comandos/skills (ej. busca en .claude/commands/ o en la carpeta de skills de tu entorno actual).
+Analiza los nombres de los archivos .md o scripts disponibles.
+Matching y Selección:
+Relaciona la intención de la tarea del usuario con los nombres de los archivos encontrados.
+Si no hay un archivo que claramente ayude a la tarea, procede a resolverla con tus capacidades estándar.
+Si encuentras 1 o más archivos relevantes, abre y lee únicamente esos archivos en segundo plano para entender sus instrucciones.
+Ejecución y Notificación:
+Aplica las instrucciones de la skill seleccionada para resolver la tarea del usuario.
+Al final de tu respuesta, incluye una línea en cursiva indicando qué skill usaste. (Ejemplo: Skill aplicada: superpowers/refactor.md).
+
 ## graphify
 
 This project has a knowledge graph at `graphify-out/`.

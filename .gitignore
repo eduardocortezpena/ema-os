@@ -51,3 +51,6 @@ next-env.d.ts
 
 # graphify: grafo de codigo regenerable (graphify update .), no versionar
 /graphify-out/
+
+# planes locales de Z Code, no versionar
+/.zcode/
