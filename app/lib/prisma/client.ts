@@ -66,3 +66,8 @@ export type Archivo = Prisma.ArchivoModel
  * 
  */
 export type GoogleDriveToken = Prisma.GoogleDriveTokenModel
+/**
+ * Model DocumentTemplate
+ * 
+ */
+export type DocumentTemplate = Prisma.DocumentTemplateModel

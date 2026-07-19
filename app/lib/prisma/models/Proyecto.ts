@@ -268,6 +268,7 @@ export type ProyectoWhereInput = {
   notes?: Prisma.NotaListRelationFilter
   nextActionTask?: Prisma.XOR<Prisma.TareaNullableScalarRelationFilter, Prisma.TareaWhereInput> | null
   archivos?: Prisma.ArchivoListRelationFilter
+  templates?: Prisma.DocumentTemplateListRelationFilter
 }
 
 export type ProyectoOrderByWithRelationInput = {
@@ -286,6 +287,7 @@ export type ProyectoOrderByWithRelationInput = {
   notes?: Prisma.NotaOrderByRelationAggregateInput
   nextActionTask?: Prisma.TareaOrderByWithRelationInput
   archivos?: Prisma.ArchivoOrderByRelationAggregateInput
+  templates?: Prisma.DocumentTemplateOrderByRelationAggregateInput
 }
 
 export type ProyectoWhereUniqueInput = Prisma.AtLeast<{
@@ -307,6 +309,7 @@ export type ProyectoWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.NotaListRelationFilter
   nextActionTask?: Prisma.XOR<Prisma.TareaNullableScalarRelationFilter, Prisma.TareaWhereInput> | null
   archivos?: Prisma.ArchivoListRelationFilter
+  templates?: Prisma.DocumentTemplateListRelationFilter
 }, "id" | "nextActionTaskId">
 
 export type ProyectoOrderByWithAggregationInput = {
@@ -360,6 +363,7 @@ export type ProyectoCreateInput = {
   notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
   nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
   archivos?: Prisma.ArchivoCreateNestedManyWithoutProjectInput
+  templates?: Prisma.DocumentTemplateCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoUncheckedCreateInput = {
@@ -377,6 +381,7 @@ export type ProyectoUncheckedCreateInput = {
   tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
   archivos?: Prisma.ArchivoUncheckedCreateNestedManyWithoutProjectInput
+  templates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoUpdateInput = {
@@ -394,6 +399,7 @@ export type ProyectoUpdateInput = {
   notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
   nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
   archivos?: Prisma.ArchivoUpdateManyWithoutProjectNestedInput
+  templates?: Prisma.DocumentTemplateUpdateManyWithoutProjectNestedInput
 }
 
 export type ProyectoUncheckedUpdateInput = {
@@ -411,6 +417,7 @@ export type ProyectoUncheckedUpdateInput = {
   tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
   archivos?: Prisma.ArchivoUncheckedUpdateManyWithoutProjectNestedInput
+  templates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProyectoCreateManyInput = {
@@ -618,6 +625,22 @@ export type ProyectoUpdateOneRequiredWithoutArchivosNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProyectoUpdateToOneWithWhereWithoutArchivosInput, Prisma.ProyectoUpdateWithoutArchivosInput>, Prisma.ProyectoUncheckedUpdateWithoutArchivosInput>
 }
 
+export type ProyectoCreateNestedOneWithoutTemplatesInput = {
+  create?: Prisma.XOR<Prisma.ProyectoCreateWithoutTemplatesInput, Prisma.ProyectoUncheckedCreateWithoutTemplatesInput>
+  connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutTemplatesInput
+  connect?: Prisma.ProyectoWhereUniqueInput
+}
+
+export type ProyectoUpdateOneWithoutTemplatesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProyectoCreateWithoutTemplatesInput, Prisma.ProyectoUncheckedCreateWithoutTemplatesInput>
+  connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutTemplatesInput
+  upsert?: Prisma.ProyectoUpsertWithoutTemplatesInput
+  disconnect?: Prisma.ProyectoWhereInput | boolean
+  delete?: Prisma.ProyectoWhereInput | boolean
+  connect?: Prisma.ProyectoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProyectoUpdateToOneWithWhereWithoutTemplatesInput, Prisma.ProyectoUpdateWithoutTemplatesInput>, Prisma.ProyectoUncheckedUpdateWithoutTemplatesInput>
+}
+
 export type ProyectoCreateWithoutTasksInput = {
   id?: string
   name: string
@@ -632,6 +655,7 @@ export type ProyectoCreateWithoutTasksInput = {
   notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
   nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
   archivos?: Prisma.ArchivoCreateNestedManyWithoutProjectInput
+  templates?: Prisma.DocumentTemplateCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoUncheckedCreateWithoutTasksInput = {
@@ -648,6 +672,7 @@ export type ProyectoUncheckedCreateWithoutTasksInput = {
   driveFolderId?: string | null
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
   archivos?: Prisma.ArchivoUncheckedCreateNestedManyWithoutProjectInput
+  templates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoCreateOrConnectWithoutTasksInput = {
@@ -669,6 +694,7 @@ export type ProyectoCreateWithoutNextActionTaskInput = {
   tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
   archivos?: Prisma.ArchivoCreateNestedManyWithoutProjectInput
+  templates?: Prisma.DocumentTemplateCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoUncheckedCreateWithoutNextActionTaskInput = {
@@ -685,6 +711,7 @@ export type ProyectoUncheckedCreateWithoutNextActionTaskInput = {
   tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
   archivos?: Prisma.ArchivoUncheckedCreateNestedManyWithoutProjectInput
+  templates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoCreateOrConnectWithoutNextActionTaskInput = {
@@ -717,6 +744,7 @@ export type ProyectoUpdateWithoutTasksInput = {
   notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
   nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
   archivos?: Prisma.ArchivoUpdateManyWithoutProjectNestedInput
+  templates?: Prisma.DocumentTemplateUpdateManyWithoutProjectNestedInput
 }
 
 export type ProyectoUncheckedUpdateWithoutTasksInput = {
@@ -733,6 +761,7 @@ export type ProyectoUncheckedUpdateWithoutTasksInput = {
   driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
   archivos?: Prisma.ArchivoUncheckedUpdateManyWithoutProjectNestedInput
+  templates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProyectoUpsertWithoutNextActionTaskInput = {
@@ -760,6 +789,7 @@ export type ProyectoUpdateWithoutNextActionTaskInput = {
   tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
   archivos?: Prisma.ArchivoUpdateManyWithoutProjectNestedInput
+  templates?: Prisma.DocumentTemplateUpdateManyWithoutProjectNestedInput
 }
 
 export type ProyectoUncheckedUpdateWithoutNextActionTaskInput = {
@@ -776,6 +806,7 @@ export type ProyectoUncheckedUpdateWithoutNextActionTaskInput = {
   tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
   archivos?: Prisma.ArchivoUncheckedUpdateManyWithoutProjectNestedInput
+  templates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProyectoCreateWithoutNotesInput = {
@@ -792,6 +823,7 @@ export type ProyectoCreateWithoutNotesInput = {
   tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
   nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
   archivos?: Prisma.ArchivoCreateNestedManyWithoutProjectInput
+  templates?: Prisma.DocumentTemplateCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoUncheckedCreateWithoutNotesInput = {
@@ -808,6 +840,7 @@ export type ProyectoUncheckedCreateWithoutNotesInput = {
   driveFolderId?: string | null
   tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
   archivos?: Prisma.ArchivoUncheckedCreateNestedManyWithoutProjectInput
+  templates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoCreateOrConnectWithoutNotesInput = {
@@ -840,6 +873,7 @@ export type ProyectoUpdateWithoutNotesInput = {
   tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
   nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
   archivos?: Prisma.ArchivoUpdateManyWithoutProjectNestedInput
+  templates?: Prisma.DocumentTemplateUpdateManyWithoutProjectNestedInput
 }
 
 export type ProyectoUncheckedUpdateWithoutNotesInput = {
@@ -856,6 +890,7 @@ export type ProyectoUncheckedUpdateWithoutNotesInput = {
   driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
   archivos?: Prisma.ArchivoUncheckedUpdateManyWithoutProjectNestedInput
+  templates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProyectoCreateWithoutArchivosInput = {
@@ -872,6 +907,7 @@ export type ProyectoCreateWithoutArchivosInput = {
   tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
   nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
+  templates?: Prisma.DocumentTemplateCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoUncheckedCreateWithoutArchivosInput = {
@@ -888,6 +924,7 @@ export type ProyectoUncheckedCreateWithoutArchivosInput = {
   driveFolderId?: string | null
   tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
   notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
+  templates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProyectoCreateOrConnectWithoutArchivosInput = {
@@ -920,6 +957,7 @@ export type ProyectoUpdateWithoutArchivosInput = {
   tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
   nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
+  templates?: Prisma.DocumentTemplateUpdateManyWithoutProjectNestedInput
 }
 
 export type ProyectoUncheckedUpdateWithoutArchivosInput = {
@@ -936,6 +974,91 @@ export type ProyectoUncheckedUpdateWithoutArchivosInput = {
   driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
   notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
+  templates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProyectoCreateWithoutTemplatesInput = {
+  id?: string
+  name: string
+  description?: string | null
+  priority?: $Enums.Priority
+  status?: $Enums.Status
+  progress?: number
+  nextAction?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  driveFolderId?: string | null
+  tasks?: Prisma.TareaCreateNestedManyWithoutProjectInput
+  notes?: Prisma.NotaCreateNestedManyWithoutProjectInput
+  nextActionTask?: Prisma.TareaCreateNestedOneWithoutIsNextActionForInput
+  archivos?: Prisma.ArchivoCreateNestedManyWithoutProjectInput
+}
+
+export type ProyectoUncheckedCreateWithoutTemplatesInput = {
+  id?: string
+  name: string
+  description?: string | null
+  priority?: $Enums.Priority
+  status?: $Enums.Status
+  progress?: number
+  nextAction?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  nextActionTaskId?: string | null
+  driveFolderId?: string | null
+  tasks?: Prisma.TareaUncheckedCreateNestedManyWithoutProjectInput
+  notes?: Prisma.NotaUncheckedCreateNestedManyWithoutProjectInput
+  archivos?: Prisma.ArchivoUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProyectoCreateOrConnectWithoutTemplatesInput = {
+  where: Prisma.ProyectoWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProyectoCreateWithoutTemplatesInput, Prisma.ProyectoUncheckedCreateWithoutTemplatesInput>
+}
+
+export type ProyectoUpsertWithoutTemplatesInput = {
+  update: Prisma.XOR<Prisma.ProyectoUpdateWithoutTemplatesInput, Prisma.ProyectoUncheckedUpdateWithoutTemplatesInput>
+  create: Prisma.XOR<Prisma.ProyectoCreateWithoutTemplatesInput, Prisma.ProyectoUncheckedCreateWithoutTemplatesInput>
+  where?: Prisma.ProyectoWhereInput
+}
+
+export type ProyectoUpdateToOneWithWhereWithoutTemplatesInput = {
+  where?: Prisma.ProyectoWhereInput
+  data: Prisma.XOR<Prisma.ProyectoUpdateWithoutTemplatesInput, Prisma.ProyectoUncheckedUpdateWithoutTemplatesInput>
+}
+
+export type ProyectoUpdateWithoutTemplatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  status?: Prisma.EnumStatusFieldUpdateOperationsInput | $Enums.Status
+  progress?: Prisma.IntFieldUpdateOperationsInput | number
+  nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tasks?: Prisma.TareaUpdateManyWithoutProjectNestedInput
+  notes?: Prisma.NotaUpdateManyWithoutProjectNestedInput
+  nextActionTask?: Prisma.TareaUpdateOneWithoutIsNextActionForNestedInput
+  archivos?: Prisma.ArchivoUpdateManyWithoutProjectNestedInput
+}
+
+export type ProyectoUncheckedUpdateWithoutTemplatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  priority?: Prisma.EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+  status?: Prisma.EnumStatusFieldUpdateOperationsInput | $Enums.Status
+  progress?: Prisma.IntFieldUpdateOperationsInput | number
+  nextAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  nextActionTaskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  driveFolderId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tasks?: Prisma.TareaUncheckedUpdateManyWithoutProjectNestedInput
+  notes?: Prisma.NotaUncheckedUpdateManyWithoutProjectNestedInput
+  archivos?: Prisma.ArchivoUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 
@@ -947,12 +1070,14 @@ export type ProyectoCountOutputType = {
   tasks: number
   notes: number
   archivos: number
+  templates: number
 }
 
 export type ProyectoCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tasks?: boolean | ProyectoCountOutputTypeCountTasksArgs
   notes?: boolean | ProyectoCountOutputTypeCountNotesArgs
   archivos?: boolean | ProyectoCountOutputTypeCountArchivosArgs
+  templates?: boolean | ProyectoCountOutputTypeCountTemplatesArgs
 }
 
 /**
@@ -986,6 +1111,13 @@ export type ProyectoCountOutputTypeCountArchivosArgs<ExtArgs extends runtime.Typ
   where?: Prisma.ArchivoWhereInput
 }
 
+/**
+ * ProyectoCountOutputType without action
+ */
+export type ProyectoCountOutputTypeCountTemplatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentTemplateWhereInput
+}
+
 
 export type ProyectoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1003,6 +1135,7 @@ export type ProyectoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   notes?: boolean | Prisma.Proyecto$notesArgs<ExtArgs>
   nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
   archivos?: boolean | Prisma.Proyecto$archivosArgs<ExtArgs>
+  templates?: boolean | Prisma.Proyecto$templatesArgs<ExtArgs>
   _count?: boolean | Prisma.ProyectoCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["proyecto"]>
 
@@ -1056,6 +1189,7 @@ export type ProyectoInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   notes?: boolean | Prisma.Proyecto$notesArgs<ExtArgs>
   nextActionTask?: boolean | Prisma.Proyecto$nextActionTaskArgs<ExtArgs>
   archivos?: boolean | Prisma.Proyecto$archivosArgs<ExtArgs>
+  templates?: boolean | Prisma.Proyecto$templatesArgs<ExtArgs>
   _count?: boolean | Prisma.ProyectoCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProyectoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1072,6 +1206,7 @@ export type $ProyectoPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     notes: Prisma.$NotaPayload<ExtArgs>[]
     nextActionTask: Prisma.$TareaPayload<ExtArgs> | null
     archivos: Prisma.$ArchivoPayload<ExtArgs>[]
+    templates: Prisma.$DocumentTemplatePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1483,6 +1618,7 @@ export interface Prisma__ProyectoClient<T, Null = never, ExtArgs extends runtime
   notes<T extends Prisma.Proyecto$notesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proyecto$notesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   nextActionTask<T extends Prisma.Proyecto$nextActionTaskArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proyecto$nextActionTaskArgs<ExtArgs>>): Prisma.Prisma__TareaClient<runtime.Types.Result.GetResult<Prisma.$TareaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   archivos<T extends Prisma.Proyecto$archivosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proyecto$archivosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArchivoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  templates<T extends Prisma.Proyecto$templatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proyecto$templatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2010,6 +2146,30 @@ export type Proyecto$archivosArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.ArchivoScalarFieldEnum | Prisma.ArchivoScalarFieldEnum[]
+}
+
+/**
+ * Proyecto.templates
+ */
+export type Proyecto$templatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocumentTemplate
+   */
+  select?: Prisma.DocumentTemplateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DocumentTemplate
+   */
+  omit?: Prisma.DocumentTemplateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentTemplateInclude<ExtArgs> | null
+  where?: Prisma.DocumentTemplateWhereInput
+  orderBy?: Prisma.DocumentTemplateOrderByWithRelationInput | Prisma.DocumentTemplateOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentTemplateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentTemplateScalarFieldEnum | Prisma.DocumentTemplateScalarFieldEnum[]
 }
 
 /**
