@@ -1,29 +1,30 @@
 # SPRINT.md
-## Estado actual: Fase 6 ✅ completa + endurecida | MCP operativo (13 tools, PDF, tests)
+
+> **Qué es:** foto del sprint en curso — qué se hizo, qué falta, en qué rama.
+> **Para qué:** retomar exactamente donde quedó la sesión anterior sin releer commits.
+> **Quién actualiza / cuándo:** el agente que cierra trabajo, en el mismo commit que lo cierra.
+> **Conecta con:** `BACKLOG.md` (de donde salen los ítems), `ROADMAP.md` (fase actual), `BITACORA.md` (detalle de cada acción).
+> **Si falta:** la próxima sesión repite exploración ya hecha o retoma trabajo a medias sin saber el estado real.
+
+## Estado actual: Fase 6 ✅ completa + endurecida | MCP operativo (14 tools, PDF, tests)
 
 ### Sprint activo (2026-07-19)
 
-- **Rama `glm/ux-tareas-v2`** — rediseño del flujo de tareas (UX v2), lista
-  para revisión/integración. **No mergeada a main, sin push.** Detalle y
-  decisiones en `BITACORA.md` (entrada 2026-07-19 Señor Dev).
-  - `completedAt` en `Tarea` (migración aditiva), purga de DONE >30 días al
-    cargar dashboard, DONE fuera de vistas activas, filtros + "Completadas
-    recientes" en `/tasks`, My Day eliminado (redirect), selector de
-    recordatorios con etiqueta, MCP `leer_my_day` repurposada.
-  - Build limpio + `npm run test:mcp` 24/24 + verificación HTTP/BD OK.
+- **Rama `claude/mcp-gaps`** — gaps post-integración Hermes-MCP: merge PR #1,
+  tool `eliminar_tarea` (2 pasos), docs Hermes corregidas (`--prefix` en vez
+  de `cwd`), `TELEGRAM_HOME_CHANNEL=<PENDIENTE>` en perfil `organizador`.
+  Build limpio + `npm run test:mcp` 30/30. Commit local, sin push.
 
 Cambios cerrados (2026-07-18): refactor Prisma y Fase 6 MCP ya en main.
 
-Acción inmediata al retomar:
-1. El integrador revisa `glm/ux-tareas-v2` (diff completo) y mergea si procede.
-2. Si se mergea: `npx prisma generate` + reiniciar `npm run dev` (migración
-   `20260719000000_tarea_completed_at` nueva).
-
 ### Próximo paso para el dueño
 
-Conectar Hermes al servidor MCP local siguiendo
-`.claude/docs/MCP_HERMES.md`. Sin eso, Fase 6.5 (integración Hermes↔EMA OS)
-no puede arrancar. **Requiere sesión CON supervisión.**
+1. Pegar el `chat_id` real de Telegram en
+   `~/AppData/Local/hermes/profiles/organizador/.env`, reemplazando
+   `<PENDIENTE>` en la línea `TELEGRAM_HOME_CHANNEL=`.
+2. Conectar Hermes al servidor MCP local siguiendo
+   `.claude/docs/MCP_HERMES.md`. Sin eso, Fase 6.5 (integración Hermes↔EMA OS)
+   no puede arrancar. **Requiere sesión CON supervisión.**
 
 ### Resumen de fases
 

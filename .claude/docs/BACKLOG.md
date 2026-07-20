@@ -1,5 +1,11 @@
 # BACKLOG.md — Items abiertos
 
+> **Qué es:** lista de trabajo pendiente, priorizada, aún no calendarizada en un sprint.
+> **Para qué:** decidir qué entra al siguiente sprint sin releer todo el historial.
+> **Quién actualiza / cuándo:** cualquier agente que cierra o descubre un pendiente, en el mismo commit.
+> **Conecta con:** `SPRINT.md` (saca ítems de aquí), `ROADMAP.md` (fase a la que pertenece cada ítem).
+> **Si falta:** se repite trabajo ya identificado o se pierden pendientes de seguridad/deuda técnica.
+
 ## Alta prioridad
 
 - [ ] **Sprint 1.5 (OPCIONAL)** — orden sugerido automático en /tasks y /my-day.

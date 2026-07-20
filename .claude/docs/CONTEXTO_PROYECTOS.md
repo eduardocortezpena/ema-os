@@ -1,8 +1,11 @@
 # CONTEXTO_PROYECTOS.md
 
-> Generado 2026-07-18 desde notas de contexto de la BD.
-> Propósito: conocimiento de clasificación para agentes (Organizador, Comunicador, etc.).
-> Actualizar cuando cambie el contexto de un proyecto.
+> **Qué es:** ficha de cada proyecto del ecosistema (qué es, señas de clasificación, personas).
+> **Para qué:** que agentes de archivo (Organizador, Comunicador) clasifiquen documentos sin ambigüedad.
+> **Quién actualiza / cuándo:** quien detecta un cambio de contexto en un proyecto, al momento de detectarlo.
+> **Conecta con:** `memories/CONTEXTOS.md` del perfil Hermes-organizador (versión resumida que usa el agente en vivo).
+> **Si falta:** los agentes de clasificación adivinan proyecto/cliente y arriesgan mover mal un archivo.
+> Generado 2026-07-18 desde notas de contexto de la BD. Actualizar cuando cambie el contexto de un proyecto.
 
 ---
 
