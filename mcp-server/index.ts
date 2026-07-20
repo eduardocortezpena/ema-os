@@ -1,7 +1,7 @@
 /**
  * Servidor MCP local de EMA OS (Fase 6 — fundación).
  *
- * Expone 13 tools para que agentes externos (Hermes, Claude Code, otros)
+ * Expone 14 tools para que agentes externos (Hermes, Claude Code, otros)
  * operen la app sin pasar por la UI:
  *   LECTURA (ejecutan directo):
  *     - listar_proyectos        (filtros estado/prioridad)
@@ -14,6 +14,7 @@
  *   ESCRITURA (2 pasos: devuelven confirmationId; confirmar_accion ejecuta):
  *     - crear_tarea
  *     - actualizar_estado_tarea (TODO/IN_PROGRESS/WAITING/DONE)
+ *     - eliminar_tarea
  *     - crear_nota
  *     - mover_archivo_a_proyecto
  *     - generar_documento       (DOCX o PDF desde plantilla Markdown)
@@ -171,6 +172,13 @@ async function execActualizarEstado(args: { id: string; titulo: string; estado: 
   if (!exists) return { error: `La tarea "${args.titulo}" ya no existe (id ${args.id}).` };
   await prisma.tarea.update({ where: { id: args.id }, data: { status: args.estado } });
   return { ok: true, mensaje: `Tarea "${args.titulo}" → ${args.estado}.` };
+}
+
+async function execEliminarTarea(args: { id: string; titulo: string }) {
+  const exists = await prisma.tarea.findUnique({ where: { id: args.id }, select: { id: true } });
+  if (!exists) return { error: `La tarea "${args.titulo}" ya no existe (id ${args.id}).` };
+  await prisma.tarea.delete({ where: { id: args.id } });
+  return { ok: true, mensaje: `Tarea "${args.titulo}" eliminada.` };
 }
 
 async function execMoverArchivo(args: { id: string; archivo_titulo: string; proyecto_destino: string }) {
@@ -455,6 +463,29 @@ server.registerTool(
   },
 );
 
+// ESCRITURA 3.5: eliminar_tarea (2 pasos)
+server.registerTool(
+  'eliminar_tarea',
+  {
+    description: 'Propone eliminar una tarea. Devuelve un confirmationId; usa confirmar_accion para ejecutar.',
+    inputSchema: {
+      titulo: z.string().describe('Título (o parte) de la tarea a eliminar.'),
+    },
+    annotations: { readOnlyHint: false, destructiveHint: true },
+  },
+  async (args) => {
+    const task = await prisma.tarea.findFirst({ where: { title: { contains: args.titulo } } });
+    if (!task) return textResult({ error: `No se encontró tarea con "${args.titulo}".` });
+    const desc = `Eliminar tarea "${task.title}".`;
+    return textResult({
+      status: 'pending_confirmation',
+      confirmationId: createConfirmation('eliminar_tarea', { id: task.id, titulo: task.title }, desc),
+      propuesta: desc,
+      instruccion: 'Llama a confirmar_accion con este confirmationId y confirm=true para ejecutar.',
+    });
+  },
+);
+
 // ESCRITURA 4: mover_archivo_a_proyecto (2 pasos)
 server.registerTool(
   'mover_archivo_a_proyecto',
@@ -535,6 +566,9 @@ server.registerTool(
           break;
         case 'actualizar_estado_tarea':
           result = await execActualizarEstado(pending.args as Parameters<typeof execActualizarEstado>[0]);
+          break;
+        case 'eliminar_tarea':
+          result = await execEliminarTarea(pending.args as Parameters<typeof execEliminarTarea>[0]);
           break;
         case 'mover_archivo_a_proyecto':
           result = await execMoverArchivo(pending.args as Parameters<typeof execMoverArchivo>[0]);

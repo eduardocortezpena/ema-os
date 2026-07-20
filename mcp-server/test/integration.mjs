@@ -2,7 +2,7 @@
  * Suite de integración del servidor MCP de EMA OS.
  *
  * Arranca el server contra una BD de prueba AISLADA (SQLite en tmp, nunca
- * emaos.db), invoca las 13 tools vía el cliente del SDK y valida respuestas.
+ * emaos.db), invoca las 14 tools vía el cliente del SDK y valida respuestas.
  * Incluye casos borde (IDs inexistentes, estados inválidos, proyecto equivocado,
  * confirmación expirada/cancelada).
  *
@@ -156,6 +156,29 @@ async function run() {
   r = await call(client, 'mover_archivo_a_proyecto', { archivo_titulo: 'Nota test', proyecto_destino: 'Prueba MCP' });
   r2 = await call(client, 'confirmar_accion', { confirmationId: r.confirmationId, confirm: true });
   assert('mover_archivo → confirm', r2.ok === true, JSON.stringify(r2));
+
+  console.log('\n[eliminar_tarea]');
+  r = await call(client, 'crear_tarea', { titulo: 'Tarea para eliminar' });
+  r2 = await call(client, 'confirmar_accion', { confirmationId: r.confirmationId, confirm: true });
+  const taskToDeleteId = r2.id;
+
+  r = await call(client, 'eliminar_tarea', { titulo: 'Tarea para eliminar' });
+  assert('eliminar_tarea → pending', r.status === 'pending_confirmation' && r.confirmationId, JSON.stringify(r));
+  r2 = await call(client, 'confirmar_accion', { confirmationId: r.confirmationId, confirm: true });
+  assert('eliminar_tarea → confirm', r2.ok === true, JSON.stringify(r2));
+  r = await call(client, 'buscar_tareas_por_texto', { texto: 'Tarea para eliminar' });
+  assert('eliminar_tarea → ya no existe', Array.isArray(r) && !r.some((t) => t.id === taskToDeleteId), JSON.stringify(r));
+
+  r = await call(client, 'eliminar_tarea', { titulo: 'tarea-inexistente-xyz' });
+  assert('eliminar_tarea id inexistente → error', r.error && !r.confirmationId, JSON.stringify(r));
+
+  r = await call(client, 'crear_tarea', { titulo: 'Tarea a cancelar eliminación' });
+  r2 = await call(client, 'confirmar_accion', { confirmationId: r.confirmationId, confirm: true });
+  r = await call(client, 'eliminar_tarea', { titulo: 'Tarea a cancelar eliminación' });
+  r2 = await call(client, 'confirmar_accion', { confirmationId: r.confirmationId, confirm: false });
+  assert('eliminar_tarea cancelada → ok', r2.ok === true && /cancel/i.test(r2.mensaje || ''), JSON.stringify(r2));
+  r = await call(client, 'buscar_tareas_por_texto', { texto: 'Tarea a cancelar eliminación' });
+  assert('eliminar_tarea cancelada → tarea sigue existiendo', Array.isArray(r) && r.length === 1, JSON.stringify(r));
 
   console.log('\n[generar_documento — DOCX y PDF reales en disco]');
   r = await call(client, 'generar_documento', { tarea_id: 'task-test', plantilla_id: 'tpl-docx', data: { nombre: 'Mundo', fecha: '2026-07-19' } });
