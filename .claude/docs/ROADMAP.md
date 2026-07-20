@@ -1,5 +1,11 @@
 # ROADMAP.md — EMA OS
 
+> **Qué es:** el mapa de fases del proyecto, fuente de verdad de la numeración.
+> **Para qué:** confirmar en qué fase está una tarea antes de asumirlo del prompt del usuario.
+> **Quién actualiza / cuándo:** quien cierra una fase completa o cambia el orden de fases.
+> **Conecta con:** `SPRINT.md` (fase activa), `BACKLOG.md` (ítems por fase), `CLAUDE.md` ("Mapa de fases").
+> **Si falta:** se pierde la numeración correcta y se repiten discusiones ya resueltas sobre el orden.
+
 ## Principio rector: gasto adicional = $0
 
 Todo open source o self-hosted. Excepciones documentadas: saldo ya comprado en

@@ -1,6 +1,10 @@
 # MEMORIA_SESIONES.md — EMA OS
 
-> Registro consolidado por jornada. Compacto a propósito (regla de tope de líneas).
+> **Qué es:** registro consolidado por jornada de qué se trabajó, compacto a propósito.
+> **Para qué:** dar contexto rápido de "qué pasó" a una sesión nueva sin leer todo `git log`.
+> **Quién actualiza / cuándo:** el agente que cierra una jornada o tarea grande.
+> **Conecta con:** `BITACORA.md` (detalle por acción), `SPRINT.md` (estado actual).
+> **Si falta:** una sesión nueva no sabe qué se decidió en jornadas previas.
 > Al superar ~100 líneas, rotar entradas viejas a `archive/MEMORIA_SESIONES_HISTORICO.md` (copia ciega).
 
 ---

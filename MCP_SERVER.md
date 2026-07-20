@@ -1,5 +1,11 @@
 # MCP_SERVER.md — Servidor MCP de EMA OS
 
+> **Qué es:** documentación del servidor MCP local (`mcp-server/index.ts`) y sus tools.
+> **Para qué:** que cualquier agente externo sepa qué tools existen y cómo arrancarlas.
+> **Quién actualiza / cuándo:** quien agrega/cambia una tool MCP, en el mismo commit.
+> **Conecta con:** `.claude/docs/MCP_HERMES.md` (guía de conexión desde Hermes).
+> **Si falta:** un agente externo no sabe qué tools existen ni el patrón de confirmación de 2 pasos.
+
 Servidor MCP (Model Context Protocol) local que expone las herramientas de
 EMA OS a agentes externos (Hermes, Claude Code, otros) vía stdio. Permite
 listar/crear proyectos y tareas, leer Next Actions y My Day, gestionar

@@ -1,4 +1,11 @@
 # SPRINT.md
+
+> **Qué es:** foto del sprint en curso — qué se hizo, qué falta, en qué rama.
+> **Para qué:** retomar exactamente donde quedó la sesión anterior sin releer commits.
+> **Quién actualiza / cuándo:** el agente que cierra trabajo, en el mismo commit que lo cierra.
+> **Conecta con:** `BACKLOG.md` (de donde salen los ítems), `ROADMAP.md` (fase actual), `BITACORA.md` (detalle de cada acción).
+> **Si falta:** la próxima sesión repite exploración ya hecha o retoma trabajo a medias sin saber el estado real.
+
 ## Estado actual: Fase 6 ✅ completa + endurecida | MCP operativo (14 tools, PDF, tests)
 
 ### Sprint activo (2026-07-19)

@@ -1,5 +1,11 @@
 # Conectar Hermes a EMA OS MCP
 
+> **Qué es:** guía paso a paso para conectar un perfil de Hermes al MCP de EMA OS.
+> **Para qué:** que instalar/reinstalar un perfil Hermes no requiera reinventar la config.
+> **Quién actualiza / cuándo:** quien cambia el arranque del server o los prerrequisitos de conexión.
+> **Conecta con:** `MCP_SERVER.md` (raíz, fuente de verdad de las tools).
+> **Si falta:** cada reinstalación de perfil repite prueba y error para conectar el MCP.
+
 El servidor MCP de EMA OS (`mcp-server/index.ts`) expone **14 tools** vía stdio
 para que agentes externos (Hermes / Dona / Claude Code) operen la app sin la UI:
 listar/crear proyectos y tareas, leer Next Actions y My Day, gestionar
@@ -68,25 +74,11 @@ otro directorio y fallar al encontrar la DB.
 
 ## Invocación probada
 
-La suite `npm run test:mcp` (raíz) arranca el servidor contra una BD de prueba,
-invoca las 14 tools y valida respuestas + casos borde. Salida esperada:
-
-```
-=== 30 pasaron, 0 fallaron ===
-```
-
-Ejemplo concreto de una llamada manual (cualquier cliente MCP stdio):
-
-```
-listar_proyectos {}  →  [{ "id": "…", "name": "…", "status": "ACTIVE", "priority": "HIGH", "progress": 0 }, …]
-```
-
-Para probar una sola tool con UI: MCP Inspector —
-
-```bash
-npx @modelcontextprotocol/inspector npm run mcp
-```
-
+`npm run test:mcp` (raíz) arranca el servidor contra una BD de prueba, invoca
+las 14 tools y valida respuestas + casos borde. Salida esperada:
+`=== 30 pasaron, 0 fallaron ===`. Ejemplo de llamada manual (cliente MCP
+stdio): `listar_proyectos {}  →  [{ "id": "…", "status": "ACTIVE", … }, …]`.
+Para probar una sola tool con UI: `npx @modelcontextprotocol/inspector npm run mcp`
 (abrir `http://localhost:6274`; `cwd` debe ser el repo).
 
 ## Troubleshooting

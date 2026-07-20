@@ -70,6 +70,12 @@ Al superar 100 líneas: rotar contenido viejo a
 fecha). **Copia ciega — NO leer ni resumir, copiar completo.** El archivo activo
 queda solo con el estado actual.
 
+### Encabezado obligatorio en documentos vivos
+
+Todo documento de contexto vivo inicia con un encabezado de máximo 10 líneas:
+qué es, para qué sirve, quién lo actualiza y cuándo, con qué conecta, y qué se
+pierde si falta. Ningún documento vivo supera 100 líneas.
+
 ### PROHIBIDO leer archive/
 
 No leer `.claude/docs/archive/` salvo orden directa del usuario.
