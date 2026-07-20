@@ -38,11 +38,12 @@ perfil, `~/AppData/Local/hermes/profiles/organizador/logs/`), NUNCA en la
 base de datos de EMA OS directamente sin pasar por una tool validada (ver
 sección de Seguridad, principio de mínimo privilegio).
 
-**Tools de EMA OS que necesitaría** (a construir en la Fase 6, IA/tool-use
-— no existen todavía): `listar_proyectos` (lee `Proyecto` + su nota de
-contexto), `proponer_destino_archivo` (solo lectura, no muta nada),
-`mover_archivo_a_proyecto` (side-effect real, requiere el flag de
-aprobación explícita del dueño en el payload).
+**Tools de EMA OS** (OBSOLETO: "a construir en la Fase 6" — Fase 6 YA EXISTE
+y está conectada vía MCP, ver `MCP_HERMES.md`): `listar_proyectos` ✅,
+`mover_archivo_a_proyecto` ✅ (2 pasos). `proponer_destino_archivo` no
+existe como tool separada — el agente usa `listar_proyectos` +
+`leer_nota_contexto` (solo lectura) para proponer, y `mover_archivo_a_proyecto`
+solo tras aprobación explícita del dueño.
 
 **Preguntas abiertas para el dueño** (no resolver aquí, solo listarlas):
 ¿cuál es la carpeta "inbox" exacta? ¿Qué tan agresivo debe ser el filtro
